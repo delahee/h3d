@@ -405,7 +405,7 @@ class BitmapData {
 		#if (flash || nme || openfl)
 		b.bmp = data;
 			#if(openfl&&cpp)
-			b.alphaPremultiplied = data.premultipliedAlpha;
+			b.alphaPremultiplied = true;
 			#end
 		#elseif js
 		b.ctx = data;

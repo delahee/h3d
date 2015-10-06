@@ -45,6 +45,7 @@ class Interactive extends Component {
 			case 1:
 				activeRight = true;
 			}
+			return;
 		};
 		
 		input.onMove = function(_) onMouseMove();
@@ -143,25 +144,25 @@ class Interactive extends Component {
 		}
 	}
 	
-	public dynamic function onMouseMove() {
+	public dynamic function onMouseMove()  : Void {
 	}
 	
-	public dynamic function onMouseOver() {
+	public dynamic function onMouseOver()  : Void {
 	}
 
-	public dynamic function onMouseOut() {
+	public dynamic function onMouseOut()  : Void {
 	}
 	
-	public dynamic function onMouseDown() {
+	public dynamic function onMouseDown()  : Void {
 	}
 
-	public dynamic function onMouseUp() {
+	public dynamic function onMouseUp() : Void  {
 	}
 	
-	public dynamic function onClick() {
+	public dynamic function onClick() : Void  {
 	}
 	
-	public dynamic function onRightClick() {
+	public dynamic function onRightClick() : Void {
 	}
 	
 }

@@ -31,7 +31,7 @@ enum ShaderType {
 @:publicFields
 class Uniform { 
 	var name : String;
-	var loc : ShaderLocation;
+	var loc : Null<ShaderLocation>;
 	var type : ShaderType;
 	var index : Int;
 	

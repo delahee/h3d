@@ -19,6 +19,7 @@ class ScrollController {
 
 	public var doScroll : Float -> Bool -> Void;
 
+	public function new() { };
 	public function onPush( curScroll : Float, evtPos : Float ){
 		if( locked )
 			return;

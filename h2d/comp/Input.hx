@@ -27,9 +27,10 @@ class Input extends Interactive {
 		input.onFocusLost = function(_) {
 			removeClass(":focus");
 			cursor.visible = false;
-			#if (openfl && cpp)
-			flash.Lib.current.__dismissSoftKeyboard();
-			#end
+			//TODO
+			//#if (openfl && cpp)
+			//flash.Lib.current.__dismissSoftKeyboard();
+			//#end
 			onBlur();
 		};
 		input.onKeyDown = function(e:hxd.Event) {
@@ -67,6 +68,7 @@ class Input extends Interactive {
 					onChange(value);
 				}
 			}
+			return;
 		};
 		this.value = "";
 	}

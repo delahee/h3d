@@ -6,7 +6,6 @@ import h2d.Sprite;
 import h2d.Text;
 import h3d.Engine;
 import hxd.res.FontBuilder;
-import mt.gx.Proto;
 
 enum ProfColor {
 	Red;

@@ -1200,7 +1200,7 @@ class GlDriver extends Driver {
 	override function uploadVertexBuffer( v : VertexBuffer, startVertex : Int, vertexCount : Int, buf : hxd.FloatBuffer, bufPos : Int ) {
 		var stride : Int = v.stride;
 		var buf = buf.getNative();
-		var sub = new Float32Array(buf.buffer, bufPos, vertexCount * stride #if cpp * (fixMult?4:1) #end);
+		var sub = new Float32Array(buf, bufPos, vertexCount * stride #if cpp * (fixMult?4:1) #end);
 		
 		if ( debugSendZeroes ) 
 			for ( i in 0...sub.length )
@@ -1226,7 +1226,7 @@ class GlDriver extends Driver {
 
 	override function uploadIndexesBuffer( i : IndexBuffer, startIndice : Int, indiceCount : Int, buf : hxd.IndexBuffer, bufPos : Int ) {
 		var buf = new Uint16Array(buf.getNative());
-		var sub = new Uint16Array(buf.getByteBuffer(), bufPos, indiceCount #if cpp * (fixMult?2:1) #end);
+		var sub = new Uint16Array(buf, bufPos, indiceCount #if cpp * (fixMult?2:1) #end);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
 		gl.bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
@@ -1234,7 +1234,7 @@ class GlDriver extends Driver {
 
 	override function uploadIndexesBytes( i : IndexBuffer, startIndice : Int, indiceCount : Int, buf : haxe.io.Bytes , bufPos : Int ) {
 		var buf = new Uint8Array(buf.getData());
-		var sub = new Uint8Array(buf.getByteBuffer(), bufPos, indiceCount * 2);
+		var sub = new Uint8Array(buf, bufPos, indiceCount * 2);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
 		gl.bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
@@ -1991,7 +1991,7 @@ class GlDriver extends Driver {
 						}
 						vid[i] = u.index + i;
 					}
-					gl.uniform1iv(u.loc, vid);
+					gl.uniform1iv(u.loc, new lime.utils.Int32Array(vid));
 					vid = null;
 				}
 					

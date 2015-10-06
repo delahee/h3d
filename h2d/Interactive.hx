@@ -216,37 +216,37 @@ class Interactive extends Drawable {
 		return scene != null && scene.currentFocus == this;
 	}
 	
-	public dynamic function onOver( e : hxd.Event ) {
+	public dynamic function onOver( e : hxd.Event ) : Void {
 	}
 
-	public dynamic function onOut( e : hxd.Event ) {
+	public dynamic function onOut( e : hxd.Event ) : Void {
 	}
 	
-	public dynamic function onPush( e : hxd.Event ) {
+	public dynamic function onPush( e : hxd.Event ) : Void {
 	}
 
-	public dynamic function onRelease( e : hxd.Event ) {
+	public dynamic function onRelease( e : hxd.Event ) : Void {
 	}
 
-	public dynamic function onClick( e : hxd.Event ) {
+	public dynamic function onClick( e : hxd.Event ) : Void {
 	}
 	
-	public dynamic function onMove( e : hxd.Event ) {
+	public dynamic function onMove( e : hxd.Event ) : Void {
 	}
 
-	public dynamic function onWheel( e : hxd.Event ) {
+	public dynamic function onWheel( e : hxd.Event ) : Void {
 	}
 
-	public dynamic function onFocus( e : hxd.Event ) {
+	public dynamic function onFocus( e : hxd.Event ) : Void {
 	}
 	
-	public dynamic function onFocusLost( e : hxd.Event ) {
+	public dynamic function onFocusLost( e : hxd.Event ) : Void {
 	}
 
-	public dynamic function onKeyUp( e : hxd.Event ) {
+	public dynamic function onKeyUp( e : hxd.Event ) : Void {
 	}
 
-	public dynamic function onKeyDown( e : hxd.Event ) {
+	public dynamic function onKeyDown( e : hxd.Event ) : Void {
 	}
 	
 }
