@@ -85,8 +85,18 @@ class FontBuilder {
 			tf.antiAliasType = flash.text.AntiAliasType.ADVANCED;
 		}
 		
+		var fpx = 0;
+		var fpy = 0;
+			
 		if (options.filters != null) {
 			tf.filters = options.filters;
+			for ( f in options.filters) {
+				var g = Std.instance( f , flash.filters.GlowFilter);
+				if ( g != null) {
+					fpx = hxd.Math.imax( fpx, Math.ceil(g.blurX));
+					fpy = hxd.Math.imax( fpy, Math.ceil(g.blurY));
+				}
+			}
 		}
 		
 		var surf = 0;
@@ -111,7 +121,7 @@ class FontBuilder {
 			surf += (w+4) * (h+4);
 			if( firstBuild && h > font.lineHeight )
 				font.lineHeight = h;
-			sizes[i] = { w:w, h:h };
+			sizes[i] = { w:w + fpx , h:h + fpy };
 		}
 		var side = Math.ceil( Math.sqrt(surf) );
 		var width = 1;
@@ -153,8 +163,8 @@ class FontBuilder {
 					height <<= 1;
 					break;
 				}
-				m.tx = x - 2;
-				m.ty = y - 2;
+				m.tx = x - 2 + fpx;
+				m.ty = y - 2 + fpy;
 				
 				#if flash
 				tf.text = options.chars.charAt(i);
