@@ -105,6 +105,8 @@ class BatchElement {
 		this.y = y;
 	}
 
+	public inline function setColor(c:Int,?a:Float=1.0) color.setColor((c&0xffffff) | (Math.round(a*255)<<24) );
+	
 	public inline function changePriority(v) {
 		this.priority = v;
 		if ( batch != null)
