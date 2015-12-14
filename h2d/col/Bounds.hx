@@ -115,6 +115,13 @@ class Bounds {
 		yMax = my + dy * v;
 	}
 	
+	public inline function scaleY( v : Float ) {
+		var dy = (yMax - yMin) * 0.5 * v;
+		var my = (yMax + yMin) * 0.5;
+		yMin = my - dy * v;
+		yMax = my + dy * v;
+	}
+	
 	public inline function offset( dx : Float, dy : Float ) {
 		xMin += dx;
 		xMax += dx;
@@ -122,22 +129,13 @@ class Bounds {
 		yMax += dy;
 	}
 	
-	public inline function getMin() {
-		return new Point(xMin, yMin);
-	}
-	
-	public inline function getCenter() {
-		return new Point((xMin + xMax) * 0.5, (yMin + yMax) * 0.5);
-	}
-
-	public inline function getSize() {
-		return new Point(xMax - xMin, yMax - yMin);
-	}
-	
-	public inline function getMax() {
-		return new Point(xMax, yMax);
-	}
-	
+	public inline function getMin() 	return new Point(xMin, yMin);
+	public inline function getCenter() 	return new Point((xMin + xMax) * 0.5, (yMin + yMax) * 0.5);
+	public inline function getCenterX() return (xMin + xMax) * 0.5;
+	public inline function getCenterY() return (yMin + yMax) * 0.5;
+	public inline function getSize() 	return new Point(xMax - xMin, yMax - yMin);
+	public inline function getMax() 	return new Point(xMax, yMax);
+	public inline function isEmpty() 	return xMax <= xMin || yMax <= yMin;
 	public inline function empty() {
 		xMin = 1e20;
 		yMin = 1e20;
@@ -145,15 +143,21 @@ class Bounds {
 		yMax = -1e20;
 	}
 	
-	public inline function isEmpty() {
-		return xMax <= xMin || yMax <= yMin;
-	}
+	
 
 	public inline function all() {
 		xMin = -1e20;
 		yMin = -1e20;
 		xMax = 1e20;
 		yMax = 1e20;
+	}
+	
+	public inline function copy(b) {
+		xMin = b.xMin;
+		yMin = b.yMin;
+		xMax = b.xMax;
+		yMax = b.yMax;
+		return b;
 	}
 	
 	public inline function clone() {

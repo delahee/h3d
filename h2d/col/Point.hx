@@ -95,5 +95,9 @@ class Point {
 		return new h3d.Vector( x, y, 0, 1.0);
 	}
 
+	public inline function mulScalar( s : Float) : Point {
+		return new Point(x * s,y * s);
+	}
+	
 	public static var ZERO = new Point(0, 0);
 }
