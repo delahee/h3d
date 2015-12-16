@@ -229,5 +229,7 @@ class Bounds {
 		);
 	}
 	
+	public inline function randomX() : Float 		return xMin + Math.random() * (xMax - xMin);
+	public inline function randomY() : Float 		return yMin + Math.random() * (yMax - yMin);
 	
 }

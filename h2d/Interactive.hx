@@ -212,6 +212,11 @@ class Interactive extends Drawable {
 		}
 	}
 	
+	public override function sync(ctx) {
+		super.sync(ctx);
+		onSync();
+	}
+	
 	public function hasFocus() {
 		return scene != null && scene.currentFocus == this;
 	}
@@ -247,6 +252,9 @@ class Interactive extends Drawable {
 	}
 
 	public dynamic function onKeyDown( e : hxd.Event ) : Void {
+	}
+	
+	public dynamic function onSync(  ) : Void {
 	}
 	
 }

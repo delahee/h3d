@@ -105,7 +105,10 @@ class BatchElement {
 		this.y = y;
 	}
 
-	public inline function setColor(c:Int,?a:Float=1.0) color.setColor((c&0xffffff) | (Math.round(a*255)<<24) );
+	public inline function setColor(c:Int, ?a:Float = 1.0) {
+		color.setColor((c & 0xffffff) | (0xff << 24) );
+		color.a = a;
+	}
 	
 	public inline function changePriority(v) {
 		this.priority = v;
@@ -287,8 +290,8 @@ class SpriteBatch extends Drawable {
 	 * priority means higher is farther
 	 */
 	@:noDebug
-	public inline function alloc(t:h2d.Tile,?prio:Int) {
-		return add(new BatchElement(t), prio);
+	public inline function alloc(?t:h2d.Tile,?prio:Int) {
+		return add(new BatchElement(t==null?tile:t), prio);
 	}
 
 	@:allow(h2d.BatchElement)

@@ -12,13 +12,14 @@ class Timer {
 	public static var calc_tmod : Float = 1;
 	public static var tmod : Float = 1.0;
 	public static var deltaT : Float = 1;
+	public static var rdeltaT : Float = 1;
 	static var frameCount = 0;
 
 	public inline static function update() {
 		frameCount++;
 		var newTime = haxe.Timer.stamp();
-		deltaT = newTime - oldTime;
-		if ( deltaT == 0.0 ) deltaT = hxd.Math.EPSILON;
+		rdeltaT = deltaT = newTime - oldTime;
+		if ( deltaT == 0.0 ) rdeltaT = deltaT = hxd.Math.EPSILON;
 		
 		oldTime = newTime;
 		if( deltaT < maxDeltaTime )
