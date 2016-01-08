@@ -101,6 +101,7 @@ class DrawableShader extends h3d.impl.Shader {
 		var colorMatrix : M44;
 
 		var hasAlphaMap : Bool = false;
+		var hasSunBleed : Bool = false;
 		var alphaMapAsOverlay : Bool = false;
 		
 		var alphaMap : Texture;
@@ -111,6 +112,9 @@ class DrawableShader extends h3d.impl.Shader {
 		var hasDisplacementMap : Bool = false;
 		var displacementUV     : Float4;
 		var displacementAmount : Float;
+		
+		var secondaryMap    : Texture;
+		var hasSecondaryMap : Bool = false;
 		
 		var hasGradientMap	: Bool = false;
 		var gradientMap		: Texture;
@@ -128,6 +132,12 @@ class DrawableShader extends h3d.impl.Shader {
 		
 		var isAlphaPremul:Bool;
 		var leavePremultipliedColors:Bool;
+		
+		var sbPosNorm : Float2;
+		var sbExposure : Float;
+		var sbDensity : Float;
+		var sbWeight : Float;
+		var sbDecay : Float;
 
 		function overlay( src : Float4, layer : Float4 ) {
 			var lum = dot( layer.rgb, [0.2126, 0.7152, 0.0722] );
@@ -220,8 +230,21 @@ class DrawableShader extends h3d.impl.Shader {
 			
 			if( hasGradientMap )		col.xyz = getGradient(col).xyz;
 			if( hasVertexAlpha ) 		col.a *= talpha;
-			if ( hasVertexColor ) 		col *= tcolor;
+			if( hasVertexColor ) 		col *= tcolor;
 			
+			if ( hasSunBleed && hasSecondaryMap) {
+				var texCoord = tcoord;
+				var delta = tcoord - sbPosNorm;
+				var sbIllDecay = 1.0;
+				var spl = 24;
+				delta *= 1.0 / spl * sbDensity;
+				for ( i in 0...24 ) {
+					texCoord -= delta;
+					col += secondaryMap.get( texCoord,linear ) * sbIllDecay * sbWeight;
+					sbIllDecay *= sbDecay;
+				}
+				col *= sbExposure;
+			}
 			
 			if ( hasAlphaMap ) 	{
 				if( alphaMapAsOverlay)
@@ -234,7 +257,8 @@ class DrawableShader extends h3d.impl.Shader {
 			if( hasAlpha ) 				col.a *= alpha;
 			if( colorMatrix != null ) 	col *= colorMatrix;
 			if( colorMul != null ) 		col *= colorMul;
-			if( colorAdd != null ) 		col += colorAdd;
+			if ( colorAdd != null ) 	col += colorAdd;
+			
 			if( isAlphaPremul ) 		col.rgb *= col.a + 0.0001;
 				
 			if( leavePremultipliedColors)
@@ -289,6 +313,8 @@ class DrawableShader extends h3d.impl.Shader {
 	public var isAlphaPremul(default, set) : Bool;      public function set_isAlphaPremul(v)		{ if( isAlphaPremul != v ) 		invalidate();  	return isAlphaPremul = v; }
 	public var hasDisplacementMap(default, set) : Bool;	public function set_hasDisplacementMap(v)	{ if( hasDisplacementMap != v ) invalidate();   return hasDisplacementMap = v; }
 	public var hasGradientMap(default,set) : Bool;	    public function set_hasGradientMap(v)		{ if( hasGradientMap != v ) 	invalidate();  	return hasGradientMap = v; }
+	public var hasSecondaryMap(default,set) : Bool;	    public function set_hasSecondaryMap(v)		{ if( hasSecondaryMap != v ) 	invalidate();  	return hasSecondaryMap = v; }
+	public var hasSunBleed(default,set) : Bool;	    	public function set_hasSunBleed(v)			{ if( hasSunBleed != v ) 	invalidate();  		return hasSunBleed = v; }
 	
 	public var hasFXAA(default, set) : Bool;				
 	
@@ -706,6 +732,7 @@ class Drawable extends Sprite {
 	public var multiplyMap(default, set) : h2d.Tile;
 	public var multiplyFactor(get, set) : Float;
 	
+	public var secondaryMap(default, set) : h2d.Tile;
 	public var colorKey(get, set) : Int;
 	
 	public var writeAlpha : Bool;
@@ -830,6 +857,17 @@ class Drawable extends Sprite {
 			alphaUV = null;
 			shader.alphaUV = null;
 		}
+		
+		return t;
+	}
+	
+	function set_secondaryMap(t:h2d.Tile) {
+		if( t != null && secondaryMap == null 
+		||	t == null && secondaryMap != null )
+			shader.invalidate();
+		
+		shader.hasSecondaryMap = t != null;
+		shader.secondaryMap = t.getTexture();
 		
 		return t;
 	}
@@ -1005,6 +1043,15 @@ class Drawable extends Sprite {
 		shader.hasVertexColor = false;
 		setupShader(ctx.engine, tile, HAS_SIZE | HAS_UV_POS | HAS_UV_SCALE);
 		ctx.engine.renderQuadBuffer(Tools.getCoreObjects().planBuffer);
+	}
+	
+	public function setSunBleed(sunPos : Vector, dens:Float,expo:Float,weight:Float,decay:Float ) {
+		shader.hasSunBleed = true;
+		shader.sbDensity = dens;
+		shader.sbExposure = expo;
+		shader.sbWeight = weight;
+		shader.sbDecay = decay;
+		shader.sbPosNorm = sunPos;
 	}
 	
 	@:noDebug
@@ -1195,7 +1242,8 @@ class Drawable extends Sprite {
 		|| shader.hasMultMap
 		|| shader.hasDisplacementMap
 		|| shader.hasGradientMap
-		|| shader.hasFXAA;
+		|| shader.hasFXAA
+		|| shader.hasSunBleed;
 	}
 
 	inline function hasSampleAlphaToCoverage() return h3d.Engine.getCurrent().driver.hasFeature( SampleAlphaToCoverage );

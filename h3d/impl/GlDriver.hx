@@ -1991,7 +1991,7 @@ class GlDriver extends Driver {
 						}
 						vid[i] = u.index + i;
 					}
-					gl.uniform1iv(u.loc, new lime.utils.Int32Array(vid));
+					gl.uniform1iv(u.loc, new openfl.utils.Int32Array(vid));
 					vid = null;
 				}
 					

@@ -126,22 +126,26 @@ class Stage3dDriver extends Driver {
 	override function init( onCreate, forceSoftware = false ) {
 		this.onCreateCallback = onCreate;
 		s3d.addEventListener(flash.events.Event.CONTEXT3D_CREATE, this.onCreate);
-		#if (flash12&&false)//wait for adobe to fix their mess
+		#if (flash12)//wait for adobe to fix their mess
 		if( flashVersion >= 12 && !forceSoftware ){
 			//experimental
 			var vec = new flash.Vector();
 			
 			#if !compatibilityMode
+			
+			/*
 				#if (air3&&flash17)
-				vec.push(Std.string(flash.display3D.Context3DProfile.STANDARD_EXTENDED));
+				vec.push("standard_extended"));
 				#end
+			*/
 				#if flash14
-				vec.push(Std.string(flash.display3D.Context3DProfile.STANDARD));
+				vec.push("standard");
 				#end
-				
+			/*
 				#if flash16
-				vec.push(Std.string(flash.display3D.Context3DProfile.STANDARD_CONSTRAINED));
+				vec.push("standard_constrained");
 				#end
+				*/
 				vec.push(Std.string(flash.display3D.Context3DProfile.BASELINE_EXTENDED));
 				vec.push(Std.string(flash.display3D.Context3DProfile.BASELINE));
 			#end

@@ -24,6 +24,22 @@ class Bounds {
 	inline function get_width() 	return xMax - xMin;
 	inline function get_height() 	return yMax - yMin;
 	
+	public var 		left(get, set) : Float; 	
+	inline function get_left() return xMin;
+	inline function set_left(v) return xMin = v;
+	
+	public var		right(get, set) : Float; 	
+	inline function get_right() return xMax;
+	inline function set_right(v) return xMax = v;
+	
+	public var		top(get, set) : Float; 	
+	inline function get_top() return yMin;
+	inline function set_top(v) return yMin = v;
+	
+	public var		bottom(get, set) : Float; 	
+	inline function get_bottom() return yMax;
+	inline function set_bottom(v) return yMax=v;
+	
 	public inline function collides( b : Bounds ) {
 		return !(xMin > b.xMax || yMin > b.yMax || xMax < b.xMin || yMax < b.yMin);
 	}
@@ -70,21 +86,24 @@ class Bounds {
 		if( ixMin < xMin ) xMin = ixMin;
 		if( ixMax > xMax ) xMax = ixMax;
 		if( iyMin < yMin ) yMin = iyMin;
-		if( iyMax > yMax ) yMax = iyMax;
+		if ( iyMax > yMax ) yMax = iyMax;
+		return this;
 	}
 
 	public inline function addPoint( p : Point ) {
 		if( p.x < xMin ) xMin = p.x;
 		if( p.x > xMax ) xMax = p.x;
 		if( p.y < yMin ) yMin = p.y;
-		if( p.y > yMax ) yMax = p.y;
+		if ( p.y > yMax ) yMax = p.y;
+		return this;
 	}
 	
 	public inline function addPoint2( px:Float,py:Float ) {
 		if( px < xMin ) xMin = px;
 		if( px > xMax ) xMax = px;
 		if( py < yMin ) yMin = py;
-		if( py > yMax ) yMax = py;
+		if ( py > yMax ) yMax = py;
+		return this;
 	}
 	
 	public inline function setMin( p : Point ) {
@@ -113,6 +132,7 @@ class Bounds {
 		yMin = my - dy * v;
 		xMax = mx + dx * v;
 		yMax = my + dy * v;
+		return this;
 	}
 	
 	public inline function scaleY( v : Float ) {
@@ -120,6 +140,7 @@ class Bounds {
 		var my = (yMax + yMin) * 0.5;
 		yMin = my - dy * v;
 		yMax = my + dy * v;
+		return this;
 	}
 	
 	public inline function offset( dx : Float, dy : Float ) {
@@ -169,12 +190,16 @@ class Bounds {
 		return b;
 	}
 	
+	/**
+	 * @return this
+	 */
 	public inline function translate(x, y) {
 		xMin += x;
 		xMax += x;
 		
 		yMin += y;
 		yMax += y;
+		return this;
 	}
 		
 	/**
