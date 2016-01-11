@@ -244,7 +244,7 @@ class Stage3dDriver extends Driver {
 		try {
 			
 			if( flashVersion >= 12 ) 
-				v = ctx.createVertexBuffer(count, stride, isDynamic?"dynamicDraw":"staticDraw" );
+				v = ctx.createVertexBuffer(count, stride, cast isDynamic?"dynamicDraw":"staticDraw" );
 			else 
 				v = ctx.createVertexBuffer(count, stride  );
 				
