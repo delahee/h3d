@@ -240,7 +240,7 @@ class DrawableShader extends h3d.impl.Shader {
 				delta *= 1.0 / spl * sbDensity;
 				for ( i in 0...24 ) {
 					texCoord -= delta;
-					col += secondaryMap.get( texCoord,linear ) * sbIllDecay * sbWeight;
+					col += secondaryMap.get( texCoord, nearest ) * (sbIllDecay * sbWeight);
 					sbIllDecay *= sbDecay;
 				}
 				col *= sbExposure;

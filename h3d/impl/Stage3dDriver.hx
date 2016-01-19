@@ -50,7 +50,7 @@ class Stage3dDriver extends Driver {
 	var curMultiBuffer : Array<h3d.impl.Buffer.BufferOffset>;
 	var curAttributes : Int;
 	var curTextures : Array<h3d.mat.Texture>;
-	var curSamplerBits : Array<Int>;
+	var curSamplerBits : Array<Int>=[];
 	var curTarget : h3d.mat.Texture;
 	public var antiAlias : Int = 0;
 
@@ -119,8 +119,12 @@ class Stage3dDriver extends Driver {
 			ctx.setTextureAt(i, null);
 			apiCall();
 		}
-		curTextures = [];
-		curSamplerBits = [];
+		
+		while( curTextures.length > 0 )
+			curTextures.pop();
+		
+		for( i in 0...curSamplerBits.length)
+			curSamplerBits[i] = -1;
 	}
 	
 	override function init( onCreate, forceSoftware = false ) {

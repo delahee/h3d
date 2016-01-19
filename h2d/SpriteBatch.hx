@@ -61,6 +61,21 @@ class BatchElement {
 		tile = t;
 		visible = true;
 	}
+	
+	public function copy( e : BatchElement) {
+		x = e.x; 
+		y = e.y;
+		alpha = e.alpha;
+		rotation = e.rotation;
+		scaleX = e.scaleX;
+		scaleY = e.scaleY;
+		skewX = e.skewX;
+		skewY = e.skewY;
+		priority = e.priority;
+		color.load( e.color );
+		tile = e.tile;
+		visible = e.visible;
+	}
 
 	@:noDebug
 	public function remove() {

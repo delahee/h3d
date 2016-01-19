@@ -19,8 +19,9 @@ class CachedBitmap extends Bitmap {
 	
 	public var drawToBackBuffer = true;
 	
-	var realWidth : Int;
-	var realHeight : Int;
+	public var realWidth(default,null) : Int;
+	public var realHeight(default,null) : Int;
+	
 	var tex : h3d.mat.Texture;
 	
 	var tmpZone : h3d.Vector;
@@ -35,7 +36,7 @@ class CachedBitmap extends Bitmap {
 	 */
 	public var permaTile: h2d.Tile;
 	
-	public function new( ?parent : Sprite, width = -1, height = -1 ) {
+	public function new( ?parent : Sprite, ?width = -1, ?height = -1 ) {
 		super(parent);
 		
 		permaTile = h2d.Tools.getEmptyTile().clone();
@@ -226,7 +227,9 @@ class CachedBitmap extends Bitmap {
 			renderDone = true;
 			
 			permaTile.copy(tile);
-			onOffscreenRenderDone(tile);
+			
+			if( onOffscreenRenderDone!=null)
+				onOffscreenRenderDone(tile);
 		}
 		
 		super.sync(ctx);

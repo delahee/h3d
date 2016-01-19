@@ -18,8 +18,82 @@ class Demo extends flash.display.Sprite{
 		hxd.System.setLoop(update);
 		scene = new h2d.Scene();
 		
-		scene = new h2d.Scene();
+		//makeBasics();
+		makeComplex();
+	}
+	
+	
+	function makeComplex() {
+		var light = new h2d.CachedBitmap( scene );
+		var w = flash.Lib.current.stage.stageWidth;
+		var h = flash.Lib.current.stage.stageHeight; 
 		
+		var showLightPass = false;
+		var showOccludersPass = false;
+		
+		//light pass here
+		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/sky.png").centerRatio(0.5,0) , light );
+		b.x = w * 0.5;
+		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/sun.png").centerRatio(0.5,0) , light );
+		b.x = w * 0.5; b.y = h * 0.05;
+		
+		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/bgRocks.png").centerRatio(0.5,1)	, light );
+		b.x = w * 0.5; b.y = h * 0.80;
+		b.scale(1.25);
+		b.color = new h3d.Vector(0, 0, 0, 0.35);
+		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/bg.png").centerRatio(0.5,1)	, light );
+		b.x = w * 0.5; b.y = h * 0.85;
+		b.scale(1.25);
+		b.color = new h3d.Vector(0, 0, 0, 0.35);
+		
+		if(!showLightPass)
+			light.drawToBackBuffer = false;
+		
+		var rest = new h2d.CachedBitmap( scene );
+		
+		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/sky.png").centerRatio(0.5,0) , rest );
+		b.x = w * 0.5;
+		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/bgRocks.png").centerRatio(0.5,1)	, rest );
+		b.x = w * 0.5; b.y = h * 0.80;
+		b.scale(1.25);
+		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/bg.png").centerRatio(0.5,1)	, rest );
+		b.x = w * 0.5; b.y = h * 0.85;
+		b.scale(1.25);
+		
+		rest.drawToBackBuffer = false;
+		if( showLightPass ) {
+			rest.visible = false;
+		}
+		
+		var final = new h2d.CachedBitmap(scene);
+		
+		var z = new h2d.Bitmap(h2d.Tile.fromAssets("assets/zombieE_run04.png").centerRatio(0.5, 1.0) );
+		z.x = 0.5 * w;
+		z.y = 200;
+		rest.addChild( z );
+		
+		final.secondaryMap = light.permaTile;	
+		final.setSunBleed( new h3d.Vector(0.39, 0.1), 0.6, 0.5, 0.15,0.92);
+		//final.drawToBackBuffer = false;
+		rest.onOffscreenRenderDone = function(tile) {
+			final.secondaryMap = light.permaTile;
+			new h2d.Bitmap( tile, final );
+		}
+		
+		if ( showLightPass || showOccludersPass )
+			final.visible = false;
+			
+		var g = new h2d.Graphics(scene);
+		g.lineStyle(1);
+		g.beginFill(0xff0000);
+		g.drawRect( -2, -2, 4, 4);
+		g.endFill();
+		
+		g.x = 512 * 0.39;
+		g.y = 512 * 0.1;
+	}
+	
+	function makeBasics() {
 		var light = new h2d.CachedBitmap( scene );
 		var g = new h2d.Graphics(light);
 		
@@ -60,16 +134,13 @@ class Demo extends flash.display.Sprite{
 		
 		final.secondaryMap = light.permaTile;	
 		final.setSunBleed( new h3d.Vector(0.2, 0.2), 0.7, 0.5, 0.33,0.89);
-		final.drawToBackBuffer = true;
+		//final.drawToBackBuffer = true;
 		
 		rest.onOffscreenRenderDone = function(tile) {
 			final.secondaryMap = light.permaTile;
 			final.addChild( bg );
 			new h2d.Bitmap( tile,final );
 		}
-		//final.visible = false;
-		
-		//bmp.setSunBleed(new h3d.Vector(0.25, 0.25), 1.0, 1.0, 1.0, 0.5);
 	}
 	
 	function update() 	{
