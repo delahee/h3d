@@ -47,6 +47,29 @@ class Catmull2 {
 		
 		return 0.5 * q;
 	}
+	
+	/**
+	 * 0...numPoint
+	 */
+	public 
+	inline
+	function c2( i : Float , ?out : h2d.col.Point) {
+		if ( out == null ) out = new h2d.col.Point();
+		
+		var p0 = get(Std.int(i-1));
+		var p1 = get(Std.int(i));
+		var p2 = get(Std.int(i+1));
+		var p3 = get(Std.int(i+2));
+		
+		var t = i - Std.int(i);
+		out.x = catmull( p0.x, p1.x, p2.x, p3.x, t );
+		out.y = catmull( p0.y, p1.y, p2.y, p3.y, t );
+		return out;
+	}
+	
+	public function plotWhole( t : Float , ?out : h2d.col.Point ) {
+		return c2( t*points.length,out );
+	}
 }
 
 

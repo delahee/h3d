@@ -590,9 +590,7 @@ class Sprite {
 		scaleY = v;
 	}
 
-	public inline function getChildAt( n ) {
-		return childs[n];
-	}
+	
 
 	public function getChildIndex( s ) {
 		for( i in 0...childs.length )
@@ -601,8 +599,13 @@ class Sprite {
 		return -1;
 	}
 	
-	public inline function toBack( ) 	if( parent != null) parent.setChildIndex( this , 0);
-	public inline function toFront()	if( parent != null) parent.setChildIndex( this , parent.numChildren - 1 );
+	public inline function getChildAt( n ) 					return childs[n];
+	
+	public inline function toBack( ) 						if( parent != null) parent.setChildIndex( this , 0);
+	public inline function toFront()						if( parent != null) parent.setChildIndex( this , parent.numChildren - 1 );
+	
+	public inline function putUnder( spr : h2d.Sprite )		if( parent != null) setChildIndex( spr.parent, spr.parent.getChildIndex(spr) - 1 );
+	public inline function putInFront( spr : h2d.Sprite )	if( parent != null) setChildIndex( spr.parent, spr.parent.getChildIndex(spr) + 1 );
 	
 	public function setChildIndex(c,idx) {
 		if( childs.remove(c) )

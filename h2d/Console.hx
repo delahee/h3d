@@ -320,11 +320,12 @@ class Console extends h2d.Sprite {
 		lastLogTime = haxe.Timer.stamp();
 	}
 
+	public var baseY :Null<Int>= null;
 	override function sync(ctx:h2d.RenderContext) {
 		var scene = getScene();
 		if( scene != null ) {
 			x = 0;
-			y = scene.height - cheight;
+			y = baseY==null?scene.height:baseY - cheight;
 			cwidth = scene.width;
 			bg.tile.scaleToSize(Math.round(width), Math.round(cheight));
 		}
