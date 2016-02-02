@@ -18,6 +18,40 @@ private class StackIterator<T> {
 	}
 }
 
+private class BackwardStackIteratorBug<T> {
+	var b : Array<T>;
+	var len : Int;
+	var pos : Int;
+	public inline function new( b : Array<T>,len:Int )  {
+		this.b = b;
+		this.len = len;
+		this.pos = len;
+	}
+	public inline function hasNext() {
+		return pos > 0;
+	}
+	public inline function next() {
+		return b[--pos];
+	}
+}
+
+private class BackwardStackIterator<T> {
+	var b : Array<T>;
+	var len : Int;
+	var pos : Int;
+	public inline function new( b : Array<T>,len:Int )  {
+		this.b = b;
+		this.len = len;
+		this.pos = 0;
+	}
+	public inline function hasNext() {
+		return pos < len;
+	}
+	public inline function next() {
+		return b[len - pos++ - 1];
+	}
+}
+
 //could be an abstract but they are not reliable enough at the time I write this 
 @:generic
 class Stack<T> {
@@ -33,8 +67,11 @@ class Stack<T> {
 	 */
 	public inline function remove(v:T):Bool{
 		var i = arr.indexOf(v);
+		return removeAt(i);
+	}
+	
+	public inline function removeAt(i:Int):Bool {
 		if ( i < 0 ) return false;
-		
 		if( pos > 1 ){
 			arr[i] = arr[pos-1];
 			arr[pos-1] = null;
@@ -77,10 +114,8 @@ class Stack<T> {
 		pos = 0;
 	}
 	
-	public inline function iterator() {
-		return new StackIterator(arr,get_length());
-	}
-	
+	public inline function iterator() return new StackIterator(arr,get_length());
+	public inline function backWardIterator() return new BackwardStackIterator(arr,get_length());	
 	public inline function toString() {
 		var s = "";
 		for ( i in 0...pos) {

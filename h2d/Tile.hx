@@ -234,8 +234,10 @@ class Tile {
 	public inline function setCenter(?dx:Int, ?dy:Int) : Void
 		copy( center( dx, dy) );
 	
-	public inline function setCenterRatio(?px:Float=0.5, ?py:Float=0.5) : Void
-		copy( centerRatio( px, py) );
+	public inline function setCenterRatio(?px:Float=0.5, ?py:Float=0.5) : Void {
+		dx = -Std.int(px * width);
+		dy = -Std.int(py * height);
+	}
 	
 	public function setPos(x, y) {
 		this.x = x;
