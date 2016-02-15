@@ -291,7 +291,10 @@ class Console extends h2d.Sprite {
 		}
 		try {
 			Reflect.callMethod(null, cmd.callb, vargs);
-		} catch( e : String ) {
+		} catch ( e : String ) {
+			#if debug
+			trace(e);
+			#end
 			log('ERROR $e', errorColor);
 		}
 	}
