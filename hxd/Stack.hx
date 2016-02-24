@@ -18,23 +18,6 @@ private class StackIterator<T> {
 	}
 }
 
-private class BackwardStackIteratorBug<T> {
-	var b : Array<T>;
-	var len : Int;
-	var pos : Int;
-	public inline function new( b : Array<T>,len:Int )  {
-		this.b = b;
-		this.len = len;
-		this.pos = len;
-	}
-	public inline function hasNext() {
-		return pos > 0;
-	}
-	public inline function next() {
-		return b[--pos];
-	}
-}
-
 private class BackwardStackIterator<T> {
 	var b : Array<T>;
 	var len : Int;
@@ -54,7 +37,7 @@ private class BackwardStackIterator<T> {
 
 //could be an abstract but they are not reliable enough at the time I write this 
 @:generic
-class Stack<T> {
+class Stack<T>  {
 	var arr : Array<T>=[];
 	var pos = 0;
 	
@@ -68,6 +51,22 @@ class Stack<T> {
 	public inline function remove(v:T):Bool{
 		var i = arr.indexOf(v);
 		return removeAt(i);
+	}
+	
+	
+	public inline function removeOrdered(v:T):Bool {
+		if ( pos == 0 ) return false;
+		var i = arr.indexOf(v);
+		return removeOrderedAt(i);
+	}
+	
+	public inline function removeOrderedAt(idx:Int):Bool {
+		if ( idx < 0 ) return false;
+		if ( pos == 0 ) return false;
+		for ( i in idx...pos)
+			arr[i] = arr[i + 1];
+		pos--;
+		return true;
 	}
 	
 	public inline function removeAt(i:Int):Bool {
@@ -101,6 +100,23 @@ class Stack<T> {
 		return v;
 	}
 	
+	public inline function first() : T {
+		if ( pos == 0 ) return null;
+		return arr[0];
+	}
+	
+	public function pushFront(v){
+		for ( i in 0...pos )
+			arr[pos - i] = arr[pos - i - 1];
+		arr[0] = v;
+		pos++;
+	}
+	
+	public inline function last() : T {
+		if ( pos == 0 ) return null;
+		return arr[pos - 1];
+	}
+	
 	public inline function unsafeGet(idx:Int) {
 		return arr[idx];
 	}
@@ -126,5 +142,40 @@ class Stack<T> {
 	
 	public inline function toData() {
 		return arr;
+	}
+	
+	public inline function fill(arr:Array<T>) {
+		for ( a in arr )
+			push( a );
+		return this;
+	}
+	
+	public inline function get(pos:Int) {
+	  return arr[pos];
+	}
+	
+	public inline function set(pos:Int, v:T):T {
+		arr[pos] = v;
+		return v;
+	}
+}
+
+class StackTest {
+	public static function test() {
+		var a : hxd.Stack<Null<Int>> = new hxd.Stack<Null<Int>>(); 
+		a.fill([1, 2, 3, 4]);
+		a.removeOrdered(3);
+		if ( a.get(0) != 1 || a.get(2) != 4) throw "assert";
+		trace(a);
+		
+		var a : hxd.Stack<Null<Int>> = new hxd.Stack<Null<Int>>() 
+		.fill([1, 2, 3, 4]);
+		
+		a.pushFront( 0 ); 
+		if ( a.get(0) != 0 || a.get(2) != 2) throw "assert";
+		
+		var a : hxd.Stack<Null<Int>> = new hxd.Stack<Null<Int>>();
+		a.pushFront( 66 ); 
+		trace(a);
 	}
 }

@@ -152,8 +152,8 @@ class Graphics extends Drawable {
 		return @:privateAccess 2  * Math.round( @:privateAccess content.index.length / 6 );
 	}
 	
-	override function getBoundsRec( relativeTo, out ) {
-		super.getBoundsRec(relativeTo, out);
+	override function getBoundsRec( relativeTo, out,forSize ) {
+		super.getBoundsRec(relativeTo, out,forSize);
 		if( tile != null ) addBounds(relativeTo, out, xMin, yMin, xMax - xMin, yMax - yMin);
 	}
 

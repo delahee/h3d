@@ -126,7 +126,7 @@ class Sprite {
 			relativeTo.syncPos();
 		}
 		syncPos();
-		getBoundsRec(relativeTo, out);
+		getBoundsRec(relativeTo, out,false);
 		if( out.isEmpty() ) {
 			addBounds(relativeTo, out, 0, 0, 1, 1);
 			out.xMax = out.xMin;
@@ -135,6 +135,24 @@ class Sprite {
 		return out;
 	}
 	
+	/**
+		This is similar to getBounds(parent), but instead of the full content, it will return
+		the size based on the alignement of the Sprite. For instance for a text, getBounds will returns
+		the full glyphs size whereas getSize() will ignore the pixels under the baseline.
+	**/
+	public function getSize( ?out : h2d.col.Bounds ) : h2d.col.Bounds {
+		if( out == null ) out = new h2d.col.Bounds();
+		getBoundsRec(parent, out, true);
+		if( out.isEmpty() ) {
+			addBounds(parent, out, -1, -1, 2, 2);
+			out.xMax = out.xMin = (out.xMax + out.xMin) * 0.5;
+			out.yMax = out.yMin = (out.yMax + out.yMin) * 0.5;
+		}
+		out.offset( -x, -y);
+		return out;
+	}
+	
+	/*
 	function getBoundsRec( relativeTo : Sprite, out : h2d.col.Bounds ) {
 		syncPos();
 		
@@ -158,6 +176,39 @@ class Sprite {
 		for ( c in childs ) {
 			
 			c.getBoundsRec(relativeTo, out);
+			if( out.xMin < xmin ) xmin = out.xMin;
+			if( out.yMin < ymin ) ymin = out.yMin;
+			if( out.xMax > xmax ) xmax = out.xMax;
+			if( out.yMax > ymax ) ymax = out.yMax;
+		}
+		out.xMin = xmin;
+		out.yMin = ymin;
+		out.xMax = xmax;
+		out.yMax = ymax;
+	}
+	*/
+	function getBoundsRec( relativeTo : Sprite, out : h2d.col.Bounds, forSize : Bool ) {
+		if( posChanged ) {
+			calcAbsPos();
+			for( c in childs )
+				c.posChanged = true;
+			posChanged = false;
+		}
+		var n = childs.length;
+		if( n == 0 ) {
+			out.empty();
+			return;
+		}
+		if( n == 1 ) {
+			var c = childs[0];
+			if( c.visible ) c.getBoundsRec(relativeTo, out,forSize) else out.empty();
+			return;
+		}
+		var xmin = hxd.Math.POSITIVE_INFINITY, ymin = hxd.Math.POSITIVE_INFINITY;
+		var xmax = hxd.Math.NEGATIVE_INFINITY, ymax = hxd.Math.NEGATIVE_INFINITY;
+		for( c in childs ) {
+			if( !c.visible ) continue;
+			c.getBoundsRec(relativeTo, out, forSize);
 			if( out.xMin < xmin ) xmin = out.xMin;
 			if( out.yMin < ymin ) ymin = out.yMin;
 			if( out.xMax > xmax ) xmax = out.xMax;
