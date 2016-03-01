@@ -495,6 +495,20 @@ class Matrix {
 		return this;
 	}
 	
+	public static inline function colorColorize(col:Int, ?ratioNewColor=1.0, ?ratioOldColor=1.0) {
+		var rgb = h3d.Vector.fromColor(col);
+		var r = ratioNewColor * rgb.r;
+		var g = ratioNewColor * rgb.g;
+		var b = ratioNewColor * rgb.b;
+		var m = [
+			ratioOldColor+r, g, b, 0,
+			r, ratioOldColor+g, b, 0,
+			r, g, ratioOldColor+b, 0,
+			0, 0, 0, 1,
+		];
+		return h3d.Matrix.L(m);
+	}
+	
 	/**
 	 * identity is one
 	 */

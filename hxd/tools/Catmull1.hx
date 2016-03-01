@@ -34,9 +34,10 @@ class Catmull1 {
 		return res;
 	}
 	
-	public inline function plotWhole( t : hxd.Float32 ) {
-		var rn = points.length * t;
-		var i = Std.int( points.length * t );
+	public function plotWhole( t : hxd.Float32 ) {
+		var l = points.length - 1;
+		var rn = l * t;
+		var i = Std.int( l * t );
 		var n = rn - i;
 		var p0 = get(i-1);
 		var p1 = get(i);

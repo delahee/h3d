@@ -79,6 +79,7 @@ class Demo extends flash.display.Sprite
 		var dcBg = getTile("assets/demoNight.png"); dcBg.setCenterRatio(0.5, 0.5);
 		var dcOverlay = getTile("assets/rampedLight.png"); dcOverlay.setCenterRatio(0.5, 0.5);
 		var overlay = getTile("assets/overlay.png"); overlay.setCenterRatio(0.5, 0.5);
+		var car = getTile("assets/carPlay1.png"); car.setCenterRatio(0.5, 0.5);
 		
 		//create multiple gpu textures
 		var tiles = [ getTile("assets/haxe.png"), getTile("assets/haxe.png"), getTile("assets/haxe.png"), getTile("assets/haxe.png") ];
@@ -989,6 +990,23 @@ class Demo extends flash.display.Sprite
 			t.y = baseline + txtBaseLine;
 			t.x -= t.textWidth * 0.5;
 			t.x = cellX+ Std.int( t.x );
+			
+		}
+		
+		{
+			cellX += 120 + incr;
+			
+			bmp = new h2d.Bitmap(car,scene);
+			bmp.x = cellX;
+			bmp.y = baseline;
+			bmp.colorMatrix = h3d.Matrix.colorColorize(0xff21517A,0.25,0.75);
+			
+			var t = new h2d.Text( font, bmp );
+			t.text = "Colorize";
+			t.maxWidth = 32;
+			t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
+			t.y = txtBaseLine;
+			t.x = Std.int( t.x );
 			
 		}
 		

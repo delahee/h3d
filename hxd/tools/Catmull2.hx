@@ -68,7 +68,7 @@ class Catmull2 {
 	}
 	
 	public function plotWhole( t : Float , ?out : h2d.col.Point ) {
-		return c2( t*points.length,out );
+		return c2( t*points.length-1,out );
 	}
 }
 
