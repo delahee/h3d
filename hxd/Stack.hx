@@ -53,6 +53,9 @@ class Stack<T>  {
 		return removeAt(i);
 	}
 	
+	public inline function random():T{
+		return arr[Std.random( get_length() )];
+	}
 	
 	public inline function removeOrdered(v:T):Bool {
 		if ( pos == 0 ) return false;
@@ -157,6 +160,17 @@ class Stack<T>  {
 	public inline function set(pos:Int, v:T):T {
 		arr[pos] = v;
 		return v;
+	}
+	
+	public function scramble() {
+		var rd = Std.random;
+		for(x in 0...(length + rd( length )) ){
+			var b = rd(length);
+			var a = rd(length);
+			var temp = arr[a];
+			arr[ a ] = arr[ b ];
+			arr[ b ] = temp;
+		}
 	}
 }
 

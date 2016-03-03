@@ -447,6 +447,7 @@ class Scene extends Layers implements h3d.IDrawable {
 			extraPasses.push(p);
 	}
 
+	
 	public function removePass(p) {
 		extraPasses.remove(p);
 		prePasses.remove(p);
@@ -564,4 +565,8 @@ class Scene extends Layers implements h3d.IDrawable {
 		return new Bitmap(target);
 	}
 
+	public function removeAllPasses() {
+		extraPasses = [];
+		prePasses = [];
+	}
 }

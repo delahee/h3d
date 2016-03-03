@@ -30,6 +30,8 @@ class Console extends h2d.Sprite {
 	var cwidth : Float=0;
 	public var shortKeyChar : Int = "/".code;
 	public var useMouseWheel = true;
+	
+	public var data : Dynamic = {};
 
 	/**
 	* One can attach the console to his render
@@ -53,6 +55,10 @@ class Console extends h2d.Sprite {
 		commands = new Map();
 		aliases = new Map();
 		addCommand("help", "Show help", [ { name : "command", t : AString, opt : true } ], showHelp);
+		
+		addCommand("set", "sets a console's value", [ { name : "name", t : AString }, { name : "val", t : AString } ], setVal);
+		addCommand("setInt", "sets a console's value", [ { name : "name", t : AString }, { name : "val", t : AInt } ], setVal);
+		addCommand("setFloat", "sets a console's value", [ { name : "name", t : AString }, { name : "val", t : AFloat} ], setVal);
 		addAlias("?", "help");
 	}
 
@@ -93,6 +99,8 @@ class Console extends h2d.Sprite {
 		default:
 		}
 	}
+	
+	function setVal(name,val) 		Reflect.setField( data, name, val );
 
 	function showHelp( ?command : String ) {
 		var all;

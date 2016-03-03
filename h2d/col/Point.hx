@@ -99,5 +99,10 @@ class Point {
 		return new Point(x * s,y * s);
 	}
 	
+	public inline function divScalar( s : Float) : Point {
+		var d = 1.0 / s;
+		return new Point(x * d,y * d);
+	}
+	
 	public static var ZERO = new Point(0, 0);
 }

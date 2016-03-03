@@ -558,7 +558,7 @@ class SpriteBatch extends Drawable {
 
 		var nverts = Std.int( pos / stride );
 
-		if ( nbQuad() > 4096 ) {
+		if ( nbQuad() > 8192 ) {
 			#if debug
 			//are you really sure that is what you wanted to do...
 			//smells like a leak...
