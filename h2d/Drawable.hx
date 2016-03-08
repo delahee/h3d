@@ -236,11 +236,10 @@ class DrawableShader extends h3d.impl.Shader {
 				var texCoord = tcoord;
 				var delta = tcoord - sbPosNorm;
 				var sbIllDecay = 1.0;
-				var spl = 24;
-				delta *= 1.0 / spl * sbDensity;
-				for ( i in 0...24 ) {
+				delta *= 1.0 / 20 * sbDensity;
+				for ( i in 0...20 ) {
 					texCoord -= delta;
-					col += secondaryMap.get( texCoord, nearest ) * (sbIllDecay * sbWeight);
+					col += secondaryMap.get( texCoord ) * (sbIllDecay * sbWeight);
 					sbIllDecay *= sbDecay;
 				}
 				col *= sbExposure;
