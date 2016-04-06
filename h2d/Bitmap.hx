@@ -13,8 +13,8 @@ class Bitmap extends Drawable {
 		this.tile = tile;
 	}
 	
-	override function getBoundsRec( relativeTo, out ) {
-		super.getBoundsRec(relativeTo, out);
+	override function getBoundsRec( relativeTo, out,forSize ) {
+		super.getBoundsRec(relativeTo, out,forSize);
 		if( tile != null ) addBounds(relativeTo, out, tile.dx, tile.dy, tile.width, tile.height);
 	}
 	

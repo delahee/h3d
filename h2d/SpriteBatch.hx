@@ -37,9 +37,6 @@ class BatchElement {
 	public var scaleX : hxd.Float32;
 	public var scaleY : hxd.Float32;
 
-	public var skewX : hxd.Float32;
-	public var skewY : hxd.Float32;
-
 	//setting this will trigger parent property
 	public var rotation : hxd.Float32;
 
@@ -55,7 +52,7 @@ class BatchElement {
 	@:noDebug
 	inline function new( t : h2d.Tile) {
 		x = 0; y = 0; alpha = 1;
-		rotation = 0; scaleX = scaleY = 1; skewX = 0; skewY = 0;
+		rotation = 0; scaleX = scaleY = 1;
 		priority = 0;
 		color = new h3d.Vector(1, 1, 1, 1);
 		tile = t;
@@ -69,8 +66,6 @@ class BatchElement {
 		rotation = e.rotation;
 		scaleX = e.scaleX;
 		scaleY = e.scaleY;
-		skewX = e.skewX;
-		skewY = e.skewY;
 		priority = e.priority;
 		color.load( e.color );
 		tile = e.tile;
@@ -343,7 +338,6 @@ class SpriteBatch extends Drawable {
 		var hy : hxd.Float32 = t.height;
 
 		tmpMatrix.identity();
-		tmpMatrix.skew(e.skewX,e.skewY);
 		tmpMatrix.scale(e.scaleX, e.scaleY);
 		tmpMatrix.rotate(e.rotation);
 		tmpMatrix.translate(e.x, e.y);
@@ -472,8 +466,8 @@ class SpriteBatch extends Drawable {
 		return pos;
 	}
 
-	override function getBoundsRec( relativeTo, out ) {
-		super.getBoundsRec(relativeTo, out);
+	override function getBoundsRec( relativeTo, out,forSize) {
+		super.getBoundsRec(relativeTo, out,forSize);
 		var e = first;
 		while( e != null ) {
 			var t = e.tile;
@@ -484,7 +478,6 @@ class SpriteBatch extends Drawable {
 				var x, y;
 
 				tmpMatrix.identity();
-				tmpMatrix.skew(e.skewX,e.skewY);
 				tmpMatrix.scale(e.scaleX, e.scaleY);
 				tmpMatrix.rotate(e.rotation);
 				tmpMatrix.translate(e.x, e.y);
@@ -565,7 +558,7 @@ class SpriteBatch extends Drawable {
 
 		var nverts = Std.int( pos / stride );
 
-		if ( nbQuad() > 4096 ) {
+		if ( nbQuad() > 8192 ) {
 			#if debug
 			//are you really sure that is what you wanted to do...
 			//smells like a leak...

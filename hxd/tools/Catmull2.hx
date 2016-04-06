@@ -2,11 +2,13 @@ package hxd.tools;
 import hxd.FloatStack;
 
 class Catmull2 {
-	var points : Array<h2d.col.Point>;
+	public var points : Array<h2d.col.Point>;
 	
 	public inline function new( points ) {
 		this.points = points;
 	}
+	
+	public inline function clone() 		return new Catmull2(points.copy());
 	
 	/*
 	 * Sample linearly and create a point buffer
@@ -46,6 +48,29 @@ class Catmull2 {
 		q += (-p0		+3*p1	-3*p2	+p3) 	* t2 * t;
 		
 		return 0.5 * q;
+	}
+	
+	/**
+	 * 0...numPoint
+	 */
+	public 
+	inline
+	function c2( i : Float , ?out : h2d.col.Point) {
+		if ( out == null ) out = new h2d.col.Point();
+		
+		var p0 = get(Std.int(i-1));
+		var p1 = get(Std.int(i));
+		var p2 = get(Std.int(i+1));
+		var p3 = get(Std.int(i+2));
+		
+		var t = i - Std.int(i);
+		out.x = catmull( p0.x, p1.x, p2.x, p3.x, t );
+		out.y = catmull( p0.y, p1.y, p2.y, p3.y, t );
+		return out;
+	}
+	
+	public function plotWhole( t : Float , ?out : h2d.col.Point ) {
+		return c2( t*points.length-1,out );
 	}
 }
 

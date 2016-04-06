@@ -31,8 +31,8 @@ class Anim extends Drawable {
 	public dynamic function onAnimEnd() {
 	}
 
-	override function getBoundsRec( relativeTo, out ) {
-		super.getBoundsRec(relativeTo, out);
+	override function getBoundsRec( relativeTo, out,forSize ) {
+		super.getBoundsRec(relativeTo, out,forSize);
 		var tile = getFrame();
 		if( tile != null ) addBounds(relativeTo, out, tile.dx, tile.dy, tile.width, tile.height);
 	}

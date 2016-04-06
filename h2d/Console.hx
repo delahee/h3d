@@ -10,6 +10,7 @@ enum ConsoleArg {
 	AEnum( values : Array<String> );
 }
 
+typedef Args = { name : String, t : ConsoleArg, ?opt : Bool };
 class Console extends h2d.Sprite {
 
 	public static var HIDE_LOG_TIMEOUT = 3.;
@@ -20,7 +21,7 @@ class Console extends h2d.Sprite {
 	var cursor : h2d.Bitmap;
 	var cursorPos(default, set) : Int;
 	var lastLogTime : Float;
-	var commands : Map < String, { help : String, args : Array<{ name : String, t : ConsoleArg, ?opt : Bool }>, callb : Dynamic } > ;
+	var commands : Map < String, { help : String, args : Array<Args>, callb : Dynamic }> ;
 	var aliases : Map<String,String>;
 	var logDY : Float = 0;
 	var logs : Array<String>;
@@ -30,6 +31,8 @@ class Console extends h2d.Sprite {
 	var cwidth : Float=0;
 	public var shortKeyChar : Int = "/".code;
 	public var useMouseWheel = true;
+	
+	public var data : Dynamic = {};
 
 	/**
 	* One can attach the console to his render
@@ -53,10 +56,14 @@ class Console extends h2d.Sprite {
 		commands = new Map();
 		aliases = new Map();
 		addCommand("help", "Show help", [ { name : "command", t : AString, opt : true } ], showHelp);
+		
+		addCommand("set", "sets a console's value", [ { name : "name", t : AString }, { name : "val", t : AString } ], setVal);
+		addCommand("setInt", "sets a console's value", [ { name : "name", t : AString }, { name : "val", t : AInt } ], setVal);
+		addCommand("setFloat", "sets a console's value", [ { name : "name", t : AString }, { name : "val", t : AFloat} ], setVal);
 		addAlias("?", "help");
 	}
 
-	public function addCommand( name, help, args, callb : Dynamic ) {
+	public function addCommand( name, help, args:Array<Args>, callb : Dynamic ) {
 		commands.set(name, { help : help, args:args, callb:callb } );
 	}
 
@@ -93,6 +100,8 @@ class Console extends h2d.Sprite {
 		default:
 		}
 	}
+	
+	function setVal(name,val) 		Reflect.setField( data, name, val );
 
 	function showHelp( ?command : String ) {
 		var all;
@@ -291,7 +300,10 @@ class Console extends h2d.Sprite {
 		}
 		try {
 			Reflect.callMethod(null, cmd.callb, vargs);
-		} catch( e : String ) {
+		} catch ( e : String ) {
+			#if debug
+			trace(e);
+			#end
 			log('ERROR $e', errorColor);
 		}
 	}
@@ -320,11 +332,12 @@ class Console extends h2d.Sprite {
 		lastLogTime = haxe.Timer.stamp();
 	}
 
+	public var baseY :Null<Int>= null;
 	override function sync(ctx:h2d.RenderContext) {
 		var scene = getScene();
 		if( scene != null ) {
 			x = 0;
-			y = scene.height - cheight;
+			y = baseY==null?scene.height:baseY - cheight;
 			cwidth = scene.width;
 			bg.tile.scaleToSize(Math.round(width), Math.round(cheight));
 		}
