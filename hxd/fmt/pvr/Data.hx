@@ -113,7 +113,7 @@ class Header {
 	
 	inline function new() {}
 	function getFormat() {
-		return pixelFormat.getHigh() != 0 ? null : Type.createEnumIndex( PixelFormat, pixelFormat.getLow() );
+		return pixelFormat.high != 0 ? null : Type.createEnumIndex( PixelFormat, pixelFormat.low );
 	}
 	
 	static inline var PVRTEX3_PREMULTIPLIED = (1<<1);
@@ -255,8 +255,8 @@ class Data {
 				return null;
 			#end
 		else {
-			var lo = haxe.Int64.getLow( header.pixelFormat );
-			var hi = haxe.Int64.getHigh( header.pixelFormat );
+			var lo = header.pixelFormat.low;
+			var hi = header.pixelFormat.high;
 			
 			var str = "";
 			
@@ -301,8 +301,8 @@ class Data {
 	}
 	
 	function getBpp() {
-		if ( haxe.Int64.getHigh(header.pixelFormat) != 0) {
-			var sum = 0, hi = haxe.Int64.getHigh(header.pixelFormat);
+		if ( header.pixelFormat.high != 0) {
+			var sum = 0, hi = header.pixelFormat.high;
 			
 			sum += (hi >> 24)	& 0xFF;
 			sum += (hi >> 16)	& 0xFF;
@@ -357,7 +357,7 @@ class Data {
 		if ( isCompressed() ) 
 			true;
 		else 
-			(((haxe.Int64.getHigh( header.pixelFormat ))>>24)&255) > 0;
+			((( header.pixelFormat.high )>>24)&255) > 0;
 	}
 	
 	function get(?mip = -1, ?surface = 0, ?face = 0, ?depth = 0) {
