@@ -2,11 +2,13 @@ package hxd.tools;
 import hxd.FloatStack;
 
 class Catmull2 {
-	var points : Array<h2d.col.Point>;
+	public var points : Array<h2d.col.Point>;
 	
 	public inline function new( points ) {
 		this.points = points;
 	}
+	
+	public inline function clone() 		return new Catmull2(points.copy());
 	
 	/*
 	 * Sample linearly and create a point buffer

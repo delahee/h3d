@@ -10,6 +10,7 @@ enum ConsoleArg {
 	AEnum( values : Array<String> );
 }
 
+typedef Args = { name : String, t : ConsoleArg, ?opt : Bool };
 class Console extends h2d.Sprite {
 
 	public static var HIDE_LOG_TIMEOUT = 3.;
@@ -20,7 +21,7 @@ class Console extends h2d.Sprite {
 	var cursor : h2d.Bitmap;
 	var cursorPos(default, set) : Int;
 	var lastLogTime : Float;
-	var commands : Map < String, { help : String, args : Array<{ name : String, t : ConsoleArg, ?opt : Bool }>, callb : Dynamic } > ;
+	var commands : Map < String, { help : String, args : Array<Args>, callb : Dynamic }> ;
 	var aliases : Map<String,String>;
 	var logDY : Float = 0;
 	var logs : Array<String>;
@@ -62,7 +63,7 @@ class Console extends h2d.Sprite {
 		addAlias("?", "help");
 	}
 
-	public function addCommand( name, help, args, callb : Dynamic ) {
+	public function addCommand( name, help, args:Array<Args>, callb : Dynamic ) {
 		commands.set(name, { help : help, args:args, callb:callb } );
 	}
 

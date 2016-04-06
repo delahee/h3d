@@ -60,7 +60,8 @@ private class GraphicsContent extends h3d.prim.Primitive {
 	}
 	
 	override function alloc( engine : h3d.Engine ) {
-		if (index.length <= 0) return ;
+		if ( tmp.length == 0 )
+			return;
 		buffer = engine.mem.allocVector(tmp, 8, 0);
 		indexes = engine.mem.allocIndex(index);
 		for( b in buffers ) {
@@ -70,14 +71,16 @@ private class GraphicsContent extends h3d.prim.Primitive {
 	}
 	
 	override function render( engine : h3d.Engine ) {
-		if (index.length <= 0) return ;
-		if( buffer == null || buffer.isDisposed() ) alloc(engine);
+		if ( buffer == null || buffer.isDisposed() ) 
+			alloc(engine); 
+		if (index.length <= 0) return;
 		for( b in buffers )
 			engine.renderIndexed(b.vbuf, b.ibuf);
 		super.render(engine);
 	}
 	
 	override function dispose() {
+		if( buffers.length > 0 )
 		for( b in buffers ) {
 			if( b.vbuf != null ) b.vbuf.dispose();
 			if( b.ibuf != null ) b.ibuf.dispose();
@@ -90,9 +93,9 @@ private class GraphicsContent extends h3d.prim.Primitive {
 	
 	public function reset() {
 		dispose();
-		tmp = new hxd.FloatBuffer();
-		index = new hxd.IndexBuffer();
-		buffers = [];
+		if( tmp==null||tmp.length > 0 ) tmp = new hxd.FloatBuffer();
+		if( index==null||index.length > 0 ) index = new hxd.IndexBuffer();
+		if( buffers==null||buffers.length > 0 ) buffers = [];
 	}
 	
 }
@@ -137,9 +140,9 @@ class Graphics extends Drawable {
 	
 	public function clear() {
 		content.reset();
-		pts = [];
-		prev = [];
-		linePts = [];
+		if( pts==null||pts.length > 0 ) pts = [];
+		if( prev==null||prev.length > 0 ) prev = [];
+		if( linePts==null||linePts.length > 0 ) linePts = [];
 		pindex = 0;
 		lineSize = 0;
 		xMin = Math.POSITIVE_INFINITY;
