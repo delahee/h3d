@@ -5,7 +5,7 @@ import hxd.Key;
 class Input extends Interactive {
 	
 	var tf : h2d.Text;
-	var cursor : h2d.Bitmap;
+	var cursorImg : h2d.Bitmap;
 	var cursorPos(default,set) : Int;
 	
 	public var value(default, set) : String;
@@ -14,11 +14,11 @@ class Input extends Interactive {
 		super("input",parent);
 		tf = new h2d.Text(null, this);
 		input.cursor = TextInput;
-		cursor = new h2d.Bitmap(Tools.getWhiteTile(), bgFill);
-		cursor.visible = false;
+		cursorImg = new h2d.Bitmap(Tools.getWhiteTile(), bgFill);
+		cursorImg.visible = false;
 		input.onFocus = function(_) {
 			addClass(":focus");
-			cursor.visible = true;
+			cursorImg.visible = true;
 			#if (openfl && cpp)
 			flash.Lib.current.requestSoftKeyboard();
 			#end
@@ -26,7 +26,7 @@ class Input extends Interactive {
 		};
 		input.onFocusLost = function(_) {
 			removeClass(":focus");
-			cursor.visible = false;
+			cursorImg.visible = false;
 			//TODO
 			//#if (openfl && cpp)
 			//flash.Lib.current.__dismissSoftKeyboard();
@@ -75,11 +75,11 @@ class Input extends Interactive {
 	
 	function set_cursorPos(v:Int) {
 		processText(tf);
-		cursor.x = tf.x + tf.calcTextWidth(value.substr(0, v)) + extLeft();
-		if( cursor.x > width - 4 ) {
-			var dx = cursor.x - (width - 4);
+		cursorImg.x = tf.x + tf.calcTextWidth(value.substr(0, v)) + extLeft();
+		if( cursorImg.x > width - 4 ) {
+			var dx = cursorImg.x - (width - 4);
 			tf.x -= dx;
-			cursor.x -= dx;
+			cursorImg.x -= dx;
 		}
 		return cursorPos = v;
 	}
@@ -107,10 +107,10 @@ class Input extends Interactive {
 		}
 		super.resize(ctx);
 		if( !ctx.measure ) {
-			cursor.y = extTop() - 1;
-			cursor.scaleX = 1 / cursor.tile.width;
-			cursor.scaleY = Std.int(height - extTop() - extBottom() + 2) / cursor.tile.height;
-			cursor.color = h3d.Vector.fromColor(style.cursorColor);
+			cursorImg.y = extTop() - 1;
+			cursorImg.width = 1;
+			cursorImg.scaleY = Std.int(height - extTop() - extBottom() + 2) / cursorImg.tile.height;
+			cursorImg.color = h3d.Vector.fromColor(style.cursorColor);
 		}
 	}
 
