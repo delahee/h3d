@@ -39,10 +39,10 @@ class Stage {
 			stage.addEventListener(flash.events.KeyboardEvent.KEY_DOWN, onKeyDown);
 			stage.addEventListener(flash.events.KeyboardEvent.KEY_UP, onKeyUp);
 			
-			#if !openfl
+			//#if !openfl
 			stage.addEventListener(flash.events.MouseEvent.RIGHT_MOUSE_DOWN, onRMouseDown);
 			stage.addEventListener(flash.events.MouseEvent.RIGHT_MOUSE_UP, onRMouseUp);
-			#end
+			//#end
 		}
 		#elseif js
 		js.Browser.window.addEventListener("mousedown", onMouseDown);

@@ -248,4 +248,7 @@ class Box extends Interactive {
 	}
 	
 	
+	public static function makeHBox(parent)  	return new Box(Horizontal,parent);
+	public static function makeVBox(parent) 	return new Box(Vertical,parent);
+	
 }

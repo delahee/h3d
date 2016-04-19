@@ -239,6 +239,10 @@ class Tile {
 		dy = -Std.int(py * height);
 	}
 	
+	public inline function getCenterRatio() {
+		return { px: -dx / width, py: -dy / height };
+	}
+	
 	public function setPos(x, y) {
 		this.x = x;
 		this.y = y;

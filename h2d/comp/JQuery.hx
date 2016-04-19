@@ -22,6 +22,7 @@ class JQuery {
 	public inline function comps(): Array<Component> 					return getComponents();
 	public inline function getComponents(): Array<Component> 			return select;
 	
+	
 	public function clone() {
 		var jq = new JQuery( root, null );
 		jq.select = select.copy();
@@ -129,6 +130,23 @@ class JQuery {
 	}
 	
 	public inline function firstComp() : Null<h2d.comp.Component>		return select[0];
+	
+	public function nth(n:Int) {
+		var sel = [];
+		if( select[n]!=null)
+			sel.push( select[n] );
+		return new JQuery(root,[]);
+	}
+	
+	public function nthChild(n:Int) {
+		var sel = [];
+		for ( s in select) {
+			var n = s.components[n];
+			if ( n != null)
+				sel.push( n );
+		}
+		return new JQuery(root,sel);
+	}
 	
 	public function first() {
 		var sel = [];
