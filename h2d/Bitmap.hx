@@ -53,9 +53,11 @@ class Bitmap extends Drawable {
 		return create( hxd.BitmapData.fromNative( bmd ), parent);
 	}
 	
+	#if openfl
 	public static inline function fromAssets(path:String,?retain=true,?fromCache=true,?parent) : h2d.Bitmap{
 		return new h2d.Bitmap(h2d.Tile.fromAssets(path,retain,fromCache),parent,null);
 	}
+	#end
 	#end
 	
 	public static inline function fromPixels(pix : hxd.Pixels,?parent) {

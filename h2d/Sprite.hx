@@ -627,6 +627,10 @@ class Sprite {
 		this.y = y;
 	}
 	
+	public inline function getPos():h2d.Vector {
+		return new h2d.Vector(x, y);
+	}
+	
 	public inline function rotate( v : hxd.Float32 ) {
 		rotation += v;
 	}
