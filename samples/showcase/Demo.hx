@@ -1022,29 +1022,40 @@ class Demo extends flash.display.Sprite
 			var ey = baseline;
 			e.x = ex; 
 			e.y = ey; 
-			e.visible = false;
+			//e.visible = false;
+			//e.blend = Add;
+
 			
 			var e = sb.alloc(dcBg);
 			var ex = cellX - 20; 
 			var ey = baseline;
 			e.x = ex; e.scaleX = 0.3;
 			e.y = ey; e.scaleY = 0.3;
-			e.visible = false;
+			//e.visible = false;
+			
 			
 			var e = sb.alloc(dcBg);
 			var ex = cellX + 20; 
 			var ey = baseline;
 			e.x = ex; e.scaleX = 0.2;
 			e.y = ey; e.scaleY = 0.2;
-			e.visible = false;
+			//e.visible = false;
+			//e.blend = Add;
 			
-			var e = sb.alloc(overlay);
-			var ex = cellX + 60; 
+			var e = sb.alloc(car);
+			var ex = cellX + 80; 
 			var ey = baseline;
 			e.x = ex; e.scaleX = 0.25;
 			e.y = ey; e.scaleY = 0.25;
-			e.visible = false;
+			
+			var e = sb.alloc(car);
+			var ex = cellX + 120; 
+			var ey = baseline;
+			e.x = ex; e.scaleX = 0.25;
+			e.y = ey; e.scaleY = 0.25;
 			//e.visible = false;
+			//e.visible = false;
+			
 			
 			var t = new h2d.Text( font, scene );
 			t.x = cellX;

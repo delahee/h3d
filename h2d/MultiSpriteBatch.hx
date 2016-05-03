@@ -537,13 +537,14 @@ class MultiSpriteBatch extends Drawable {
 			var buffer = ctx.engine.mem.alloc(nverts, stride, 4,true);
 			buffer.uploadVector(tmpBuf, 0, nverts);
 			
-			inline function draw( tile:h2d.Tile, pos:Int, nb:Int) {//nb sprites
+			inline function draw( tile:h2d.Tile, blend:h2d.BlendMode,pos:Int, nb:Int) {//nb sprites
 				//trace("drawing sprites pos:" + pos + " nb:" + nb);
 				//buffer = ctx.engine.mem.alloc(nb*4, stride, 4,true);
 				//buffer.uploadVector(tmpBuf, pos * stride * 4, nb * 4);
 				//optionnaly, upload everything then render partial ( better ?)
+				blendMode = blend;
 				setupShader(ctx.engine, tile, Drawable.BASE_TILE_DONT_CARE);
-				ctx.engine.renderQuadBuffer(buffer,pos*2,(pos+nb)*2);
+				ctx.engine.renderQuadBuffer(buffer,pos*2,nb*2);
 			}
 			
 			var e = first;
@@ -574,11 +575,11 @@ class MultiSpriteBatch extends Drawable {
 					var tex = tile.getTexture();
 					var blend = e.blend;
 					if ( curTex != tex || curBlend != e.blend ){
-						draw(lastElem.tile, start, pos - start );
+						draw(lastElem.tile, lastElem.blend, start, pos - start );
 						drawnVerts += (pos - start) * 4;
 						start = pos;
 						curTex = tex;
-						curBlend = e.blend;
+						curBlend = blend;
 					}
 					verts += 4;
 					lastElem = e;
@@ -589,7 +590,7 @@ class MultiSpriteBatch extends Drawable {
 			
 			
 			if ( drawnVerts < verts ) 
-				draw(lastElem.tile, start, pos - start);
+				draw(lastElem.tile, lastElem.blend,start, pos - start);
 		
 			buffer.dispose();
 		}
