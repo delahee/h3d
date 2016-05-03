@@ -143,6 +143,14 @@ class Bounds {
 		return this;
 	}
 	
+	public inline function scaleX( v : Float ) {
+		var dx = (xMax - xMin) * 0.5 * v;
+		var mx = (xMax + xMin) * 0.5;
+		xMin = mx - dx * v;
+		xMax = mx + dx * v;
+		return this;
+	}
+	
 	public inline function offset( dx : Float, dy : Float ) {
 		xMin += dx;
 		xMax += dx;

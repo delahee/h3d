@@ -7,7 +7,7 @@ class Input extends Interactive {
 	var tf : h2d.Text;
 	var cursorImg : h2d.Bitmap;
 	var cursorPos(default,set) : Int;
-	
+	public var deferValidation = false;
 	public var value(default, set) : String;
 	
 	public function new(?parent) {
@@ -49,23 +49,25 @@ class Input extends Interactive {
 					cursorPos = value.length;
 				case Key.DELETE:
 					value = value.substr(0, cursorPos) + value.substr(cursorPos + 1);
-					onChange(value);
+					if(!deferValidation) onChange(value);
 					return;
 				case Key.BACKSPACE:
 					if( cursorPos > 0 ) {
 						value = value.substr(0, cursorPos - 1) + value.substr(cursorPos);
 						cursorPos--;
-						onChange(value);
+						if(!deferValidation) onChange(value);
 					}
 					return;
 				case Key.ENTER:
+					if ( deferValidation )
+						onChange(value);
 					input.blur();
 					return;
 				}
 				if( e.charCode != 0 ) {
 					value = value.substr(0, cursorPos) + String.fromCharCode(e.charCode) + value.substr(cursorPos);
 					cursorPos++;
-					onChange(value);
+					if(!deferValidation) onChange(value);
 				}
 			}
 			return;
@@ -94,6 +96,7 @@ class Input extends Interactive {
 	}
 	
 	function set_value(t) {
+		if (t == null) t = "";
 		needRebuild = true;
 		return value = t;
 	}

@@ -290,17 +290,24 @@ class LocalFileSystem implements FileSystem {
 	public var createXBX : Bool;
 	public var tmpDir : String;
 	
-	public function new( dir : String ) {
+	public function new( dir : String , ?useAbsolute=false) {
 		baseDir = dir;
 		#if air3
-		var froot = new flash.filesystem.File(flash.filesystem.File.applicationDirectory.nativePath + "/" + baseDir);
-		if ( !froot.exists ) {
-			if ( System.debugLevel >= 2) {
-				trace("path:" + flash.filesystem.File.applicationDirectory.nativePath);
+		var froot : flash.filesystem.File;
+		if( ! useAbsolute ){
+			froot = new flash.filesystem.File(flash.filesystem.File.applicationDirectory.nativePath + "/" + baseDir);
+			if ( !froot.exists ) {
+				if ( System.debugLevel >= 2) {
+					trace("path:" + flash.filesystem.File.applicationDirectory.nativePath);
+				}
+				throw "air:Could not find dir " + dir;
 			}
-			throw "air:Could not find dir " + dir;
+			baseDir = froot.nativePath;
 		}
-		baseDir = froot.nativePath;
+		else {
+			froot = new flash.filesystem.File(dir);
+		}
+		
 		baseDir = baseDir.split("\\").join("/");
 		if( !StringTools.endsWith(baseDir, "/") ) baseDir += "/";
 		root = new LocalEntry(this, "root", null, froot);
