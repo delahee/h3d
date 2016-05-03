@@ -534,17 +534,16 @@ class MultiSpriteBatch extends Drawable {
 			ctx.flush(true);
 
 			//trace(stride+" " + bufpos + " " + tmpBuf.length);
-			var buffer = null;
+			var buffer = ctx.engine.mem.alloc(nverts, stride, 4,true);
+			buffer.uploadVector(tmpBuf, 0, nverts);
 			
 			inline function draw( tile:h2d.Tile, pos:Int, nb:Int) {//nb sprites
 				//trace("drawing sprites pos:" + pos + " nb:" + nb);
-				buffer = ctx.engine.mem.alloc(nb*4, stride, 4,true);
-				buffer.uploadVector(tmpBuf, pos * stride * 4, nb * 4);
+				//buffer = ctx.engine.mem.alloc(nb*4, stride, 4,true);
+				//buffer.uploadVector(tmpBuf, pos * stride * 4, nb * 4);
 				//optionnaly, upload everything then render partial ( better ?)
 				setupShader(ctx.engine, tile, Drawable.BASE_TILE_DONT_CARE);
-				ctx.engine.renderQuadBuffer(buffer);
-				buffer.dispose();
-				buffer = null;
+				ctx.engine.renderQuadBuffer(buffer,pos*2,(pos+nb)*2);
 			}
 			
 			var e = first;
@@ -553,9 +552,22 @@ class MultiSpriteBatch extends Drawable {
 			var verts = 0;
 			var drawnVerts = 0;
 			var tile = e.tile != null ? e.tile : h2d.Tools.getEmptyTile();
+			
+			
 			var curTex : h3d.mat.Texture = tile.getTexture();
 			var curBlend : h2d.BlendMode = e.blend;
 			var lastElem = null;
+			
+			while ( e != null ) {
+				if ( e.visible ) {
+					curTex = e.tile==null?null:e.tile.getTexture();
+					curBlend = e.blend;
+					lastElem = e;
+					break;
+				}
+				e = e.next;
+			}
+			
 			while ( e != null ) {
 				if ( e.visible ) {
 					var tile = e.tile != null ? e.tile : h2d.Tools.getEmptyTile();
@@ -569,16 +581,17 @@ class MultiSpriteBatch extends Drawable {
 						curBlend = e.blend;
 					}
 					verts += 4;
+					lastElem = e;
+					pos++;
 				}
-				lastElem = e;
 				e = e.next;
-				pos++;
 			}
 			
 			
 			if ( drawnVerts < verts ) 
 				draw(lastElem.tile, start, pos - start);
-			
+		
+			buffer.dispose();
 		}
 	}
 
