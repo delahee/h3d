@@ -561,6 +561,7 @@ class SpriteBatch extends Drawable {
 
 	@:noDebug
 	override function draw( ctx : RenderContext ) {
+		super.draw(ctx);
 		if ( first == null ) return;
 
 		var stride = getStride();

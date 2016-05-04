@@ -45,7 +45,7 @@ class MultiBatchElement {
 	public var tile : Tile;
 	public var color : h3d.Vector;
 	public var batch(default, null) : MultiSpriteBatch;
-	public var blend : h2d.BlendMode = h2d.BlendMode.Normal;
+	public var blendMode : h2d.BlendMode = h2d.BlendMode.Normal;
 
 	var prev : MultiBatchElement;
 	var next : MultiBatchElement;
@@ -91,8 +91,13 @@ class MultiBatchElement {
 	@:noDebug
 	public function remove() {
 		if(batch!=null)	batch.delete(this);
-		tile = null;
 		batch = null;
+	}
+	
+	@:noDebug
+	public function dispose() {
+		remove();
+		tile = null;
 	}
 
 	public var width(get, set):Float;
@@ -136,7 +141,7 @@ class MultiBatchElement {
 		color.a = a;
 	}
 	
-	public inline function changePriority(v) {
+	public function changePriority(v) {
 		this.priority = v;
 		if ( batch != null)
 		{
@@ -520,16 +525,15 @@ class MultiSpriteBatch extends Drawable {
 		return pos;
 	}
 
-	//@:noDebug
+	@:noDebug
 	override function draw( ctx : RenderContext ) {
+		super.draw(ctx);
 		if ( first == null ) return;
 
 		var stride = getStride();
 		var bufpos = 0;
 		bufpos = computeTRS();
 		var nverts = Std.int( bufpos / stride );
-
-
 		if( nbQuad() > 0 ){
 			ctx.flush(true);
 
@@ -556,13 +560,13 @@ class MultiSpriteBatch extends Drawable {
 			
 			
 			var curTex : h3d.mat.Texture = tile.getTexture();
-			var curBlend : h2d.BlendMode = e.blend;
+			var curBlend : h2d.BlendMode = e.blendMode;
 			var lastElem = null;
 			
 			while ( e != null ) {
 				if ( e.visible ) {
 					curTex = e.tile==null?null:e.tile.getTexture();
-					curBlend = e.blend;
+					curBlend = e.blendMode;
 					lastElem = e;
 					break;
 				}
@@ -573,9 +577,9 @@ class MultiSpriteBatch extends Drawable {
 				if ( e.visible ) {
 					var tile = e.tile != null ? e.tile : h2d.Tools.getEmptyTile();
 					var tex = tile.getTexture();
-					var blend = e.blend;
-					if ( curTex != tex || curBlend != e.blend ){
-						draw(lastElem.tile, lastElem.blend, start, pos - start );
+					var blend = e.blendMode;
+					if ( curTex != tex || curBlend != e.blendMode ){
+						draw(lastElem.tile, lastElem.blendMode, start, pos - start );
 						drawnVerts += (pos - start) * 4;
 						start = pos;
 						curTex = tex;
@@ -590,7 +594,7 @@ class MultiSpriteBatch extends Drawable {
 			
 			
 			if ( drawnVerts < verts ) 
-				draw(lastElem.tile, lastElem.blend,start, pos - start);
+				draw(lastElem.tile, lastElem.blendMode,start, pos - start);
 		
 			buffer.dispose();
 		}
