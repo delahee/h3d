@@ -8,7 +8,7 @@ class Bounds {
 	public var xMax : Float;
 	public var yMax : Float;
 	
-	public var x(get,null) : Float;
+	public var x(get, null) : Float;
 	public var y(get, null) : Float;
 	
 	public var width(get,null) : Float;

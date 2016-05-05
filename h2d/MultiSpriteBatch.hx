@@ -150,6 +150,14 @@ class MultiBatchElement {
 		}
 		return v;
 	}
+	
+	public inline function getBounds() {
+		var bnd = new h2d.col.Bounds();
+		var c = tile.getCenterRatio();
+		bnd.addPoint2( x - c.x * width, y - c.y * height);
+		bnd.addPoint2( x + (1.0 - c.x) * width, y + (1.0 - c.y) * height );
+		return bnd;
+	}
 
 }
 
