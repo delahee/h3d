@@ -269,7 +269,7 @@ class Console extends h2d.Sprite {
 				}
 				vargs.push(i);
 			case AFloat:
-				var f = Std.parseFloat(v);
+				var f : Float = Std.parseFloat(v);
 				if( Math.isNaN(f) ) {
 					log('$v should be Float for argument ${a.name}',errorColor);
 					return;
