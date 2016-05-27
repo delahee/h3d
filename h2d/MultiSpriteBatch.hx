@@ -565,8 +565,6 @@ class MultiSpriteBatch extends Drawable {
 			var verts = 0;
 			var drawnVerts = 0;
 			var tile = e.tile != null ? e.tile : h2d.Tools.getEmptyTile();
-			
-			
 			var curTex : h3d.mat.Texture = tile.getTexture();
 			var curBlend : h2d.BlendMode = e.blendMode;
 			var lastElem = null;

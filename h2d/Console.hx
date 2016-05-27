@@ -1,7 +1,7 @@
 package h2d;
 
 import hxd.Key;
-
+using StringTools;
 enum ConsoleArg {
 	AInt;
 	AFloat;
@@ -29,7 +29,7 @@ class Console extends h2d.Sprite {
 	var curCmd:String;
 	var cheight : Float=0;
 	var cwidth : Float=0;
-	public var shortKeyChar : Int = "/".code;
+	public var shortKeyChars : Array<Int> = ["/".code,"²".code];
 	public var useMouseWheel = true;
 	
 	public var data : Dynamic = {};
@@ -152,7 +152,7 @@ class Console extends h2d.Sprite {
 	}
 
 	function handleKey( e : hxd.Event ) {
-		if( e.charCode == shortKeyChar && !bg.visible ) {
+		if( (shortKeyChars.indexOf(e.charCode)>=0) && !bg.visible ) {
 			bg.visible = true;
 			logIndex = -1;
 		}
@@ -231,8 +231,11 @@ class Console extends h2d.Sprite {
 
 	function handleCommand( command : String ) {
 		command = StringTools.trim(command);
-		if( command.charCodeAt(0) == "/".code ) command = command.substr(1);
-		if( command == "" ) {
+		for ( s in shortKeyChars) 
+			if ( command.startsWith( String.fromCharCode(s )))
+				command = command.substr(1);
+		
+			if( command == "" ) {
 			hide();
 			return;
 		}
