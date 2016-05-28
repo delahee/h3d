@@ -19,6 +19,7 @@
 	<haxelib name="h3d" />
 	<haxelib name="hxsl" if="flash"/>
 	
+	<haxedef name="advanced-telemetry"/>
 	
 	<assets path="assets" rename="assets" />
 	

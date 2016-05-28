@@ -9,6 +9,10 @@ typedef BaseConf = {
 	var dpadDown 	: Int;
 	var dpadLeft 	: Int;
 	var dpadRight 	: Int;
+	
+	var analogX 	:Int;
+	var analogY 	:Int;
+	
 	var A 	:Int;
 	var B 	:Int;
 	var X 	:Int;
@@ -21,7 +25,8 @@ typedef BaseConf = {
 }
 
 class Pad {
-
+	
+	public static var USE_POLLING = true; //requires .update call at frame end
 	public static var CONFIG_XBOX : BaseConf = cast {
 		ids:["XINPUT_DEVICE_0"],
 		name:"Xbox 360 Controller (XInput STANDARD GAMEPAD)",
@@ -122,13 +127,34 @@ class Pad {
 	public var xAxis : Float = 0.;
 	public var yAxis : Float = 0.;
 	
+	public var xAxisIndex = 0;
+	public var yAxisIndex = 1;
+	
 	public var xInverted = false;
 	public var yInverted = false;
 	
 	public var buttons : Array<Bool> = [];
 	public var values : Array<Float> = [];
+	public var axis : Array<Bool> = [];
+	
+	/**
+	 * Requires .update calls at frame end
+	 */
+	public var prevButtons : Array<Bool> = [];
+	
+	/**
+	 * Requires .update calls at frame end
+	 */
+	public var prevValues : Array<Float> = [];
+	
 	public var nativeIds : Array<String> = [];
+	
+	#if flash
+	public var nativeControls : Array<flash.ui.GameInputControl> = [];
+	#end
+	
 	public var conf:BaseConf;
+	public var destroyed = false;
 
 	function new() {
 	}
@@ -146,6 +172,22 @@ class Pad {
 		
 	}
 
+	public inline function isDown(idx:Int) : Bool {
+		return values[idx] <= -0.25 || values[idx] >= 0.25;
+	}
+	
+	public inline function wasDown(idx:Int) : Bool {
+		return prevValues[idx] <= -0.25 || prevValues[idx] >= 0.25;
+	}
+	
+	public inline function isAxis(btIdx:Int){
+		return nativeIds[btIdx].startsWith("AXIS_");
+	}
+	
+	public inline function onPress(idx:Int) : Bool {
+		return isDown(idx)&&!wasDown(idx);
+	}
+	
 	public function getButtonName(idx:Int) {
 		return 
 		if ( conf == null)
@@ -166,8 +208,8 @@ class Pad {
 	public var d : flash.ui.GameInputDevice;
 	static var initDone = false;
 	static var inst : flash.ui.GameInput;
-	public static var padList : Array<Pad> = [];
 	#end
+	public static var padList : Array<Pad> = [];
 
 	/**
 		Wait until a gamepad gets connected. On some platforms, this might require the user to press a button until it activates
@@ -175,6 +217,29 @@ class Pad {
 		
 	#if flash
 	public static function nbPads() return flash.ui.GameInput.numDevices;
+	#end
+	
+	public static function getPadByIndex(idx) {
+		for ( p in padList)
+			if ( p.index == idx )
+				return p;
+		return null;
+	}
+	
+	public static function getPadByName(name:String) {
+		for ( p in padList)
+			if ( p.name == name )
+				return p;
+		return null;
+	}
+	
+	#if flash
+	public static function getPadById(id:String) {
+		for ( p in padList)
+			if ( p.d.id == id )
+				return p;
+		return null;
+	}
 	#end
 	
 	public static function wait( onPad : Pad -> Void ) {
@@ -197,6 +262,7 @@ class Pad {
 		trace(e.device.name+" is removed");
 		for (p in padList.copy()) {
 			if (p.d == e.device ) {
+				p.destroyed = true;
 				p.onRemoval();
 				padList.remove(p);
 			}
@@ -234,32 +300,41 @@ class Pad {
 		var axisCount = 0;
 		var axisX = 0, axisY = 1;
 		
-		//trace(p.d.name+" " + p.d.id);
-		//trace("pad ctrls:" + p.d.numControls+" idx:"+p.index);
-		
 		for( i in 0...p.d.numControls ) {
 			var c = p.d.getControlAt(i);
 			var cid = c.id;
-			var valID = p.values.length;
+			var valID = i;
 			var min = c.minValue, max = c.maxValue;
+			
 			p.values.push(0.);
 			p.nativeIds.push(c.id);
+			p.nativeControls.push(c);
+			p.buttons.push(false);
+			
 			if( StringTools.startsWith(c.id, "AXIS_") ) {
 				var axisID = axisCount++;
-				c.addEventListener(flash.events.Event.CHANGE, function(_) {
-					var v = (c.value - min) * 2 / (max - min) - 1;
-					p.values[valID] = v;
-					if( axisID == axisX )
-						p.xAxis = !p.xInverted?v:-v;
-					else if( axisID == axisY )
-						p.yAxis = !p.yInverted?v:-v;
-				});
-			} else if( StringTools.startsWith(c.id, "BUTTON_") ) {
-				c.addEventListener(flash.events.Event.CHANGE, function(_) {
-					var v = (c.value - min) / (max - min);
-					p.values[valID] = v;
-					p.buttons[valID] = v > 0.5;
-				});
+				p.axis[valID] = true;
+				if( !USE_POLLING)
+					c.addEventListener(flash.events.Event.CHANGE, function(_) {
+						var v = (c.value - min) * 2 / (max - min) - 1;
+						p.values[valID] = v;
+						
+						if( axisID == axisX ) 		p.xAxis = !p.xInverted?v:-v;
+						else if ( axisID == axisY ) p.yAxis = !p.yInverted?v: -v;
+					});
+			} else if ( StringTools.startsWith(c.id, "BUTTON_") ) {
+				p.axis[valID] = false;
+				if( !USE_POLLING)
+					c.addEventListener(flash.events.Event.CHANGE, function(_) {
+						var v = (c.value - min) / (max - min);
+						p.values[valID] = v;
+						p.buttons[valID] = v > 0.5;
+					});
+			}
+			else {
+				p.axis[valID] = false;
+				p.values[valID] = 0;
+				p.buttons[valID] = false;
 			}
 			//else trace("unrecognised id " + c.id);
 		}
@@ -276,4 +351,37 @@ class Pad {
 		var count = flash.ui.GameInput.numDevices; // necessary to trigger added
 	}
 	#end
+	
+	/**
+	 * Allows polling and prevValues
+	 */
+	public static function update() {
+		for ( p in padList) {
+			for (i in 0...p.buttons.length) {
+				p.prevButtons[i] = p.buttons[i];
+				p.prevValues[i] = p.values[i];
+				
+				if ( USE_POLLING ) {
+					var c = p.nativeControls[i];
+					var axisX = 0;
+					var axisY = 1;
+						
+					if ( p.axis[i]) {
+						var v = (c.value - c.minValue) * 2 / (c.maxValue - c.minValue) - 1;
+						
+						if( i == axisX ) 		p.xAxis = !p.xInverted?v:-v;
+						else if ( i == axisY ) 	p.yAxis = !p.yInverted?v:-v;
+						
+						p.values[i] = v;
+					}
+					else {
+						var v = (c.value - c.minValue) / (c.maxValue - c.minValue);
+						p.values[i] = v;
+						p.buttons[i] = v > 0.5;
+					}
+				}
+			}
+		}
+		
+	}
 } 

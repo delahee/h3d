@@ -112,10 +112,23 @@ class Demo extends flash.display.Sprite{
 						tButton.text = "last pressed : "+pad.getButtonName(i);
 				}
 			}
+			
+			
+			
+			for ( i in 0...pad.buttons.length) {
+				if ( pad.onPress(i)) {
+					trace(pad.getButtonName(i)+" on press ");
+				}
+			}
+			
+			for ( i in 0...pad.buttons.length) {
+				if ( pad.isDown(i)) {
+					trace(pad.getButtonName(i)+" is down");
+				}
+			}
 		}
 		
-		
-		
+		hxd.Pad.update();
 	}
 	
 	static function main() {
