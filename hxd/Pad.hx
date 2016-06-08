@@ -208,6 +208,7 @@ class Pad {
 	public var d : flash.ui.GameInputDevice;
 	static var initDone = false;
 	static var inst : flash.ui.GameInput;
+	static var dummy : Pad;
 	#end
 	public static var padList : Array<Pad> = [];
 
@@ -223,14 +224,14 @@ class Pad {
 		for ( p in padList)
 			if ( p.index == idx )
 				return p;
-		return null;
+		return dummy;
 	}
 	
 	public static function getPadByName(name:String) {
 		for ( p in padList)
 			if ( p.name == name )
 				return p;
-		return null;
+		return dummy;
 	}
 	
 	#if flash
@@ -238,7 +239,7 @@ class Pad {
 		for ( p in padList)
 			if ( p.d.id == id )
 				return p;
-		return null;
+		return dummy;
 	}
 	#end
 	
@@ -247,6 +248,7 @@ class Pad {
 		if( !initDone ) {
 			initDone = true;
 			inst = new flash.ui.GameInput();
+			dummy = createDummy();
 			scanForPad(onPad);
 		}
 		#else
