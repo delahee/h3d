@@ -10,6 +10,7 @@ class Interactive extends Drawable {
 	public var blockEvents : Bool = true;
 	public var propagateEvents : Bool = false;
 	public var backgroundColor : Null<Int>;
+	public var backgroundBlocks = true;
 	public var enableRightButton : Bool;
 	var scene : Scene;
 	var isMouseDown : Int = -1;
@@ -42,7 +43,7 @@ class Interactive extends Drawable {
 
 	override function getBoundsRec( relativeTo, out,forSize ) {
 		super.getBoundsRec(relativeTo, out,forSize);
-		if( backgroundColor!=null) addBounds(relativeTo, out, 0, 0, Std.int(width), Std.int(height));
+		if( backgroundColor!=null&&backgroundBlocks) addBounds(relativeTo, out, 0, 0, Std.int(width), Std.int(height));
 	}
 	
 	override function onParentChanged() {

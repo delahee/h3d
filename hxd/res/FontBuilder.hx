@@ -84,6 +84,10 @@ class FontBuilder {
 			tf.gridFitType = flash.text.GridFitType.SUBPIXEL;
 			tf.antiAliasType = flash.text.AntiAliasType.ADVANCED;
 		}
+		else {
+			tf.gridFitType = flash.text.GridFitType.PIXEL;
+			tf.antiAliasType = flash.text.AntiAliasType.NORMAL;
+		}
 		
 		var fpx = 0;
 		var fpy = 0;
