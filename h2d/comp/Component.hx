@@ -236,8 +236,8 @@ class Component extends Sprite {
 		} else {
 			if( !classes.remove(name) )
 				classes.push(name);
-			needRebuild = true;
 		}
+		needRebuild = true;
 		return this;
 	}
 	

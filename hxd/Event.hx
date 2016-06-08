@@ -27,6 +27,7 @@ class Event {
 	public var keyCode 		: Int;
 	public var charCode 	: Int;
 	public var wheelDelta 	: Float;
+	public var duration 	: Int = 0;
 	
 	public function new(k,x=0.,y=0.) {
 		kind = k;
@@ -41,15 +42,16 @@ class Event {
 	public function clone() {
 		var e = new Event(kind);
 		
-		e.relX 		    = relX 		       ;
-		e.relY 		    = relY 		       ;
-		e.propagate     = propagate        ;
-		e.cancel 		= cancel 		   ;
-		e.button 		= button 		   ;
-		e.touchId 		= touchId 		   ;
-		e.keyCode 		= keyCode 		   ;
-		e.charCode 	    = charCode 	       ;
-		e.wheelDelta    = wheelDelta       ;
+		e.relX 		    = relX 		   	;
+		e.relY 		    = relY 		   	;
+		e.propagate     = propagate    	;
+		e.cancel 		= cancel 		;
+		e.button 		= button 		;
+		e.touchId 		= touchId 		;
+		e.keyCode 		= keyCode 		;
+		e.charCode 	    = charCode 	   	;
+		e.wheelDelta    = wheelDelta    ;
+		e.duration		= duration		;
 		
 		return e;
 	}

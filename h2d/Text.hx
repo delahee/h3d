@@ -81,13 +81,13 @@ class Text extends Drawable implements IText {
 	 */
 	var glyphs : TileGroup;
 
-	public function new( font : Font, ?parent, ?sh:h2d.Drawable.DrawableShader) {
+	public function new( font : Font,  ?parent = null, ?txt:String=null, ?sh:h2d.Drawable.DrawableShader) {
 		super(parent,sh);
 		this.font = font;
 
 		textAlign = Left;
 		letterSpacing = 1;
-		text = "";
+		text = txt==null?"":txt;
 		textColor = 0xFFFFFFFF;
 	}
 

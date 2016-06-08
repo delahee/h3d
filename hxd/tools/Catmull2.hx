@@ -35,7 +35,8 @@ class Catmull2 {
 		return res;
 	}
 	
-	inline function get(idx) : h2d.col.Point {
+	//inline 
+	function get(idx) : h2d.col.Point {
 		return points[ hxd.Math.iclamp( idx,0, points.length-1 ) ];
 	}
 	
@@ -54,7 +55,7 @@ class Catmull2 {
 	 * 0...numPoint
 	 */
 	public 
-	inline
+	//inline
 	function c2( i : Float , ?out : h2d.col.Point) {
 		if ( out == null ) out = new h2d.col.Point();
 		
@@ -70,7 +71,7 @@ class Catmull2 {
 	}
 	
 	public function plotWhole( t : Float , ?out : h2d.col.Point ) {
-		return c2( t*points.length-1,out );
+		return c2( t*(points.length-1),out );
 	}
 }
 

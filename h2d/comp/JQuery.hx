@@ -6,7 +6,7 @@ private typedef Query = Array<CssClass>;
 @:access(h2d.comp.Component)
 @:keep
 class JQuery {
-	public static var DEFAULT_API = { };
+	public static var DEFAULT_API : Dynamic = { };
 	
 	var root : Component;
 	var select : Array<Component>;
@@ -21,6 +21,7 @@ class JQuery {
 	
 	public inline function comps(): Array<Component> 					return getComponents();
 	public inline function getComponents(): Array<Component> 			return select;
+	
 	
 	public function clone() {
 		var jq = new JQuery( root, null );
@@ -129,6 +130,23 @@ class JQuery {
 	}
 	
 	public inline function firstComp() : Null<h2d.comp.Component>		return select[0];
+	
+	public function nth(n:Int) {
+		var sel = [];
+		if( select[n]!=null)
+			sel.push( select[n] );
+		return new JQuery(root,[]);
+	}
+	
+	public function nthChild(n:Int) {
+		var sel = [];
+		for ( s in select) {
+			var n = s.components[n];
+			if ( n != null)
+				sel.push( n );
+		}
+		return new JQuery(root,sel);
+	}
 	
 	public function first() {
 		var sel = [];
@@ -406,6 +424,7 @@ class JQuery {
 		return set;
 	}
 	
+	//???
 	public function add( query : Dynamic ) {
 		if ( Std.is( query, String)) {
 			var squery : String = cast query;
@@ -427,6 +446,24 @@ class JQuery {
 				cquery.remove();
 				s.addChild( cquery );
 			}
+		}
+		return this;
+	}
+	
+	public function append( query : Dynamic ) {
+		if ( Std.is( query, String)) {
+			var squery : String = cast query;
+			var src = new JQuery(null, squery );
+			append( src );
+		}
+		else if ( Std.is( query, JQuery)) {
+			var jquery : JQuery = cast query;
+			for ( s in select ) 
+				for ( c in jquery.getComponents() ) {
+					var cl : Component = cast c.clone();
+					cl.remove();
+					s.addChild( cl );
+				}
 		}
 		return this;
 	}

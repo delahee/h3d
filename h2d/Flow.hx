@@ -368,7 +368,7 @@ class Flow extends Sprite {
 	**/
 	public function reflow() {
 
-		var cw, ch;
+		var cw, ch:Float;
 		if( !isVertical ) {
 
 			var halign = halign == null ? Left : halign;
@@ -391,12 +391,12 @@ class Flow extends Sprite {
 					if( p.isAbsolute ) continue;
 					var c = childs[i];
 					var a = p.valign != null ? p.valign : valign;
-					c.y = y + p.offsetY + p.paddingTop;
+					c.y = Math.round(y + p.offsetY + p.paddingTop);
 					switch( a ) {
 					case Bottom:
-						c.y += maxLineHeight - p.calculatedHeight;
+						c.y += Math.round(maxLineHeight - p.calculatedHeight);
 					case Middle:
-						c.y += Std.int((maxLineHeight - p.calculatedHeight) * 0.5);
+						c.y += Math.round((maxLineHeight - p.calculatedHeight) * 0.5);
 					default:
 					}
 				}
@@ -416,7 +416,7 @@ class Flow extends Sprite {
 				if( x + p.calculatedWidth > maxWidth && x > startX ) {
 					br = true;
 					alignLine(i);
-					y += maxLineHeight + verticalSpacing;
+					y += Math.round(maxLineHeight + verticalSpacing);
 					maxLineHeight = 0;
 					x = startX;
 				}
@@ -428,7 +428,7 @@ class Flow extends Sprite {
 			}
 			alignLine(childs.length);
 			cw += paddingRight + borderWidth;
-			ch = y + maxLineHeight + paddingBottom + borderHeight;
+			ch = Math.round(y + maxLineHeight + paddingBottom + borderHeight);
 
 			// horizontal align
 			if( minWidth != null && cw < minWidth ) cw = minWidth;

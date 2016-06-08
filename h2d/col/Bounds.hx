@@ -8,7 +8,7 @@ class Bounds {
 	public var xMax : Float;
 	public var yMax : Float;
 	
-	public var x(get,null) : Float;
+	public var x(get, null) : Float;
 	public var y(get, null) : Float;
 	
 	public var width(get,null) : Float;
@@ -140,6 +140,14 @@ class Bounds {
 		var my = (yMax + yMin) * 0.5;
 		yMin = my - dy * v;
 		yMax = my + dy * v;
+		return this;
+	}
+	
+	public inline function scaleX( v : Float ) {
+		var dx = (xMax - xMin) * 0.5 * v;
+		var mx = (xMax + xMin) * 0.5;
+		xMin = mx - dx * v;
+		xMax = mx + dx * v;
 		return this;
 	}
 	

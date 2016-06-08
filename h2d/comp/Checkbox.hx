@@ -27,6 +27,7 @@ class Checkbox extends Interactive {
 	}
 	
 	override function onClick() {
+		bgFill.askRedraw();
 		checked = !checked;
 		onChange(checked);
 	}

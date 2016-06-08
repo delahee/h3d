@@ -97,5 +97,10 @@ class Fill extends h2d.TileColorGroup {
 		}
 	}
 
+	
+	public function askRedraw() {
+		needReset = true;
+		softReset();
+	}
 
 }

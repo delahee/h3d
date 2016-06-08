@@ -12,7 +12,8 @@ class Interactive extends Drawable {
 	public var backgroundColor : Null<Int>;
 	public var enableRightButton : Bool;
 	var scene : Scene;
-	var isMouseDown : Int;
+	var isMouseDown : Int = -1;
+	var isMouseDownDuration : Int = -1;
 	
 	public function new(width, height, ?parent:h2d.Sprite) {
 		super(parent);
@@ -41,7 +42,7 @@ class Interactive extends Drawable {
 
 	override function getBoundsRec( relativeTo, out,forSize ) {
 		super.getBoundsRec(relativeTo, out,forSize);
-		if( backgroundColor != null ) addBounds(relativeTo, out, 0, 0, Std.int(width), Std.int(height));
+		if( backgroundColor!=null) addBounds(relativeTo, out, 0, 0, Std.int(width), Std.int(height));
 	}
 	
 	override function onParentChanged() {
@@ -106,21 +107,26 @@ class Interactive extends Drawable {
 		case EPush:
 			if( enableRightButton || e.button == 0 ) {
 				isMouseDown = e.button;
+				isMouseDownDuration = 0;
+				e.duration = isMouseDownDuration;
 				onPush(e);
 			}
 		case ERelease:
+			e.duration = isMouseDownDuration;
 			if( enableRightButton || e.button == 0 ) {
 				onRelease(e);
 				if( !e.cancel && isMouseDown == e.button )
 					onClick(e);
 			}
 			isMouseDown = -1;
+			isMouseDownDuration = -1;
 		case EOver:
 			if( cursor!=null)
 				hxd.System.setCursor(cursor);
 			onOver(e);
 		case EOut:
 			isMouseDown = -1;
+			isMouseDownDuration = -1;
 			if( cursor!=null)
 				hxd.System.setCursor(Default);
 			onOut(e);
@@ -213,6 +219,7 @@ class Interactive extends Drawable {
 	}
 	
 	public override function sync(ctx) {
+		if ( isMouseDown >= 0) isMouseDownDuration++;
 		super.sync(ctx);
 		onSync();
 	}

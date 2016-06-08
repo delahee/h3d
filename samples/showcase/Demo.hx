@@ -1010,6 +1010,62 @@ class Demo extends flash.display.Sprite
 			
 		}
 		
+		{
+			cellX += bmp.width + incr;
+			
+			//sprite match
+			var sb = new h2d.MultiSpriteBatch( scene);
+			
+			
+			var e = sb.alloc(car);
+			var ex = cellX - 50; 
+			var ey = baseline;
+			e.x = ex; 
+			e.y = ey; 
+			//e.visible = false;
+			//e.blend = Add;
+
+			
+			var e = sb.alloc(dcBg);
+			var ex = cellX - 20; 
+			var ey = baseline;
+			e.x = ex; e.scaleX = 0.3;
+			e.y = ey; e.scaleY = 0.3;
+			//e.visible = false;
+			
+			
+			var e = sb.alloc(dcBg);
+			var ex = cellX + 20; 
+			var ey = baseline;
+			e.x = ex; e.scaleX = 0.2;
+			e.y = ey; e.scaleY = 0.2;
+			//e.visible = false;
+			//e.blend = Add;
+			
+			var e = sb.alloc(car);
+			var ex = cellX + 80; 
+			var ey = baseline;
+			e.x = ex; e.scaleX = 0.25;
+			e.y = ey; e.scaleY = 0.25;
+			
+			var e = sb.alloc(car);
+			var ex = cellX + 120; 
+			var ey = baseline;
+			e.x = ex; e.scaleX = 0.25;
+			e.y = ey; e.scaleY = 0.25;
+			//e.visible = false;
+			//e.visible = false;
+			
+			
+			var t = new h2d.Text( font, scene );
+			t.x = cellX;
+			t.y = baseline + txtBaseLine;
+			t.text = "MultiSpriteBatch";
+			t.maxWidth = 32;
+			t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
+			t.x -= t.textWidth * 0.5;
+		}
+		
 	}
 	var atb:TextBatchElement;
 	var actions = [];

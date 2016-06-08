@@ -50,7 +50,7 @@ class BatchElement {
 	var next : BatchElement;
 
 	@:noDebug
-	inline function new( t : h2d.Tile) {
+	public inline function new( t : h2d.Tile) {
 		x = 0; y = 0; alpha = 1;
 		rotation = 0; scaleX = scaleY = 1;
 		priority = 0;
@@ -70,6 +70,21 @@ class BatchElement {
 		color.load( e.color );
 		tile = e.tile;
 		visible = e.visible;
+	}
+	
+	public function getClone() {
+		var nu = new BatchElement(tile);
+		nu.x = x; 
+		nu.y = y;
+		nu.alpha = alpha;
+		nu.rotation = rotation;
+		nu.scaleX = scaleX;
+		nu.scaleY = scaleY;
+		nu.priority = priority;
+		nu.color.load( color );
+		nu.tile = tile;
+		nu.visible = visible;
+		return nu;
 	}
 
 	@:noDebug
@@ -546,6 +561,7 @@ class SpriteBatch extends Drawable {
 
 	@:noDebug
 	override function draw( ctx : RenderContext ) {
+		super.draw(ctx);
 		if ( first == null ) return;
 
 		var stride = getStride();

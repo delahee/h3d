@@ -162,7 +162,7 @@ class Stage3dDriver extends Driver {
 		#end
 		{
 			#if (haxe_ver >= 3.2)
-			s3d.requestContext3D( forceSoftware ? flash.display3D.Context3DRenderMode.SOFTWARE : flash.display3D.Context3DRenderMode.AUTO );
+			s3d.requestContext3D( cast forceSoftware ? flash.display3D.Context3DRenderMode.SOFTWARE : flash.display3D.Context3DRenderMode.AUTO );
 			#else
 			s3d.requestContext3D( Std.string((forceSoftware ? flash.display3D.Context3DRenderMode.SOFTWARE : flash.display3D.Context3DRenderMode.AUTO)));
 			#end

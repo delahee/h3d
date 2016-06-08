@@ -27,27 +27,23 @@ class Sprite {
 	/**
 	 * In radians
 	 */
-	public var rotation(default, set) : Float;
-	public var visible	: Bool;
-
-	public var matA(default,null) 	: hxd.Float32;
-	public var matB(default,null)	: hxd.Float32;
-	public var matC(default,null)	: hxd.Float32;
-	public var matD(default,null)	: hxd.Float32;
-	public var absX(default,null)	: hxd.Float32;
-	public var absY(default,null)	: hxd.Float32;
+	public var 	rotation(default, set) : Float;
+	public var 	visible	: Bool;
 	
-	var posChanged(default,set) : Bool;
-	var allocated : Bool;
-	var lastFrame : Int;
+	public var 	matA(default,null) 	: hxd.Float32;
+	public var 	matB(default,null)	: hxd.Float32;
+	public var 	matC(default,null)	: hxd.Float32;
+	public var 	matD(default,null)	: hxd.Float32;
+	public var 	absX(default,null)	: hxd.Float32;
+	public var 	absY(default,null)	: hxd.Float32;
 	
-	public var  mouseX(get, null) : Float;
-	public var  mouseY(get, null) : Float;
+	var 		posChanged(default,set) : Bool;
+	var 		allocated : Bool;
+	var 		lastFrame : Int;
 	
-	#if alpha_inherit
-	@:isVar
-	public var 	alpha(get,set) : Float; 		public function get_alpha() { return alpha; }
-	#end
+	public var  mouseX(get, null) 	: Float;
+	public var  mouseY(get, null) 	: Float;
+	public var	userData			: Dynamic;
 	
 	/**
 	 * COSTS AN ARM
@@ -625,6 +621,14 @@ class Sprite {
 	public inline function setPos( x : hxd.Float32, y : hxd.Float32 ) {
 		this.x = x;
 		this.y = y;
+	}
+	
+	public inline function getScale():h2d.Vector {
+		return new h2d.Vector(scaleX, scaleY);
+	}
+	
+	public inline function getPos():h2d.Vector {
+		return new h2d.Vector(x, y);
 	}
 	
 	public inline function rotate( v : hxd.Float32 ) {

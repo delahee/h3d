@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<!-- NMML reference: https://gist.github.com/1763850 -->
+	
+	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
+	<meta title="pad" package="h2d.samples.pad" version="1.0.0" company=""  />
+	
+	<!-- output -->
+	<app main="Demo" file="pad" path="bin" swf-version="11.6" />
+	
+	<window background="#FFFFFF" fps="30" />
+	<window width="1280" height="720" unless="mobile" />
+	<window vsync="true" antialiasing="0" if="cpp" orientation="auto" resizable="true" />
+	
+	<!-- classpath, haxe libs -->
+	<source path="." />
+	<haxelib name="openfl" />
+	<haxelib name="format" />
+	<haxelib name="h3d" />
+	<haxelib name="hxsl" if="flash"/>
+	
+	<haxedef name="advanced-telemetry"/>
+	
+	<assets path="assets" rename="assets" />
+	
+	<haxeflag name="-dce" value="no" />
+</project>

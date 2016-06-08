@@ -63,6 +63,7 @@ using StringTools;
 	private typedef Uint16Array = openfl.utils.Int16Array;
 	private typedef Uint8Array = openfl.utils.UInt8Array;
 	private typedef Float32Array = openfl.utils.Float32Array;
+	private typedef Int32Array = openfl.utils.Int32Array;
 	#end
 
 	#if js
@@ -1991,7 +1992,11 @@ class GlDriver extends Driver {
 						}
 						vid[i] = u.index + i;
 					}
+					#if legacy
 					gl.uniform1iv(u.loc, new openfl.utils.Int32Array(vid));
+					#else 
+					gl.uniform1iv(u.loc, vid);
+					#end
 					vid = null;
 				}
 					

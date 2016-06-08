@@ -12,8 +12,6 @@ import hxd.System;
  * to create a random tile you can new(tex,x,y,w,h) it or call fromColor
  */
 class Tile {
-
-
 	var 		innerTex : h3d.mat.Texture;
 
 	public var 	u(default,null) : hxd.Float32;
@@ -237,6 +235,10 @@ class Tile {
 	public inline function setCenterRatio(?px:Float=0.5, ?py:Float=0.5) : Void {
 		dx = -Std.int(px * width);
 		dy = -Std.int(py * height);
+	}
+	
+	public inline function getCenterRatio() : h2d.Vector {
+		return new h2d.Vector(-dx / width, -dy / height );
 	}
 	
 	public function setPos(x, y) {

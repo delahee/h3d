@@ -861,12 +861,14 @@ class Drawable extends Sprite {
 	}
 	
 	function set_secondaryMap(t:h2d.Tile) {
+		
+		#if flash
 		if( t != null && secondaryMap == null 
 		||	t == null && secondaryMap != null )
 			shader.invalidate();
-		
 		shader.hasSecondaryMap = t != null;
 		shader.secondaryMap = t.getTexture();
+		#end
 		
 		return t;
 	}
@@ -1044,13 +1046,15 @@ class Drawable extends Sprite {
 		ctx.engine.renderQuadBuffer(Tools.getCoreObjects().planBuffer);
 	}
 	
-	public function setSunBleed(sunPos : Vector, dens:Float,expo:Float,weight:Float,decay:Float ) {
+	public function setSunBleed(sunPos : Vector, dens:Float, expo:Float, weight:Float, decay:Float ) {
+		#if flash
 		shader.hasSunBleed = true;
 		shader.sbDensity = dens;
 		shader.sbExposure = expo;
 		shader.sbWeight = weight;
 		shader.sbDecay = decay;
 		shader.sbPosNorm = sunPos;
+		#end
 	}
 	
 	@:noDebug
