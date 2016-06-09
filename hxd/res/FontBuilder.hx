@@ -9,6 +9,7 @@ typedef FontBuildOptions = {
 	
 	?to4444:Bool,
 	?filters:Array<flash.filters.BitmapFilter>,
+	?edgify:{lum:Float, a:Int},//Allow to have really crispy font even at low resolution
 };
 
 /**
@@ -85,7 +86,7 @@ class FontBuilder {
 			tf.antiAliasType = flash.text.AntiAliasType.ADVANCED;
 		}
 		else {
-			tf.gridFitType = flash.text.GridFitType.PIXEL;
+			tf.gridFitType = flash.text.GridFitType.NONE;
 			tf.antiAliasType = flash.text.AntiAliasType.NORMAL;
 		}
 		
@@ -190,6 +191,36 @@ class FontBuilder {
 		
 		var pixels = hxd.BitmapData.fromNative(bmp).getPixels();
 		bmp.dispose();
+		
+		if( options.edgify != null ){
+			var mem = hxd.impl.Memory.select(pixels.bytes.bytes);
+			var e : { lum:Float,a:Int} = options.edgify;
+			for( i in 0...pixels.width*pixels.height ) {
+				var p = (i << 2);
+
+				var b = mem.b(p);
+				var g = mem.b(p+1);
+				var r = mem.b(p+2);
+				var a = mem.b(p+3);
+				
+				var lum = (0.299 * (r/255.0) + 0.587 * (g/255.0) + 0.114 * (b/255.0));
+				
+				if ( lum >= e.lum && a > e.a) {
+					function f( v ) return Math.round(v * (a / 255.0));
+					mem.wb(p,   f(255) );
+					mem.wb(p+1, f(255) );
+					mem.wb(p+2, f(255) );
+					mem.wb(p+3, a);
+				}
+				else {
+					mem.wb(p,   0);
+					mem.wb(p+1, 0);
+					mem.wb(p+2, 0);
+					mem.wb(p+3, 0);
+				}
+			}
+			mem.end();
+		}
 		
 		if( !options.to4444){
 			pixels.convert(BGRA);
