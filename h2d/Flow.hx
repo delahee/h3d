@@ -127,6 +127,7 @@ class Flow extends Sprite {
 
 	public function new(?parent) {
 		super(parent);
+		halign = Left;
 	}
 
 	/**

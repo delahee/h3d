@@ -263,6 +263,7 @@ class Interactive extends Drawable {
 	}
 	
 	public dynamic function onSync(  ) : Void {
+		
 	}
 	
 }

@@ -8,29 +8,30 @@
     <movie fps="30" />
     <movie width="1280" />
     <movie height="720" />
-    <movie version="1" />
+    <movie version="0" />
     <movie minorVersion="0" />
     <movie platform="Lime" />
     <movie background="FFFFFF" />
+    <movie preferredSDK="Haxe 3.2.0;3.2.0;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
     <class path="C:\Workspace\motionTools\haxe3\lib\openfl\git" />
     <class path="C:\Workspace\motionTools\haxe3\lib\lime\git" />
+    <class path="C:\Workspace\motionTools\haxe3\lib\h3d\git" />
     <class path="C:\Workspace\motionTools\haxe3\lib\format\github_svn" />
     <class path="C:\Workspace\motionTools\haxe3\lib\hxsl\git" />
-    <class path="C:\Workspace\motionTools\haxe3\lib\h3d\git" />
     <class path="" />
-    <class path="bin\html5\haxe" />
+    <class path="bin\flash\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="openfl=2.2.4&#xA;lime=2.0.6&#xA;format=3.1.3&#xA;hxsl=2.0.0&#xA;h3d=0.0.1&#xA;tools=2.0.6&#xA;no-compilation&#xA;openfl-html5&#xA;canvas&#xA;lime-html5&#xA;html5&#xA;web&#xA;html5" />
+    <option directives="openfl=2.2.4&#xA;lime=2.0.6&#xA;h3d=0.0.1&#xA;format=3.1.3&#xA;hxsl=2.0.0&#xA;swf-directblit&#xA;tools=2.0.6&#xA;no-compilation&#xA;openfl-flash&#xA;web" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="-swf-version 11.6&#xA;--remap flash:openfl&#xA;-dce no&#xA;--macro allowPackage(&quot;flash&quot;)" />
+    <option additional="-swf-version 11.6&#xA;-dce no&#xA;-swf-version 12&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

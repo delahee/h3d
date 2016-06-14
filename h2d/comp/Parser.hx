@@ -310,6 +310,20 @@ class Parser {
 		
 		if( goIn )
 		for ( e in x.x ) {
+			#if (haxe_ver >= "3.3" )
+			if ( e.nodeType == Xml.Element) {
+				build( new haxe.xml.Fast(e), c);
+			}
+			else {
+				if ( !Std.is(c, Label)&&!Std.is(c,HtmlLabel )) {
+						if( canBeLabelled(e.nodeValue)){
+							var value = StringTools.trim(e.nodeValue);
+							if( value.length>0)
+								new Label(value, c);
+						}
+					}
+			}
+			#else
 			switch(e.nodeType) {
 				case Xml.Element:
 					build( new haxe.xml.Fast(e), c);
@@ -323,6 +337,7 @@ class Parser {
 						}
 					}
 			}
+			#end
 			
 		}
 		

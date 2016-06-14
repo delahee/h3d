@@ -25,7 +25,15 @@ class Demo extends flash.display.Sprite{
 		g.endFill();
 		
 		
-		
+		var g = new h2d.Graphics(scene);
+		g.beginFill();
+		//g.lineStyle(2.0);
+		//g.drawRect( 0, 0, 50, 50);
+		g.addPointFull( 100, 100, 1, 0, 0, 1 );
+		g.addPointFull( 200, 100, 0, 1, 0, 0 );
+		g.addPointFull( 200, 200, 1, 0, 1, 0.3 );
+		g.addPointFull( 100, 200, 1, 1, 0, 1 );
+		g.endFill();
 	}
 	
 	function update() 	{
