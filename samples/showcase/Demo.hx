@@ -1010,6 +1010,7 @@ class Demo extends flash.display.Sprite
 			
 		}
 		
+		if(false)
 		{
 			cellX += bmp.width + incr;
 			

@@ -1992,7 +1992,7 @@ class GlDriver extends Driver {
 						}
 						vid[i] = u.index + i;
 					}
-					#if legacy
+					#if (legacy||haxe_ver>="3.3")
 					gl.uniform1iv(u.loc, new openfl.utils.Int32Array(vid));
 					#else 
 					gl.uniform1iv(u.loc, vid);

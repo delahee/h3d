@@ -404,8 +404,12 @@ class BitmapData {
 		var b = new BitmapData( -101, -102 );
 		#if (flash || nme || openfl)
 		b.bmp = data;
-			#if(openfl&&cpp)
-			b.alphaPremultiplied = true;
+			#if (openfl && cpp)
+				#if ( haxe_ver >= "3.3" )
+				//nop
+				#else
+				b.alphaPremultiplied = true;
+				#end
 			#elseif flash
 			b.alphaPremultiplied = true;
 			#end

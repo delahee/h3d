@@ -116,8 +116,11 @@ class Shader {
 	public function clone(?c:Shader) {
 		var cl = Type.getClass(this);
 		var n = (c != null) ? (cast c) : Type.createEmptyInstance( cast cl );
-		for ( c in Type.getClassFields(cl))
-			Reflect.setField( n, c, Reflect.getProperty( this, c ));
+		for ( c in Type.getInstanceFields(cl)) {
+			var	val =  Reflect.getProperty( this, c );
+			if( !Reflect.isFunction(val ))
+				Reflect.setField( n, c, val);
+		}
 		return n;
 	}
 }

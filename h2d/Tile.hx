@@ -56,6 +56,9 @@ class Tile {
 		#if flash 
 		tile.getTexture().flags.set(AlphaPremultiplied);
 		#end
+		#if (haxe_ver >= "3.3")
+		tile.getTexture().flags.unset(AlphaPremultiplied);
+		#end
 		return tile;
 	}
 	#end
@@ -71,7 +74,7 @@ class Tile {
 		if( h<=0 ) h = 1;
 		
 		var fl = haxe.EnumFlags.ofInt(0);
-		if ( bmp.alphaPremultiplied)
+		if ( bmp.alphaPremultiplied) 
 			fl.set(h3d.mat.Data.TextureFlags.AlphaPremultiplied);
 		
 		var tex = new h3d.mat.Texture(w, h, fl);
