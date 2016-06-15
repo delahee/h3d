@@ -390,7 +390,7 @@ class Tile {
 			var bmp2 = new flash.display.BitmapData(w, h, true, 0);
 			var p0 = new flash.geom.Point(0, 0);
 			var bmp = bmp.toNative();
-			bmp2.copyPixels(bmp, bmp.rect, p0, bmp, p0, true);
+			bmp2.copyPixels(bmp, bmp.rect, p0, bmp, p0, false);
 			innerTex.uploadBitmap(hxd.BitmapData.fromNative(bmp2));
 			bmp2.dispose();
 			bmp2 = null;
