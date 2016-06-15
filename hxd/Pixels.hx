@@ -140,28 +140,27 @@ class Pixels {
 				for ( i in 0...width * height ) {
 					var p = (i<<2) + bytes.position;
 					var col = (mem.i32(p));
-					var a = col			&0xff;
-					var r = (col>>8	)	&0xff;
-					var g = (col>>16)	&0xff;
-					var b = (col>>> 24)	&0xff;
-					var bits = (a >> 4) | ((b >> 4) << 4) | ((g >> 4) << 8) | ((r >> 4) << 12);
-					dst.bytes.set( (i<<1), 		(bits & 0xff) );
-					dst.bytes.set( (i<<1)+1, 	(bits>>8) );
+					var b = (col			&0xff)>>>4;
+					var g = ((col>>8)		&0xff)>>>4;
+					var r = ((col>>16)		&0xff)>>>4;
+					var a = ((col>>>24)		&0xff)>>>4;
+					
+					var bits = a | (b << 4) | (g << 8) | (r << 12);
+					dst.bytes.setUInt16( (i<<1), bits );
 				}
 				mem.end();
 			
-			case [BGRA,Mixed(4,4,4,4)]:
+			case [BGRA, Mixed(4, 4, 4, 4)]:
 				var mem = hxd.impl.Memory.select(bytes.bytes);
 				for ( i in 0...width * height ) {
 					var p = (i<<2) + bytes.position;
 					var col = (mem.i32(p));
-					var b = col			&0xff;
-					var g = (col>>8	)	&0xff;
-					var r = (col>>16)	&0xff;
-					var a = (col>>>24)	&0xff;
-					var bits = (a >> 4) | ((b >> 4) << 4) | ((g >> 4) << 8) | ((r >> 4) << 12);
-					dst.bytes.set( (i<<1), 	(bits & 0xff) );
-					dst.bytes.set( (i<<1)+1,(bits>>8) );
+					var a = col			&0xff;
+					var r = (col>>8	)	&0xff;
+					var g = (col>>16)	&0xff;
+					var b = (col>>>24)	&0xff;
+					var bits = a | (b << 4) | (g << 8) | (r << 12);
+					dst.bytes.setUInt16( (i<<1), bits );
 				}
 				mem.end();
 		}
