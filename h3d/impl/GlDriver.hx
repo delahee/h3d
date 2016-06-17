@@ -64,6 +64,7 @@ using StringTools;
 	private typedef Uint8Array = openfl.utils.UInt8Array;
 	private typedef Float32Array = openfl.utils.Float32Array;
 	private typedef Int32Array = openfl.utils.Int32Array;
+	private typedef Uint32Array = openfl.utils.Int32Array;
 	#end
 
 	#if js
@@ -279,6 +280,10 @@ class GlDriver extends Driver {
 		
 		if ( supportSeamlessCubemap)
 			gl.enable( TEXTURE_CUBE_MAP_SEAMLESS );
+			
+		//gl.pixelStorei(t, 0);
+		gl.pixelStorei(GL.UNPACK_ALIGNMENT, 1); 
+		gl.pixelStorei(GL.PACK_ALIGNMENT, 1);
 	}
 	
 	function detectCaps() {
@@ -745,10 +750,17 @@ class GlDriver extends Driver {
 		gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, count * 2, GL.STATIC_DRAW);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		#else
-		var tmp = new Uint16Array(count);
-		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, b);
-		gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp, GL.STATIC_DRAW);
-		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+			#if (mobile&&cpp)
+				var tmp = new Uint16Array(count);
+				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, b);
+				gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp, GL.STATIC_DRAW);
+				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+			#else
+				var tmp = new Uint32Array(count);
+				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, b);
+				gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp, GL.STATIC_DRAW);
+				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+			#end
 		#end
 		return b;
 	}
@@ -1199,6 +1211,7 @@ class GlDriver extends Driver {
 	}
 	
 	override function uploadVertexBuffer( v : VertexBuffer, startVertex : Int, vertexCount : Int, buf : hxd.FloatBuffer, bufPos : Int ) {
+		hxd.System.trace2("uploading bytes float "+vertexCount);
 		var stride : Int = v.stride;
 		var buf = buf.getNative();
 		var sub = new Float32Array(buf, bufPos, vertexCount * stride #if cpp * (fixMult?4:1) #end);
@@ -1215,6 +1228,7 @@ class GlDriver extends Driver {
 	}
 
 	override function uploadVertexBytes( v : VertexBuffer, startVertex : Int, vertexCount : Int, buf : haxe.io.Bytes, bufPos : Int ) {
+		hxd.System.trace2("uploading bytes 32");
 		var stride : Int = v.stride;
 		var buf = getUints(buf);
 		var sub = getUints(buf.buffer, bufPos, vertexCount * stride * 4);
@@ -1226,14 +1240,26 @@ class GlDriver extends Driver {
 	}
 
 	override function uploadIndexesBuffer( i : IndexBuffer, startIndice : Int, indiceCount : Int, buf : hxd.IndexBuffer, bufPos : Int ) {
-		var buf = new Uint16Array(buf.getNative());
-		var sub = new Uint16Array(buf, bufPos, indiceCount #if cpp * (fixMult?2:1) #end);
-		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
-		gl.bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub);
-		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+		#if (mobile && cpp)
+			hxd.System.trace2("uploading index 16");
+
+			var buf = new Uint16Array(buf.getNative());
+			var sub = new Uint16Array(buf, bufPos, indiceCount #if cpp * (fixMult?2:1) #end);
+			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
+			gl.bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub);
+			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+		#else 
+			hxd.System.trace2("uploading index 32");
+			var buf = new Int32Array(buf.getNative());
+			var sub = new Int32Array(buf, bufPos, indiceCount #if cpp * (fixMult?4:1) #end);
+			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
+			gl.bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 4, sub);
+			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
+		#end
 	}
 
 	override function uploadIndexesBytes( i : IndexBuffer, startIndice : Int, indiceCount : Int, buf : haxe.io.Bytes , bufPos : Int ) {
+		hxd.System.trace2("uploading bytes 8");
 		var buf = new Uint8Array(buf.getData());
 		var sub = new Uint8Array(buf, bufPos, indiceCount * 2);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
@@ -2130,7 +2156,12 @@ class GlDriver extends Driver {
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, ibuf);
 		checkError();
 		
+		#if (mobile && cpp)
 		gl.drawElements(GL.TRIANGLES, ntriangles * 3, GL.UNSIGNED_SHORT, startIndex * 2);
+		#else 
+		gl.drawElements(GL.TRIANGLES, ntriangles * 3, GL.UNSIGNED_INT, startIndex * 4);
+		#end
+		
 		checkError();
 		
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);

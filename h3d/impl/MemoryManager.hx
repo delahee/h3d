@@ -109,8 +109,13 @@ class BigBuffer {
  */
 class MemoryManager {
 
+	#if (desktop&&cpp)
 	static inline var MAX_MEMORY = 256 << 20; // MB
 	static inline var MAX_BUFFERS = 4096; // Maximum number of buffers
+	#else
+	static inline var MAX_MEMORY = 512 << 20; // MB
+	static inline var MAX_BUFFERS = 16*1024; // Maximum number of buffers
+	#end
 
 	@:allow(h3d)
 	var driver : Driver;
@@ -144,6 +149,7 @@ class MemoryManager {
 	
 	public inline function textureCount() return textures.length;
 	
+	@:noDebug
 	function initIndexes() {
 		var indices = new hxd.IndexBuffer();
 		for( i in 0...allocSize ) indices.push(i);
@@ -151,17 +157,24 @@ class MemoryManager {
 
 		var indices = new hxd.IndexBuffer();
 		var p = 0;
-		for( i in 0...allocSize >> 2 ) {
-			var k = i << 2;
-			indices.push(k);
-			indices.push(k + 1);
-			indices.push(k + 2);
-			indices.push(k + 2);
-			indices.push(k + 1);
-			indices.push(k + 3);
+		
+		var t0 = haxe.Timer.stamp();
+		var size = allocSize >> 2;
+		#if (desktop&&cpp)
+		size = 1024 * 128;
+		indices[size-1] = 0; 
+		#end
+		for( i in 0...size ) {
+			var k 			= i << 2;
+			indices[i*6] 	= k;
+			indices[i*6+1] 	= k + 1;
+			indices[i*6+2] 	= k + 2;
+			indices[i*6+3] 	= k + 2;
+			indices[i*6+4] 	= k + 1;
+			indices[i*6+5] 	= k + 3;
 		}
 		quadIndexes = allocIndex(indices);
-		//System.trace3("allocating " + quadIndexes.count + " quad indexes "+quadIndexes);
+		
 	}
 
 	/**
@@ -533,24 +546,30 @@ class MemoryManager {
 		#end
 		// buffer not found : allocate a new one
 		if ( b == null ) {
-			//System.trace4("reusable buffer not found. creating shallow buffer...");
+			//System.trace3("reusable buffer not found. creating shallow buffer...");
 			
 			var size=0;
 			if( align == 0 ) {
 				size = nvect;
 				if( size > 0xFFFF ) throw "Too many vertex to allocate "+size;
-			} else
+			} else {
+				//trace("asked:" + nvect+" <> "+allocSize );
+				#if (desktop&&cpp)
+				size = nvect * 2;
+				#else
 				size = allocSize; // group allocations together to minimize buffer count
+				#end
+			}
 			var mem = size * stride * 4, v = null;
-			if( usedMemory + mem > MAX_MEMORY || bufferCount >= MAX_BUFFERS || (v = driver.allocVertex(size,stride)) == null ) {
+			if( usedMemory + mem > MAX_MEMORY || bufferCount >= MAX_BUFFERS || (v = driver.allocVertex(size,stride,isDynamic)) == null ) {
 				var size = usedMemory - freeMemory();
 				garbage();
 				cleanBuffers();
 				if( usedMemory - freeMemory() == size ) {
 					if( bufferCount >= MAX_BUFFERS )
-						throw "Too many vertex buffers";
-						
-					throw  "Memory full : not enough vertex buffers ( " + mem +" )";
+						throw "Too many vertex buffers : "+bufferCount;
+					else
+						throw  "Memory full : not enough vertex buffers ( " + mem +" )"+ bufferCount + " for "+size;
 				}
 				return alloc(nvect, stride, align, isDynamic,allocPos);
 			}
@@ -567,7 +586,7 @@ class MemoryManager {
 		
 		
 		// always alloc multiples of 4 (prevent quad split)
-		var alloc = nvect > free.count ? free.count - (free.count%align) : nvect;
+		var alloc = (nvect > free.count) ? (free.count - (free.count%align)) : nvect;
 		var fpos = free.pos;
 		free.pos += alloc;
 		free.count -= alloc;
