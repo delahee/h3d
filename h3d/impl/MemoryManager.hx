@@ -3,7 +3,6 @@ import h3d.impl.MemoryManager.FreeCell;
 import haxe.EnumFlags.EnumFlags;
 import hxd.System;
 
-
 @:allow(h3d)
 class FreeCell {
 	static var GUID = 0;
@@ -481,10 +480,12 @@ class MemoryManager {
 						break;
 					} else {
 						// we can't alloc into a smaller buffer because we might use preallocated indexes
+						/*
 						if( b.size != allocSize ) {
 							free = null;
 							break;
 						}
+						*/
 						var d = (align - (free.pos % align)) % align;
 						if( d == 0 )
 							break;
@@ -554,18 +555,24 @@ class MemoryManager {
 				if( size > 0xFFFF ) throw "Too many vertex to allocate "+size;
 			} else {
 				//trace("asked:" + nvect+" <> "+allocSize );
-				#if (desktop&&cpp)
-				size = nvect * 2;
-				#else
-				size = allocSize; // group allocations together to minimize buffer count
-				#end
+				if ( (nvect * 2) > allocSize ) {
+					//trace("using ext");	
+					#if (desktop&&cpp)
+					size = nvect * 2;
+					#else
+					size = allocSize; // group allocations together to minimize buffer count
+					#end
+				} else {
+					//trace("using reg");
+					size = allocSize;
+				}
 			}
 			var mem = size * stride * 4, v = null;
 			if( usedMemory + mem > MAX_MEMORY || bufferCount >= MAX_BUFFERS || (v = driver.allocVertex(size,stride,isDynamic)) == null ) {
 				var size = usedMemory - freeMemory();
 				garbage();
 				cleanBuffers();
-				if( usedMemory - freeMemory() == size ) {
+				if( (usedMemory - freeMemory()) == size ) {
 					if( bufferCount >= MAX_BUFFERS )
 						throw "Too many vertex buffers : "+bufferCount;
 					else
