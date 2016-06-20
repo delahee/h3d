@@ -552,7 +552,15 @@ class MemoryManager {
 			var size=0;
 			if( align == 0 ) {
 				size = nvect;
-				if( size > 0xFFFF ) throw "Too many vertex to allocate "+size;
+				
+				var lim = 0;
+				#if flash
+				lim =  0x7fff;
+				#else
+				lim =  0x7fffffff;
+				#end
+				if ( size >= lim ) throw "Too many vertex to allocate " + size;
+				
 			} else {
 				//trace("asked:" + nvect+" <> "+allocSize );
 				if ( (nvect * 2) > allocSize ) {
