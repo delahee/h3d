@@ -38,7 +38,7 @@ class Tile {
 	/**
 	 * see Tile.fromXXXX rather than trying to create me directly
 	 */
-	public inline function new(tex : h3d.mat.Texture, x:Int, y:Int, w:Int, h:Int, dx=0, dy=0) {
+	public inline function new(tex : h3d.mat.Texture, x:Int, y:Int, w:Int, h:Int, dx:Int=0, dy:Int=0) {
 		this.innerTex = tex;
 		this.x = x;
 		this.y = y;
@@ -48,7 +48,7 @@ class Tile {
 		this.dy = dy;
 		if( tex != null ) setTexture(tex);
 	}
-
+	
 	#if (flash || openfl)
 	public static function fromFlashBitmap( bmp : flash.display.BitmapData, ?retain:Bool=true,?allocPos : h3d.impl.AllocPos ) : Tile {
 		var bmd = BitmapData.fromNative( bmp );
@@ -268,7 +268,13 @@ class Tile {
 			v2 = ( h + y ) / tex.height;
 		}
 	}
-
+	
+	public function setU(f : Float) 	u = 	f;
+	public function setU2(f : Float) 	u2 = 	f;
+	                                            
+	public function setV(f : Float) 	v = 	f;
+	public function setV2(f : Float) 	v2 = 	f;
+	
 	public function scaleToSize( w, h ) {
 		//there are information lost here...
 		dx = Math.round( dx * w / width );
@@ -403,7 +409,7 @@ class Tile {
 	}
 
 	static var COLOR_CACHE = new Map<Int,h3d.mat.Texture>();
-	public static inline function fromColor( color : Int, ?width = 4, ?height = 4, ?allocPos : h3d.impl.AllocPos ) {
+	public static function fromColor( color : Int, ?width:Int = 4, ?height:Int = 4, ?allocPos : h3d.impl.AllocPos ) {
 		var t = COLOR_CACHE.get(color);
 		if( t == null || t.isDisposed() ) {
 			t = h3d.mat.Texture.fromColor(color, allocPos);

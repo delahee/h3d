@@ -90,7 +90,6 @@ class BatchElement {
 	@:noDebug
 	public function remove() {
 		if(batch!=null)	batch.delete(this);
-		tile = null;
 		batch = null;
 	}
 
@@ -143,6 +142,11 @@ class BatchElement {
 			batch.add( this, v );
 		}
 		return v;
+	}
+	
+	public function dispose() {
+		remove();
+		tile = null;
 	}
 
 }
@@ -252,6 +256,7 @@ class SpriteBatch extends Drawable {
 		e.batch = this;
 		e.priority = prio;
 
+		//should e.remove first
 		//if ( prio == null )	{
 			//if( first == null )
 				//first = last = e;
