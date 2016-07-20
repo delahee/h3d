@@ -22,6 +22,9 @@ class Vector {
 	public inline function distance( v : Vector ) {
 		return Math.sqrt(distanceSq(v));
 	}
+	
+	public inline function dist( v : Vector ) return distance(v);
+	public inline function dist2( v : Vector ) return distanceSq(v);
 
 	public inline function distanceSq( v : Vector ) {
 		var dx = v.x - x;
@@ -114,7 +117,7 @@ class Vector {
 		return lengthSq().sqrt();
 	}
 
-	public function normalize() {
+	public function normalize() : Void {
 		var k = lengthSq();
 		if( k < hxd.Math.EPSILON ) k = 0 else k = k.invSqrt();
 		x *= k;
@@ -181,11 +184,19 @@ class Vector {
 		y += add.y*mul.y;
 		z += add.z*mul.z;
 	}
+	
 
 	public inline function scale3( f : hxd.Float32 ) : Void {
 		x *= f;
 		y *= f;
 		z *= f;
+	}
+	
+	public inline function scale4( f : hxd.Float32 ) : Void {
+		x *= f;
+		y *= f;
+		z *= f;
+		w *= f;
 	}
 	
 	public inline function invert() : Void  {

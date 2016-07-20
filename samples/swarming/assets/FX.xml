@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with TexturePacker http://www.codeandweb.com/texturepacker-->
+<!-- $TexturePacker:SmartUpdate:dc4950e53b1c93bf6ac9523cfe622ae4:23ee937701a89cb566f1ec6b61d39651:d8b1319f8ac8e0bdbc10d9b220ab71c1$ -->
+<TextureAtlas imagePath="FX.png">
+    <SubTexture name="Smoke1" x="602" y="757" width="128" height="128"/>
+    <SubTexture name="Smoke2" x="734" y="757" width="128" height="128"/>
+    <SubTexture name="arc" x="240" y="1602" width="153" height="317"/>
+    <SubTexture name="blizzard" x="594" y="998" width="256" height="256"/>
+    <SubTexture name="blurBlizzard" x="479" y="1273" width="466" height="256"/>
+    <SubTexture name="bulle1" x="503" y="1900" width="129" height="129"/>
+    <SubTexture name="bulle2" x="854" y="3" width="129" height="129"/>
+    <SubTexture name="bulle3" x="854" y="136" width="129" height="129"/>
+    <SubTexture name="bulle4" x="602" y="624" width="129" height="129"/>
+    <SubTexture name="caillou1" x="547" y="1533" width="60" height="60"/>
+    <SubTexture name="caillou2" x="611" y="1533" width="60" height="60"/>
+    <SubTexture name="caillou3" x="675" y="1533" width="60" height="60"/>
+    <SubTexture name="caillou4" x="739" y="1533" width="60" height="60"/>
+    <SubTexture name="coin" x="857" y="645" width="98" height="98"/>
+    <SubTexture name="dent" x="803" y="1533" width="45" height="59"/>
+    <SubTexture name="disc" x="996" y="3" width="204" height="204"/>
+    <SubTexture name="dust" x="758" y="528" width="89" height="89"/>
+    <SubTexture name="eclair1" x="3" y="1602" width="233" height="352"/>
+    <SubTexture name="eclair2" x="277" y="1923" width="222" height="114"/>
+    <SubTexture name="eclair3" x="479" y="998" width="111" height="271"/>
+    <SubTexture name="feuille" x="602" y="889" width="100" height="100"/>
+    <SubTexture name="feuille2" x="706" y="889" width="100" height="100"/>
+    <SubTexture name="flame1" x="1228" y="3" width="227" height="203"/>
+    <SubTexture name="flame2" x="636" y="1857" width="166" height="171"/>
+    <SubTexture name="flame3" x="602" y="411" width="152" height="209"/>
+    <SubTexture name="flame4" x="850" y="1596" width="142" height="229"/>
+    <SubTexture name="flame5" x="806" y="1857" width="158" height="163"/>
+    <SubTexture name="fleur" x="810" y="889" width="100" height="100"/>
+    <SubTexture name="glowbal" x="3" y="3" width="595" height="991"/>
+    <SubTexture name="goutte" x="240" y="1923" width="33" height="31"/>
+    <SubTexture name="iris" x="602" y="3" width="200" height="200"/>
+    <SubTexture name="lightShadow" x="590" y="1597" width="256" height="256"/>
+    <SubTexture name="luciole" x="166" y="1958" width="75" height="75"/>
+    <SubTexture name="lune" x="397" y="1602" width="189" height="294"/>
+    <SubTexture name="onde" x="602" y="207" width="200" height="200"/>
+    <SubTexture name="paf" x="3" y="998" width="472" height="600"/>
+    <SubTexture name="part" x="866" y="747" width="110" height="110"/>
+    <SubTexture name="racine" x="479" y="1533" width="64" height="64"/>
+    <SubTexture name="racine16" x="245" y="1958" width="16" height="16"/>
+    <SubTexture name="rect" x="3" y="2037" width="32" height="8"/>
+    <SubTexture name="snow" x="852" y="1533" width="100" height="42"/>
+    <SubTexture name="sparkGlow" x="968" y="1829" width="256" height="211"/>
+    <SubTexture name="starBlue" x="735" y="624" width="118" height="113"/>
+    <SubTexture name="starGreen" x="758" y="411" width="118" height="113"/>
+    <SubTexture name="starRed" x="806" y="269" width="118" height="113"/>
+    <SubTexture name="starWhite" x="857" y="528" width="118" height="113"/>
+    <SubTexture name="starYellow" x="880" y="386" width="118" height="113"/>
+    <SubTexture name="starYellowStroke" x="928" y="269" width="118" height="113"/>
+    <SubTexture name="triangle" x="3" y="1958" width="159" height="75"/>
+</TextureAtlas>
