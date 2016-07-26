@@ -22,6 +22,7 @@ typedef BaseConf = {
 	var defaultYInverted :Bool;
 	var matchString :String;
 	var metaName : String;
+	var eraseUnconfed:Bool;
 }
 
 class Pad {
@@ -55,6 +56,7 @@ class Pad {
 		dpadRight : 19,
 		names : ["LX", "LY", "RX", "RY", "A", "B", "X", "Y", "LB", "RB", "LT", "RT", "Select", "Start", "LCLK", "RCLK", "DUp", "DDown", "DLeft", "DRight"],
 		defaultYInverted:true,
+		eraseUnconfed:true,
 	};
 	
 	public static var CONFIG_XARCADE : BaseConf = cast {
@@ -85,7 +87,8 @@ class Pad {
 		"RB", "", "start", "", "",//15-19
 		"DUp","DRight","DDown","DLeft"
 		],
-		defaultYInverted:false,
+		defaultYInverted:false, 
+		eraseUnconfed:true,
 	}
 	
 	public static var CONFIG_RAP4 : BaseConf = cast {
@@ -117,9 +120,82 @@ class Pad {
 		"L3","R3","PS Button",//20-24
 		],
 		defaultYInverted:false,
+		eraseUnconfed:true,
 	}
 	
-	public static var CONFS :Array<Dynamic> = [CONFIG_XARCADE, CONFIG_XBOX,CONFIG_RAP4];
+	public static var CONFIG_HORI_MINI_PS4 : BaseConf = cast {
+		ids:["AE5BB750-4444-11E6-8001-444553540000"],
+		name:"Fighting Stick mini 4",
+		matchString:"Fighting Stick mini 4",
+		metaName:"HORI PS4",
+		analogX : 0,
+		analogY : 0,
+		
+		X:10,
+		Y:13,
+		LB:14,
+		
+		A:11,
+		B:12,
+		RB:15,
+		
+		start : 19,
+		dpadUp : 6,
+		dpadDown : 7,
+		dpadLeft : 8,
+		dpadRight : 9,
+		
+		share:18,
+		options:29,
+		
+		names : [
+		"", "", "", "", "",//0-4
+		"", "DUp", "DDown", "DLeft", "DRight", //5-9
+		"SQUARE", "CROSS", "CIRCLE", "TRIANGLE", "L1",//10-14
+		"R1", "L2", "R2", "Share", "Options", //15-19
+		"L3","R3","PS Button",//20-24
+		],
+		defaultYInverted:false,
+		eraseUnconfed:true,
+	}
+	
+	public static var CONFIG_DUMMY : BaseConf = cast {
+		ids:["dummy"],
+		name:"dummy",
+		matchString:"dummy",
+		metaName:"dummy",
+		analogX : 0,
+		analogY : 0,
+		
+		X:10,
+		Y:13,
+		LB:14,
+		
+		A:11,
+		B:12,
+		RB:15,
+		
+		start : 19,
+		dpadUp : 6,
+		dpadDown : 7,
+		dpadLeft : 8,
+		dpadRight : 9,
+		
+		share:18,
+		options:29,
+		
+		names : [
+		"", "", "", "", "",//0-4
+		"", "DUp", "DDown", "DLeft", "DRight", //5-9
+		"SQUARE", "CROSS", "CIRCLE", "TRIANGLE", "L1",//10-14
+		"R1", "L2", "R2", "Share", "Options", //15-19
+		"L3","R3","PS Button",//20-24
+		],
+		defaultYInverted:false,
+		eraseUnconfed:false,
+	}
+	
+	public static var CONFS :Array<Dynamic> = [CONFIG_XARCADE, CONFIG_XBOX,CONFIG_RAP4 , CONFIG_HORI_MINI_PS4, CONFIG_DUMMY];
 
 	public var connected(default, null) = true;
 	public var name(get, never) : String;
@@ -181,7 +257,7 @@ class Pad {
 	}
 	
 	public inline function isAxis(btIdx:Int){
-		return nativeIds[btIdx].startsWith("AXIS_");
+		return nativeIds[btIdx].startsWith("AX_");
 	}
 	
 	public inline function onPress(idx:Int) : Bool {
@@ -191,7 +267,7 @@ class Pad {
 	public function getButtonName(idx:Int) {
 		return 
 		if ( conf == null)
-			"BUTTON_" + idx;
+			"BT_" + idx;
 		else 
 			conf.names[idx];
 	}
@@ -201,6 +277,7 @@ class Pad {
 	public static function createDummy() {
 		var p = new Pad();
 		p.connected = false;
+		p.conf = CONFIG_DUMMY;
 		return p;
 	}
 
@@ -289,7 +366,8 @@ class Pad {
 		var pid = p.d.id;
 		var pname = p.d.name;
 		for ( c in CONFS) {
-			if ( pname.toLowerCase().indexOf( c.matchString.toLowerCase() ) >= 0 ) {
+			if ( (pname.toLowerCase().indexOf( c.matchString.toLowerCase()  ) >= 0)
+			&&	(p.d.id == c.ids[0]||p.d.id == c.ids[1]) ){
 				//trace("found one match " + c.name);
 				p.conf = c;
 				if ( c.defaultXInverted ) p.xInverted = true;
@@ -313,7 +391,7 @@ class Pad {
 			p.nativeControls.push(c);
 			p.buttons.push(false);
 			
-			if( StringTools.startsWith(c.id, "AXIS_") ) {
+			if( StringTools.startsWith(c.id, "AX_") ) {
 				var axisID = axisCount++;
 				p.axis[valID] = true;
 				if( !USE_POLLING)
@@ -324,14 +402,15 @@ class Pad {
 						if( axisID == axisX ) 		p.xAxis = !p.xInverted?v:-v;
 						else if ( axisID == axisY ) p.yAxis = !p.yInverted?v: -v;
 					});
-			} else if ( StringTools.startsWith(c.id, "BUTTON_") ) {
+			} else if ( StringTools.startsWith(c.id, "BT_") ) {
 				p.axis[valID] = false;
-				if( !USE_POLLING)
+				if ( !USE_POLLING) {
 					c.addEventListener(flash.events.Event.CHANGE, function(_) {
 						var v = (c.value - min) / (max - min);
 						p.values[valID] = v;
 						p.buttons[valID] = v > 0.5;
 					});
+				}
 			}
 			else {
 				p.axis[valID] = false;
@@ -360,6 +439,13 @@ class Pad {
 	public static function update() {
 		for ( p in padList) {
 			for (i in 0...p.buttons.length) {
+				
+				if ( p.conf.eraseUnconfed && ( p.conf != null && p.conf.names[i]==null || p.conf.names[i].length == 0) ) {
+					p.prevButtons[i] = p.buttons[i] = false;
+					p.prevValues[i] = p.values[i] = 0;
+					continue;
+				}
+					
 				p.prevButtons[i] = p.buttons[i];
 				p.prevValues[i] = p.values[i];
 				

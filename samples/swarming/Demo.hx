@@ -73,7 +73,7 @@ class SwarmingPart extends ent.PartData {
 		var start = bm.Dice.roll(0, Math.floor(ags.length * (1.0-SAMPLE_FACTOR)) );
 		var end = start + Math.floor(ags.length * SAMPLE_FACTOR);
 		for ( i in start...end ) {
-			var a = ags.random();
+			var a = ags.unsafeGet(i);
 			if( a.pos.dist2(pos) < IS_CLOSE*IS_CLOSE){
 				align.incr( a.speed );
 				nb++;
@@ -105,7 +105,7 @@ class SwarmingPart extends ent.PartData {
 	}
 	
 	public function updateCohesionFull() {
-		var ags : hxd.Stack<SwarmingPart> = agents();
+		var ags = agents();
 		var nb = 0;
 		cohesion.zero();
 		

@@ -40,8 +40,12 @@ class Demo extends flash.display.Sprite{
 		g.endFill();
 		
 		var pos = 0;
-		function onPad(p) {
+		function onPad(p:hxd.Pad) {
 			pads.push(p);
+			trace(p.name);
+			trace(p.nativeIds);
+			trace("native id:"+p.d.id);
+			trace("native name"+p.d.name);
 			
 			var t = new h2d.Text(hxd.res.FontBuilder.getFont("consolas", 14), scene);
 			t.text = "name: "+p.d.name+" id:"+p.d.id+(p.conf!=null?"[MATCHED]":"");
@@ -66,7 +70,7 @@ class Demo extends flash.display.Sprite{
 		for ( i in 0...32) {
 			var x = accX + 50;
 			var y = 50 + ((i >= 16)?50:0);
-			var b = mt.gx.h2d.Proto.circle( x, y, 16, 0xffffff, scene);
+			var b = bm.Proto.circle( x, y, 16, 0xffffff, scene);
 			b.alpha = 0.5;
 			bs.push(b);
 			accX += 32;
@@ -77,6 +81,7 @@ class Demo extends flash.display.Sprite{
 			t.x -= 8;
 			t.y -= 8;
 			t.textColor = 0xff000000;
+			trace( t.text );
 		}
 	}
 	
@@ -113,19 +118,17 @@ class Demo extends flash.display.Sprite{
 				}
 			}
 			
-			
-			
 			for ( i in 0...pad.buttons.length) {
 				if ( pad.onPress(i)) {
-					trace(pad.getButtonName(i)+" on press ");
+					trace(pad.getButtonName(i) );
 				}
 			}
-			
+			/*
 			for ( i in 0...pad.buttons.length) {
 				if ( pad.isDown(i)) {
 					trace(pad.getButtonName(i)+" is down");
 				}
-			}
+			}*/
 		}
 		
 		hxd.Pad.update();
