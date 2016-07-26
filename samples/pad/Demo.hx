@@ -44,8 +44,8 @@ class Demo extends flash.display.Sprite{
 			pads.push(p);
 			trace(p.name);
 			trace(p.nativeIds);
-			trace("native id:"+p.d.id);
-			trace("native name"+p.d.name);
+			trace("native id: "+p.d.id);
+			trace("native name: "+p.d.name);
 			
 			var t = new h2d.Text(hxd.res.FontBuilder.getFont("consolas", 14), scene);
 			t.text = "name: "+p.d.name+" id:"+p.d.id+(p.conf!=null?"[MATCHED]":"");

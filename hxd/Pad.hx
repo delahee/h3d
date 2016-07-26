@@ -127,7 +127,7 @@ class Pad {
 		ids:["AE5BB750-4444-11E6-8001-444553540000"],
 		name:"Fighting Stick mini 4",
 		matchString:"Fighting Stick mini 4",
-		metaName:"HORI PS4",
+		metaName:"HORI4 PS4",
 		analogX : 0,
 		analogY : 0,
 		
@@ -138,6 +138,9 @@ class Pad {
 		A:11,
 		B:12,
 		RB:15,
+		
+		L2:16,
+		R2:17,
 		
 		start : 19,
 		dpadUp : 6,
@@ -159,6 +162,45 @@ class Pad {
 		eraseUnconfed:true,
 	}
 	
+	public static var CONFIG_HORI_MINI_PS3 : BaseConf = cast {
+		ids:["2B7ADB00-5311-11E6-8001-444553540000"],
+		name:"Fighting Stick mini 4",
+		matchString:"Fighting Stick mini 4",
+		metaName:"HORI4 PS3",
+		analogX : 0,
+		analogY : 0,
+		
+		X:8,//aka square
+		Y:11, //aka triangle
+		LB:12, //aka L1
+		
+		A:9, //aka X
+		B:10, //aka circle
+		RB:13, //aka R1
+		
+		start : 19,
+		dpadUp : 4,
+		dpadDown : 5,
+		dpadLeft : 6,
+		dpadRight : 7,
+		
+		share:16	,
+		options:17,
+		
+		L2:14,
+		R2:15,
+		
+		names : [
+		"", "", "", "", "UP",//0-4
+		"DOWN", "LEFT", "RIGHT", "SQUARE", "CROSS", //5-9
+		"CIRCLE", "TRIANGLE", "L1", "R1", "L2",//10-14
+		"R2", "SHARE", "OPTIONS", "", "", //15-19
+		"PS Button",""," ",//20-24
+		],
+		defaultYInverted:false,
+		eraseUnconfed:false,
+	}
+
 	public static var CONFIG_DUMMY : BaseConf = cast {
 		ids:["dummy"],
 		name:"dummy",
@@ -195,7 +237,7 @@ class Pad {
 		eraseUnconfed:false,
 	}
 	
-	public static var CONFS :Array<Dynamic> = [CONFIG_XARCADE, CONFIG_XBOX,CONFIG_RAP4 , CONFIG_HORI_MINI_PS4, CONFIG_DUMMY];
+	public static var CONFS :Array<Dynamic> = [CONFIG_DUMMY,CONFIG_XARCADE, CONFIG_XBOX,CONFIG_RAP4 , CONFIG_HORI_MINI_PS4, CONFIG_HORI_MINI_PS3 ];
 
 	public var connected(default, null) = true;
 	public var name(get, never) : String;
@@ -440,10 +482,12 @@ class Pad {
 		for ( p in padList) {
 			for (i in 0...p.buttons.length) {
 				
-				if ( p.conf.eraseUnconfed && ( p.conf != null && p.conf.names[i]==null || p.conf.names[i].length == 0) ) {
-					p.prevButtons[i] = p.buttons[i] = false;
-					p.prevValues[i] = p.values[i] = 0;
-					continue;
+				if( p.conf != null ){
+					if ( p.conf.eraseUnconfed && ( p.conf.names != null && p.conf.names[i]==null || p.conf.names[i].length == 0) ) {
+						p.prevButtons[i] = p.buttons[i] = false;
+						p.prevValues[i] = p.values[i] = 0;
+						continue;
+					}
 				}
 					
 				p.prevButtons[i] = p.buttons[i];
