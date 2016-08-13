@@ -98,33 +98,39 @@ class CachedBitmap extends Bitmap {
 		return h;
 	}
 	
+	function innerRealloc(tex:h3d.mat.Texture) {
+		if (onBeforeRealloc != null) onBeforeRealloc();
+		invalidate();
+		tex.alloc();
+		tex.clear(targetColor);
+		if (onAfterRealloc != null) onAfterRealloc();
+	}
+	
+	function innerCreateTile() {
+		var tw = 1, th = 1;
+		var engine = h3d.Engine.getCurrent();
+		realWidth = width < 0 ? engine.width : Math.ceil(width);
+		realHeight = height < 0 ? engine.height : Math.ceil(height);
+		while( tw < realWidth ) tw <<= 1;
+		while ( th < realHeight ) th <<= 1;
+		
+		if ( tex != null) throw "assert";
+		
+		tex = new h3d.mat.Texture(tw, th, h3d.mat.Texture.TargetFlag() );
+		#if debug
+		tex.name = 'CachedBitmap[$name]';
+		#end
+		
+		tex.realloc = innerRealloc.bind(tex);
+		
+		renderDone = false;
+		tile = new Tile(tex, 0, 0, realWidth, realHeight);
+		permaTile.copy(tile);
+	}
+	
 	public function getTile() {
-		if ( tile == null ) {
-			var tw = 1, th = 1;
-			var engine = h3d.Engine.getCurrent();
-			realWidth = width < 0 ? engine.width : Math.ceil(width);
-			realHeight = height < 0 ? engine.height : Math.ceil(height);
-			while( tw < realWidth ) tw <<= 1;
-			while ( th < realHeight ) th <<= 1;
-			
-			if ( tex != null) throw "assert";
-			
-			tex = new h3d.mat.Texture(tw, th, h3d.mat.Texture.TargetFlag() );
-			#if debug
-			tex.name = 'CachedBitmap[$name]';
-			#end
-			tex.realloc = function() {
-				if (onBeforeRealloc != null) onBeforeRealloc();
-				invalidate();
-				tex.alloc();
-				tex.clear(targetColor);
-				if (onAfterRealloc != null) onAfterRealloc();
-			};
-			
-			renderDone = false;
-			tile = new Tile(tex, 0, 0, realWidth, realHeight);
-			permaTile.copy(tile);
-		}
+		if ( tile == null )
+			innerCreateTile();
 		return tile;
 	}
 

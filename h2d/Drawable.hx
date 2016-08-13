@@ -141,7 +141,7 @@ class DrawableShader extends h3d.impl.Shader {
 
 		function overlay( src : Float4, layer : Float4 ) {
 			var lum = dot( layer.rgb, [0.2126, 0.7152, 0.0722] );
-			var mul = src.rgb * layer.rgb * [2.0,2.0,2.0];
+			var mul = src.rgb * (layer.rgb * 2.0);
 			var scr = 1.0 - 2.0 * (1.0 - src.rgb) * (1.0 - layer.rgb);
 			var cmp = lum < 0.500;
 			var ccmp = mix3(mul, scr, cmp );
@@ -236,10 +236,10 @@ class DrawableShader extends h3d.impl.Shader {
 				var texCoord = tcoord;
 				var delta = tcoord - sbPosNorm;
 				var sbIllDecay = 1.0;
-				delta *= 1.0 / 26 * sbDensity;
-				for ( i in 0...26 ) {
+				delta *= (1.0 / 20.0) * sbDensity;
+				for ( i in 0...20 ) {
 					texCoord -= delta;
-					col += secondaryMap.get( texCoord ) * (sbIllDecay * sbWeight);
+					col += secondaryMap.get( texCoord , nearest) * (sbIllDecay * sbWeight);
 					sbIllDecay *= sbDecay;
 				}
 				col *= sbExposure;
