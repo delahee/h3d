@@ -2,8 +2,8 @@ package hxd;
 using StringTools;
 
 typedef BaseConf = {
-	var ids:Array<String>;	//identifier for matching and default setups
-	var name:String;		//identifier for matching and default setups
+	var ids:Array<String>;	//seems link to port used so unable to match over different pcs
+	var name:String;		//
 	var names:Array<String>;
 	var dpadUp 		: Int;
 	var dpadDown 	: Int;
@@ -391,7 +391,7 @@ class Pad {
 	}
 	
 	static function onDeviceAdded(onPad:Pad->Void, e:flash.events.GameInputEvent) {
-		//trace(e.device.name+" is added");
+		trace(e.device.name+" is addede "+ e.device.id);
 		var p = new Pad();
 		p.d = e.device;
 		
@@ -409,8 +409,9 @@ class Pad {
 		var pname = p.d.name;
 		for ( c in CONFS) {
 			if ( (pname.toLowerCase().indexOf( c.matchString.toLowerCase()  ) >= 0)
-			&&	(p.d.id == c.ids[0]||p.d.id == c.ids[1]) ){
-				//trace("found one match " + c.name);
+			//&&	(p.d.id == c.ids[0] || p.d.id == c.ids[1]) 
+			){
+				trace("found one match " + c.name);
 				p.conf = c;
 				if ( c.defaultXInverted ) p.xInverted = true;
 				if ( c.defaultYInverted ) p.yInverted = true;
