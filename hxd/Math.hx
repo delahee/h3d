@@ -104,6 +104,10 @@ class Math {
 		return std.Math.sqrt(f);
 	}
 	
+	public static inline function log( f : Float ) {
+		return std.Math.log(f);
+	}
+	
 	public static inline function sqr( f : Float ) {
 		return f*f;
 	}
