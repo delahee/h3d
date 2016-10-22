@@ -33,7 +33,7 @@ class Pad {
 	
 	public static var USE_POLLING = true; //requires .update call at frame end
 	public static var CONFIG_XBOX : BaseConf = cast {
-		ids:["XINPUT_DEVICE_0"],
+		ids:["XINPUT_DEVICE_0","XINPUT_DEVICE_1"],
 		name:"Xbox 360 Controller (XInput STANDARD GAMEPAD)",
 		matchString:"XInput",
 		metaName:"Pad Xbox",
