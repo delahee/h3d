@@ -5,6 +5,7 @@ typedef BaseConf = {
 	var ids:Array<String>;	//seems link to port used so unable to match over different pcs
 	var name:String;		//
 	var names:Array<String>;
+	
 	var dpadUp 		: Int;
 	var dpadDown 	: Int;
 	var dpadLeft 	: Int;
@@ -19,6 +20,9 @@ typedef BaseConf = {
 	var Y 	:Int;
 	var LB 	:Int;
 	var RB 	:Int;
+	
+	var start	:Int;
+	
 	var defaultYInverted :Bool;
 	var matchString :String;
 	var metaName : String;
@@ -32,7 +36,7 @@ class Pad {
 		ids:["XINPUT_DEVICE_0"],
 		name:"Xbox 360 Controller (XInput STANDARD GAMEPAD)",
 		matchString:"XInput",
-		metaName:"Pad XboxOne/360",
+		metaName:"Pad Xbox",
 		
 		analogX : 0,
 		analogY : 1,
@@ -91,6 +95,7 @@ class Pad {
 		eraseUnconfed:true,
 	}
 	
+	
 	public static var CONFIG_RAP4 : BaseConf = cast {
 		ids:["E8AFC630-E6DE-11E5-8002-444553540000"],
 		name:"Real Arcade Pro.4",
@@ -99,25 +104,25 @@ class Pad {
 		analogX : 30,
 		analogY : 31,
 		
-		X:10,
-		Y:13,
-		LB:14,
+		X:8,//SQUARE
+		Y:11,//TRIANGLE
+		LB:12,
 		
-		A:11,
-		B:12,
-		RB:15,
+		A:9,//X
+		B:10,//CIRCLE
+		RB:13,
 		
-		start : 19,
-		dpadUp : 6,
-		dpadDown : 7,
-		dpadLeft : 8,
-		dpadRight : 9,
+		start : 17,
+		dpadUp : 4,
+		dpadDown : 5,
+		dpadLeft : 6,
+		dpadRight : 7,
 		names : [
-		"", "", "", "", "",//0-4
-		"", "DUp", "DDown", "DLeft", "DRight", //5-9
-		"SQUARE", "CROSS", "CIRCLE", "TRIANGLE", "L1",//10-14
-		"R1", "L2", "R2", "Share", "Options", //15-19
-		"L3","R3","PS Button",//20-24
+		"", "", "", "", "D-Up",//0-4
+		"D-Down", "D-Left", "D-Right", "SQUARE", "CROSS", //5-9
+		"CIRCLE", "TRIANGLE", "L1", "R1", "L2",//10-14
+		"R2", "L2", "Options", "", "", //15-19
+		"","","",//20-24
 		],
 		defaultYInverted:false,
 		eraseUnconfed:true,
@@ -299,7 +304,7 @@ class Pad {
 	}
 	
 	public inline function isAxis(btIdx:Int){
-		return nativeIds[btIdx].startsWith("AX_");
+		return nativeIds[btIdx].startsWith("AXIS_");
 	}
 	
 	public inline function onPress(idx:Int) : Bool {
@@ -309,7 +314,7 @@ class Pad {
 	public function getButtonName(idx:Int) {
 		return 
 		if ( conf == null)
-			"BT_" + idx;
+			"BUTTON_" + idx;
 		else 
 			conf.names[idx];
 	}
@@ -338,6 +343,10 @@ class Pad {
 	#if flash
 	public static function nbPads() return flash.ui.GameInput.numDevices;
 	#end
+	
+	public static function getList() : Array<Pad>{
+		return padList;
+	}
 	
 	public static function getPadByIndex(idx) {
 		for ( p in padList)
@@ -376,11 +385,11 @@ class Pad {
 
 	#if flash
 	static function onDeviceUnusable(e:flash.events.GameInputEvent) {
-		trace(e.device.name+" is unusable");
+		//trace(e.device.name+" is unusable");
 	}
 	
 	static function onDeviceRemoved(e:flash.events.GameInputEvent) {
-		trace(e.device.name+" is removed");
+		//trace(e.device.name+" is removed");
 		for (p in padList.copy()) {
 			if (p.d == e.device ) {
 				p.destroyed = true;
@@ -391,7 +400,7 @@ class Pad {
 	}
 	
 	static function onDeviceAdded(onPad:Pad->Void, e:flash.events.GameInputEvent) {
-		trace(e.device.name+" is addede "+ e.device.id);
+		//trace(e.device.name+" is added "+ e.device.id);
 		var p = new Pad();
 		p.d = e.device;
 		
@@ -411,7 +420,7 @@ class Pad {
 			if ( (pname.toLowerCase().indexOf( c.matchString.toLowerCase()  ) >= 0)
 			//&&	(p.d.id == c.ids[0] || p.d.id == c.ids[1]) 
 			){
-				trace("found one match " + c.name);
+				//trace("found one match " + c.name);
 				p.conf = c;
 				if ( c.defaultXInverted ) p.xInverted = true;
 				if ( c.defaultYInverted ) p.yInverted = true;
@@ -434,7 +443,8 @@ class Pad {
 			p.nativeControls.push(c);
 			p.buttons.push(false);
 			
-			if( StringTools.startsWith(c.id, "AX_") ) {
+			//trace("add ctrl : "+c.id);
+			if( StringTools.startsWith(c.id, "AXIS_") ) {
 				var axisID = axisCount++;
 				p.axis[valID] = true;
 				if( !USE_POLLING)
@@ -445,7 +455,7 @@ class Pad {
 						if( axisID == axisX ) 		p.xAxis = !p.xInverted?v:-v;
 						else if ( axisID == axisY ) p.yAxis = !p.yInverted?v: -v;
 					});
-			} else if ( StringTools.startsWith(c.id, "BT_") ) {
+			} else if ( StringTools.startsWith(c.id, "BUTTON_") ) {
 				p.axis[valID] = false;
 				if ( !USE_POLLING) {
 					c.addEventListener(flash.events.Event.CHANGE, function(_) {
@@ -463,14 +473,17 @@ class Pad {
 			//else trace("unrecognised id " + c.id);
 		}
 
-		if ( onPad != null ) onPad(p);
-		
 		padList.push(p);
+		
+		if ( onPad != null ) onPad(p);
 	}
 	
+	static var op : flash.events.GameInputEvent->Void;
 	public static function scanForPad(onPad:Pad->Void) {
+		op = onDeviceAdded.bind(onPad);
+		
 		inst.addEventListener(flash.events.GameInputEvent.DEVICE_UNUSABLE,onDeviceUnusable);
-		inst.addEventListener(flash.events.GameInputEvent.DEVICE_ADDED, onDeviceAdded.bind(onPad));
+		inst.addEventListener(flash.events.GameInputEvent.DEVICE_ADDED, op);
 		inst.addEventListener(flash.events.GameInputEvent.DEVICE_REMOVED, onDeviceRemoved);
 		var count = flash.ui.GameInput.numDevices; // necessary to trigger added
 	}

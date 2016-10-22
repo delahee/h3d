@@ -261,8 +261,6 @@ class Stage3dDriver extends Driver {
 		}
 		return new VertexWrapper(v, stride, count*stride*4);
 	}
-	
-	
 
 	override function allocIndexes( count : Int ) : IndexBuffer {
 		apiCall();

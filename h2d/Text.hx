@@ -67,6 +67,7 @@ class Text extends Drawable implements IText {
 	 */
 	public var textColor(default, set) : Int;
 	public var maxWidth(default, set) : Null<Float>;
+	
 	public var dropShadow : { dx : Float, dy : Float, color : Int, alpha : Float };
 
 	public var textWidth(get, null) : Int;
@@ -110,7 +111,8 @@ class Text extends Drawable implements IText {
 		t.maxWidth = maxWidth;
 
 		var ds = dropShadow;
-		t.dropShadow = { dx:ds.dx, dy:ds.dy, color:ds.color, alpha:ds.alpha };
+		if(ds!=null)
+			t.dropShadow = { dx:ds.dx, dy:ds.dy, color:ds.color, alpha:ds.alpha };
 
 		t.textAlign = textAlign;
 		t.letterSpacing = letterSpacing;

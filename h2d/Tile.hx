@@ -174,7 +174,7 @@ class Tile {
 	#end
 	
 	#if openfl
-	public static inline function fromAssets( path:String , ?retain = true, fromCache = true) {
+	public static inline function fromAssets( path:String , ?retain = true, ?fromCache = true) {
 		var bmd = openfl.Assets.getBitmapData( path, fromCache );
 		if (bmd == null) return h2d.Tile.fromTexture(h2d.Tools.getVoidTexture());
 		var tile = fromFlashBitmap( bmd, retain );

@@ -133,11 +133,17 @@ class DrawableShader extends h3d.impl.Shader {
 		var isAlphaPremul:Bool;
 		var leavePremultipliedColors:Bool;
 		
+		var isBlurredG3T:Bool;
+		var isBlurredG3x3T:Bool;
+		var blurRadius:Float;
+		
 		var sbPosNorm : Float2;
 		var sbExposure : Float;
 		var sbDensity : Float;
 		var sbWeight : Float;
 		var sbDecay : Float;
+		
+		var time : Float;
 
 		function overlay( src : Float4, layer : Float4 ) {
 			var lum = dot( layer.rgb, [0.2126, 0.7152, 0.0722] );
@@ -146,6 +152,66 @@ class DrawableShader extends h3d.impl.Shader {
 			var cmp = lum < 0.500;
 			var ccmp = mix3(mul, scr, cmp );
 			return [ccmp.x, ccmp.y, ccmp.z, src.a * layer.a];
+		}
+		
+		//http://rastergrid.com/blog/2010/09/efficient-gaussian-blur-with-linear-sampling/
+		function blurG3Tex(tex:Texture, uv:Float2, resolution:Float2, blurRadius:Float) {
+			var offset = [0.0, 1.3846153846, 3.2307692308];
+			var weight = [0.2270270270, 0.3162162162, 0.0702702703];
+			
+			var cen = tex.get(uv, linear) * weight.x;
+			
+			cen += tex.get(uv+resolution*[0,offset.y]*blurRadius, linear) * weight.y;
+			cen += tex.get(uv-resolution*[0,offset.y]*blurRadius, linear) * weight.y;
+			
+			cen += tex.get(uv+resolution*[0,offset.z]*blurRadius, linear) * weight.z;
+			cen += tex.get(uv-resolution*[0,offset.z]*blurRadius, linear) * weight.z;
+			return cen;
+		}
+		
+		function blurG3x3Tex(tex:Texture, uv:Float2, res:Float2, blurRadius:Float) {
+			var col = [0, 0, 0, 0];
+			
+			var ux = res.x * blurRadius;
+			var ux2 = 2 * res.x * blurRadius;
+			
+			var uy = res.y * blurRadius;
+			var uy2 = 2 * res.y * blurRadius;
+			
+			col += 0.00078633 * tex.get([uv.x + -ux2	, 	(tuv.y + uy2)  ],nearest);
+			col += 0.00655965 * tex.get([uv.x + -ux		, 	(tuv.y + uy2)  ],nearest);
+			col += 0.01330373 * tex.get([uv.x  			, 	(tuv.y + uy2)  ],nearest);
+			col += 0.00655965 * tex.get([uv.x + ux		, 	(tuv.y + uy2)  ],nearest);
+			col += 0.00078633 * tex.get([uv.x + ux2		, 	(tuv.y + uy2)  ],nearest);
+			
+			
+			col += 0.00655965 * tex.get([uv.x + -ux2	,  	(tuv.y + uy)  ],nearest);
+			col += 0.05472157 * tex.get([uv.x + -ux		, 	(tuv.y + uy)  ],nearest);
+			col += 0.11098164 * tex.get([uv.x 			, 	(tuv.y + uy)  ],nearest);
+			col += 0.05472157 * tex.get([uv.x + ux		, 	(tuv.y + uy)  ],nearest);
+			col += 0.00655965 * tex.get([uv.x + ux2		, 	(tuv.y + uy)  ],nearest);
+			
+			
+			col += 0.01330373 * tex.get([uv.x + -ux2	,  	(tuv.y)   	],nearest);
+			col += 0.11098164 * tex.get([uv.x + -ux		,   (tuv.y)		],nearest);
+			col += 0.22508352 * tex.get([uv.x 			,  	(tuv.y)   	],nearest);
+			col += 0.11098164 * tex.get([uv.x + ux		,   (tuv.y) 	],nearest);
+			col += 0.01330373 * tex.get([uv.x + ux2		, 	(tuv.y)   	],nearest);
+			
+			
+			col += 0.00655965 * tex.get([uv.x + -ux2	,  	(tuv.y - uy)  ],nearest);
+			col += 0.05472157 * tex.get([uv.x + -ux		, 	(tuv.y - uy)  ],nearest);
+			col += 0.11098164 * tex.get([uv.x 			,  	(tuv.y - uy)  ],nearest);
+			col += 0.05472157 * tex.get([uv.x + ux		, 	(tuv.y - uy)  ],nearest);
+			col += 0.00655965 * tex.get([uv.x + ux2		, 	(tuv.y - uy)  ],nearest);
+			
+			
+			col += 0.00078633  * tex.get([uv.x + -ux2	, 	(tuv.y - uy2)  ],nearest);
+			col += 0.00655965  * tex.get([uv.x + -ux	, 	(tuv.y - uy2)  ],nearest);
+			col += 0.01330373  * tex.get([uv.x 			, 	(tuv.y - uy2)  ],nearest);
+			col += 0.00655965  * tex.get([uv.x + ux		, 	(tuv.y - uy2)  ],nearest);
+			col += 0.00078633  * tex.get([uv.x + ux2	, 	(tuv.y - uy2)  ],nearest);
+			return col;
 		}
 		
 		function fxaa(tex:Texture, uv:Float2, resolution:Float2, nw:Float2, ne:Float2, sw:Float2, se:Float2) {
@@ -204,6 +270,10 @@ class DrawableShader extends h3d.impl.Shader {
 			return gradientMap.get([gradientUV.x + (gradientUV.z - gradientUV.x) * lum, gradientUV.y]);
 		}
 		
+		function nrand(n:Float2) {
+			return abs(frac(sin( dp3([n.x,n.y,0], [12.9898, 78.233,0.0]))* 43758.5453));
+		}
+		
 		function fragment( tex : Texture ) {
 			var tcoord = tuv;
 			if (hasDisplacementMap) {
@@ -213,8 +283,14 @@ class DrawableShader extends h3d.impl.Shader {
 			}
 			
 			var col:Float4;
-			if( !hasFXAA )
-				col = tex.get(sinusDeform != null ? [tcoord.x + sin(tcoord.y * sinusDeform.y + sinusDeform.x) * sinusDeform.z, tcoord.y] : tcoord, filter = ! !filter, wrap = tileWrap);
+			if ( !hasFXAA ) {
+				if ( isBlurredG3T ) 
+					col = blurG3Tex( tex, tcoord, texResolutionFS, blurRadius);
+				else if (isBlurredG3x3T)
+					col = blurG3x3Tex( tex, tcoord, texResolutionFS, blurRadius);
+				else 
+					col = tex.get(sinusDeform != null ? [tcoord.x + sin(tcoord.y * sinusDeform.y + sinusDeform.x) * sinusDeform.z, tcoord.y] : tcoord, filter = ! !filter, wrap = tileWrap);
+			}
 			else
 				col = fxaa( tex, tcoord, texResolutionFS, fxaaNW, fxaaNE, fxaaSW, fxaaSE);
 			
@@ -236,13 +312,18 @@ class DrawableShader extends h3d.impl.Shader {
 				var texCoord = tcoord;
 				var delta = tcoord - sbPosNorm;
 				var sbIllDecay = 1.0;
-				delta *= (1.0 / 20.0) * sbDensity;
-				for ( i in 0...20 ) {
+				delta *= (1.0 / 12.0) * sbDensity;
+				var c = nrand(tcoord + [time,frac(time*0.001)]);
+				texCoord -= delta * c*1.5;
+				col += secondaryMap.get( texCoord , nearest) * (sbIllDecay * sbWeight);
+				sbIllDecay *= sbDecay;
+					
+				for ( i in 1...12 ) {
 					texCoord -= delta;
 					col += secondaryMap.get( texCoord , nearest) * (sbIllDecay * sbWeight);
 					sbIllDecay *= sbDecay;
 				}
-				col *= sbExposure;
+				col *= sbExposure * 1.25;
 			}
 			
 			if ( hasAlphaMap ) 	{
@@ -256,7 +337,7 @@ class DrawableShader extends h3d.impl.Shader {
 			if( hasAlpha ) 				col.a *= alpha;
 			if( colorMatrix != null ) 	col *= colorMatrix;
 			if( colorMul != null ) 		col *= colorMul;
-			if ( colorAdd != null ) 	col += colorAdd;
+			if( colorAdd != null ) 	col += colorAdd;
 			
 			if( isAlphaPremul ) 		col.rgb *= col.a + 0.0001;
 				
@@ -319,10 +400,15 @@ class DrawableShader extends h3d.impl.Shader {
 	public var hasSunBleed(default,set) : Bool;	    	public function set_hasSunBleed(v)			{ if( hasSunBleed != v ) 	invalidate();  		return hasSunBleed = v; }
 	
 	public var hasFXAA(default, set) : Bool;				
-	
 	inline function set_hasFXAA(v:Bool)	{ 
 		if ( hasFXAA != v ) invalidate();  	
 		return hasFXAA = v; 
+	}
+	
+	public var isBlurred(default, set) : Bool;				
+	inline function set_isBlurred(v:Bool)	{ 
+		if ( isBlurred != v ) invalidate();  	
+		return isBlurred = v; 
 	}
 	
 	public var leavePremultipliedColors(default, set) : Bool = false;   
@@ -822,6 +908,51 @@ class Drawable extends Sprite {
 		var ov = shader.hasFXAA;
 		if ( ov != v ) shader.invalidate();
 		return shader.hasFXAA = v;
+	}
+	
+	
+	
+	public var blurRadius(get, set) : Float;
+	function get_blurRadius() return shader.blurRadius; 
+	function set_blurRadius(v:Float):Float {
+		return shader.blurRadius = v;
+	}
+	
+	public var isBlurredG3T(get, set) : Bool;
+	function get_isBlurredG3T() return shader.isBlurredG3T; 
+	function set_isBlurredG3T(v) {
+		#if flash
+		var drv = Std.instance(h3d.Engine.getCurrent().driver, h3d.impl.Stage3dDriver);
+		if ( drv.isBaselineConstrained() )
+			v = false;
+		#end
+		
+		var ov = shader.isBlurredG3T;
+		
+		if ( shader.blurRadius < 0.0 || Math.isNaN(shader.blurRadius) )
+			shader.blurRadius = 1.0;
+			
+		if ( ov != v ) shader.invalidate();
+		
+		return shader.isBlurredG3T = v;
+	}
+	
+	public var isBlurredG3x3T(get, set) : Bool;
+	function get_isBlurredG3x3T() return shader.isBlurredG3x3T; 
+	function set_isBlurredG3x3T(v) {
+		#if flash
+		var drv = Std.instance(h3d.Engine.getCurrent().driver, h3d.impl.Stage3dDriver);
+		if ( drv.isBaselineConstrained() )
+			v = false;
+		#end
+		
+		var ov = shader.isBlurredG3x3T;
+		
+		if ( shader.blurRadius < 0.0 || Math.isNaN(shader.blurRadius))
+			shader.blurRadius = 1.0;
+			
+		if ( ov != v ) shader.invalidate();
+		return shader.isBlurredG3x3T = v;
 	}
 	
 	function get_alpha() : Float return shader.alpha;

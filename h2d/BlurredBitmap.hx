@@ -624,7 +624,8 @@ class BlurredBitmap extends CachedBitmap {
 			case Scale(_, _): shader.useScale = true;
 		}
 		
-		shader.isAlphaPremul = finalTex.flags.has( AlphaPremultiplied ) 
+		shader.isAlphaPremul = 
+			(finalTex!=null&&finalTex.flags.has( AlphaPremultiplied )) 
 		&& (shader.hasAlphaMap || shader.hasAlpha || shader.hasMultMap 
 		|| shader.hasVertexAlpha || shader.hasVertexColor 
 		|| shader.colorMatrix != null || shader.colorAdd != null

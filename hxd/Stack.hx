@@ -108,11 +108,18 @@ class Stack<T>  {
 		return arr[0];
 	}
 	
-	public function pushFront(v){
+	public function pushFront(v:T){
 		for ( i in 0...pos )
 			arr[pos - i] = arr[pos - i - 1];
 		arr[0] = v;
 		pos++;
+	}
+	
+	public function swap(i0,i1) {
+		if ( i0 == i1) return;
+		var t = arr[i0];
+		arr[i0] = arr[i1];
+		arr[i1] = t;
 	}
 	
 	public inline function last() : T {
