@@ -312,13 +312,13 @@ class DrawableShader extends h3d.impl.Shader {
 				var texCoord = tcoord;
 				var delta = tcoord - sbPosNorm;
 				var sbIllDecay = 1.0;
-				delta *= (1.0 / 12.0) * sbDensity;
-				var c = nrand(tcoord + [time,frac(time*0.001)]);
-				texCoord -= delta * c*1.5;
+				delta *= (1.0 / 16.0) * sbDensity;
+				var c = nrand(tcoord + [time,frac(time*0.0005)]);
+				texCoord -= delta * c * 0.9;
 				col += secondaryMap.get( texCoord , nearest) * (sbIllDecay * sbWeight);
 				sbIllDecay *= sbDecay;
 					
-				for ( i in 1...12 ) {
+				for ( i in 1...16 ) {
 					texCoord -= delta;
 					col += secondaryMap.get( texCoord , nearest) * (sbIllDecay * sbWeight);
 					sbIllDecay *= sbDecay;
