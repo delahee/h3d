@@ -36,31 +36,13 @@ class Loader {
 		return m;
 	}
 
-	/*
-	function loadAwdModel( path : String ) : AwdModel {
-		var m : AwdModel = cache.get(path);
-		if( m == null ) {
-			m = new AwdModel(fs.get(path));
-			cache.set(path, m);
-		}
-		return m;
-	}
-	*/
-	/*
-	function loadImage( path : String ) : Image {
-		var i : Image = cache.get(path);
-		if( i == null ) {
-			i = new Image(fs.get(path));
-			cache.set(path, i);
-		}
-		return t;
-	}*/
 	
-	function loadSound( path : String ) : Sound {
+	function loadSound( path : String , ?cached = true) : Sound {
 		var s : Sound = cache.get(path);
 		if( s == null ) {
 			s = new Sound(fs.get(path));
-			cache.set(path, s);
+			if( cached )
+				cache.set(path, s);
 		}
 		return s;
 	}

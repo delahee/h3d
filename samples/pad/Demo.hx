@@ -41,6 +41,7 @@ class Demo extends flash.display.Sprite{
 		
 		var pos = 0;
 		function onPad(p:hxd.Pad) {
+			p.conf.eraseUnconfed = false;
 			pads.push(p);
 			trace(p.name);
 			trace(p.nativeIds);

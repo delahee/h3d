@@ -82,6 +82,7 @@ private class LocalEntry extends FileEntry {
 		var bytes = haxe.io.Bytes.alloc(fs.bytesAvailable);
 		fs.readBytes(bytes.getData());
 		fs.close();
+		fs = null;
 		return bytes;
 		#else
 		return sys.io.File.getBytes(file);

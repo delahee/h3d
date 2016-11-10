@@ -34,30 +34,40 @@ class Demo extends flash.display.Sprite{
 		//light pass here
 		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/sky.png").centerRatio(0.5,0) , light );
 		b.x = w * 0.5;
+		b.color = new h3d.Vector(1,1,1,2);
 		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/sun.png").centerRatio(0.5,0) , light );
-		b.x = w * 0.5; b.y = h * 0.05;
-		
+		b.x = w * 0.5; b.y = h * 0.1;
+		b.color = new h3d.Vector(1, 1, 1, 2);
+		/*
 		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/bgRocks.png").centerRatio(0.5,1)	, light );
 		b.x = w * 0.5; b.y = h * 0.80;
 		b.scale(1.25);
-		b.color = new h3d.Vector(0, 0, 0, 0.35);
+		b.color = new h3d.Vector(1,1,1,2);
+		
 		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/bg.png").centerRatio(0.5,1)	, light );
 		b.x = w * 0.5; b.y = h * 0.85;
 		b.scale(1.25);
-		b.color = new h3d.Vector(0, 0, 0, 0.35);
-		
+		b.color = new h3d.Vector(1,1,1,1.2);
+		*/
 		if(!showLightPass)
 			light.drawToBackBuffer = false;
 		
 		var rest = new h2d.CachedBitmap( scene );
 		
+		var opaqA = 0.7;
 		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/sky.png").centerRatio(0.5,0) , rest );
 		b.x = w * 0.5;
+		b.color = new h3d.Vector(1,1,1,opaqA);
+		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/sun.png").centerRatio(0.5,0) , rest );
+		b.x = w * 0.5; b.y = h * 0.1;
+		b.color = new h3d.Vector(1,1,1,opaqA);
 		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/bgRocks.png").centerRatio(0.5,1)	, rest );
 		b.x = w * 0.5; b.y = h * 0.80;
+		b.color = new h3d.Vector(1,1,1,opaqA);
 		b.scale(1.25);
 		var b = new h2d.Bitmap( h2d.Tile.fromAssets("assets/bg.png").centerRatio(0.5,1)	, rest );
 		b.x = w * 0.5; b.y = h * 0.85;
+		b.color = new h3d.Vector(1,1,1,opaqA);
 		b.scale(1.25);
 		
 		rest.drawToBackBuffer = false;
@@ -73,8 +83,8 @@ class Demo extends flash.display.Sprite{
 		rest.addChild( z );
 		
 		final.secondaryMap = light.permaTile;	
-		final.setSunBleed( new h3d.Vector(0.39, 0.1), 0.6, 0.5, 0.15,0.92);
-		//final.drawToBackBuffer = false;
+		final.setSunBleed( new h3d.Vector(0.39, 0.1),0.8, 0.6, 0.3, 0.95);
+		//final.drawToBackBuffer = true;
 		rest.onOffscreenRenderDone = function(tile) {
 			final.secondaryMap = light.permaTile;
 			new h2d.Bitmap( tile, final );
@@ -133,7 +143,7 @@ class Demo extends flash.display.Sprite{
 		var final = new h2d.CachedBitmap(scene);
 		
 		final.secondaryMap = light.permaTile;	
-		final.setSunBleed( new h3d.Vector(0.2, 0.2), 0.7, 0.5, 0.33,0.89);
+		final.setSunBleed( new h3d.Vector(0.1, 0.1), 4,1,1,1);
 		//final.drawToBackBuffer = true;
 		
 		rest.onOffscreenRenderDone = function(tile) {

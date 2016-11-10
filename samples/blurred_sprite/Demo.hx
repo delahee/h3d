@@ -116,6 +116,33 @@ class Demo extends flash.display.Sprite{
 		t.x = 800;
 		t.y = 400;
 		t.textColor = 0xcdcdcd;
+		
+		
+		
+		
+		var b = new h2d.Bitmap(h2d.Tile.fromAssets("assets/sz_garage_james01.png"),scene );
+		b.x = 0;
+		b.y = 300;
+		var ob = b;
+		
+		var s = 1;
+		for( d in [[-1,0], [1,0], [0,-1], [0,1] ] ){
+			var b = new h2d.Bitmap(h2d.Tile.fromAssets("assets/sz_garage_james01.png"),scene );
+			b.x = ob.x + d[0] * s;
+			b.y = ob.y + d[1] * s;
+			b.color = new h3d.Vector(0, 0, 0, 1);
+			b.colorAdd = new h3d.Vector(1, 0, 0, 0);
+		}
+		
+		ob.toFront();
+		
+		//b.setOutline( {spreadX:1,spreadY:1} );
+		/*
+		b.isBlurredG3x3T = true;
+		b.blurRadius = 2.5;
+		b.color = new h3d.Vector(0, 0, 0, 1);
+		b.colorAdd = new h3d.Vector(1, 0, 0, 0);
+		*/
 	}
 	
 	function update() 	{

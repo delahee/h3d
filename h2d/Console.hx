@@ -319,13 +319,6 @@ class Console extends h2d.Sprite {
 		var text = Std.string(text);
 		if ( color == null ) color = tf.textColor;
 
-		//this is not good,
-		/*
-		while ( logTxt.htmlText.length > 2048 ) {
-			var first = logTxt.htmlText.indexOf("<br/>");
-			logTxt.htmlText = logTxt.htmlText.substr( first+"<br/>".length );
-		}*/
-
 		var oldH = logTxt.textHeight;
 		logTxt.htmlText += '<font color="#${StringTools.hex(color&0xFFFFFF,6)}">${StringTools.htmlEscape(text)}</font><br/>';
 
@@ -333,6 +326,7 @@ class Console extends h2d.Sprite {
 		logTxt.alpha = 1;
 		logTxt.visible = true;
 		lastLogTime = haxe.Timer.stamp();
+		return text;
 	}
 
 	public var baseY :Null<Int>= null;
