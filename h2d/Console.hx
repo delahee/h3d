@@ -68,7 +68,11 @@ class Console extends h2d.Sprite {
 	}
 
 	public function addAlias( name, command ) {
-		aliases.set(name, command);
+		aliases.set(name, command); 
+		#if debug
+		if ( !commands.exists(command) )
+			throw "invalid alias";
+		#end
 	}
 
 	public function runCommand( commandLine : String ) {
