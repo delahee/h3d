@@ -29,17 +29,43 @@ class TBLayout implements h2d.Text.ITextPos{
 		#end
 
 		var es = @:privateAccess t.elements;
-		if(t.dropShadow != null) {
-			var d = t.dropShadow;
-			var e = t.sp.alloc(tile);
-			es.push(e);
-			e.x = t.x + ((x + d.dx) * t.scaleX);
-			e.y = t.y + ((y + d.dy) * t.scaleY);
-			e.tile = tile;
-			e.color.setColor( d.color  );
-			e.color.a = t.alpha * d.alpha;
-			e.scaleX = t.scaleX;
-			e.scaleY = t.scaleY;
+		if (t.dropShadow != null) {
+			if ( t.useShadowAsOutline ) {
+				for ( i in 0...4) {
+					var dsx = 0;
+					var dsy = 0;
+					
+					switch(i) {
+						case 0: dsx = 1; dsy = 1;
+						case 1: dsx = -1; dsy = -1;
+						case 2: dsx = 1; dsy = -1;
+						case 3: dsx = -1; dsy = 1;
+					}
+					
+					var d = t.dropShadow;
+					var e = t.sp.alloc(tile);
+					es.push(e);
+					e.x = t.x + ((x + d.dx * dsx) * t.scaleX);
+					e.y = t.y + ((y + d.dy * dsy) * t.scaleY);
+					e.tile = tile;
+					e.color.setColor( d.color  );
+					e.color.a = t.alpha * d.alpha;
+					e.scaleX = t.scaleX;
+					e.scaleY = t.scaleY;
+				}
+			}
+			else {
+				var d = t.dropShadow;
+				var e = t.sp.alloc(tile);
+				es.push(e);
+				e.x = t.x + ((x + d.dx) * t.scaleX);
+				e.y = t.y + ((y + d.dy) * t.scaleY);
+				e.tile = tile;
+				e.color.setColor( d.color  );
+				e.color.a = t.alpha * d.alpha;
+				e.scaleX = t.scaleX;
+				e.scaleY = t.scaleY;
+			}
 		}
 
 		var e = t.sp.alloc(tile);
@@ -70,7 +96,8 @@ class TextBatchElement implements IText {
 	//only lower bits rgb significant
 	public var textColor(default, set) 	: Int;
 	public var maxWidth(default, set) 	: Null<Float>;
-	public var dropShadow(default,set)	: Null<{ dx : Float, dy : Float, color : Int, alpha : Float }>;
+	public var dropShadow(default, set)	: Null<{ dx : Float, dy : Float, color : Int, alpha : Float }>;
+	public var useShadowAsOutline : Bool;
 
 	public var textWidth(get, null) 		: Int;
 	public var textHeight(get, null)	 	: Int;
@@ -115,7 +142,7 @@ class TextBatchElement implements IText {
 	public inline function getTexture() return sp.tile.getTexture();
 
 	public inline function nbQuad() {
-		return dropShadow == null ? text.length : text.length * 2;
+		return (dropShadow == null) ? text.length : ( useShadowAsOutline ? text.length * 5: text.length * 2);
 	}
 
 	inline function set_scaleX(v) 	{

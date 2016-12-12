@@ -29,7 +29,7 @@ class FlowProperties {
 	public var calculatedWidth : Float = 0.;
 	public var calculatedHeight : Float = 0.;
 
-	public var isBreak(default,null) : Bool;
+	public var isBreak(default, null) : Bool;
 
 	public function new() {
 	}
@@ -118,6 +118,9 @@ class Flow extends Sprite {
 		This is useful if you want to include flows in other flows while keeping the text aligned.
 	**/
 	public var isInline = false;
+	
+	public var fitToPixel = false;
+
 
 	var background : h2d.ScaleGrid;
 	var properties : Array<FlowProperties> = [];
@@ -425,7 +428,10 @@ class Flow extends Sprite {
 				x += p.calculatedWidth;
 				if( x > cw ) cw = x;
 				x += horitontalSpacing;
-				if( p.calculatedHeight > maxLineHeight ) maxLineHeight = p.calculatedHeight;
+				if ( p.calculatedHeight > maxLineHeight ) maxLineHeight = p.calculatedHeight;
+				
+				if( fitToPixel )
+					c.x = Math.round(c.x);
 			}
 			alignLine(childs.length);
 			cw += paddingRight + borderWidth;
@@ -478,6 +484,9 @@ class Flow extends Sprite {
 					xmin += p.calculatedWidth + horitontalSpacing;
 				}
 				childs[i].x = px + p.offsetX + p.paddingLeft;
+				
+				if( fitToPixel )
+					childs[i].x = Math.round(childs[i].x);
 			}
 
 		} else {
@@ -540,7 +549,10 @@ class Flow extends Sprite {
 				y += p.calculatedHeight;
 				if( y > ch ) ch = y;
 				y += verticalSpacing;
-				if( p.calculatedWidth > maxColWidth ) maxColWidth = p.calculatedWidth;
+				if ( p.calculatedWidth > maxColWidth ) maxColWidth = p.calculatedWidth;
+				
+				if( fitToPixel )
+					c.y = Math.round(c.y);
 			}
 			alignLine(childs.length);
 			ch += paddingTop + borderHeight;
@@ -594,6 +606,9 @@ class Flow extends Sprite {
 					ymin += p.calculatedHeight + verticalSpacing;
 				}
 				childs[i].y = py + p.offsetY + p.paddingTop;
+				
+				if( fitToPixel )
+					childs[i].y = Math.round(childs[i].y);
 			}
 		}
 

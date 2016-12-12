@@ -55,11 +55,16 @@ class Mask extends Sprite {
 	override function drawRec( ctx : h2d.RenderContext ) {
 		ctx.flush();
 		
-		var x1 = (absX + 1) * 0.5 * ctx.engine.width;
-		var y1 = (1 - absY) * 0.5 * ctx.engine.height;
+		var t = ctx.engine.getTarget();
+		
+		var tw = (t == null) ?  ctx.engine.width : t.width;
+		var th = (t == null) ?  ctx.engine.height : t.height;
+		
+		var x1 = (absX + 1) * 0.5 * tw;
+		var y1 = (1 - absY) * 0.5 * th;
 
-		var x2 = ((width * matA + height * matC + absX) + 1) * 0.5 * ctx.engine.width;
-		var y2 = (1 - (width * matB + height * matD + absY)) * 0.5 * ctx.engine.height;
+		var x2 = ((width * matA + height * matC + absX) + 1) * 0.5 * tw;
+		var y2 = (1 - (width * matB + height * matD + absY)) * 0.5 * th;
 		
 		x1 += offsetX;
 		y1 += offsetY;
