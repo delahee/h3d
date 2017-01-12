@@ -45,8 +45,12 @@ class TBLayout implements h2d.Text.ITextPos{
 					var d = t.dropShadow;
 					var e = t.sp.alloc(tile);
 					es.push(e);
-					e.x = t.x + ((x + d.dx * dsx) * t.scaleX);
-					e.y = t.y + ((y + d.dy * dsy) * t.scaleY);
+					
+					var lnx = Math.sqrt(d.dx * d.dx + d.dy * d.dy);
+					if ( lnx == 0 )
+						lnx = 0.00001;
+					e.x = t.x + ((x + d.dx/lnx * dsx) * t.scaleX);
+					e.y = t.y + ((y + d.dy/lnx * dsy) * t.scaleY);
 					e.tile = tile;
 					e.color.setColor( d.color  );
 					e.color.a = t.alpha * d.alpha;

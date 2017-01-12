@@ -5,7 +5,40 @@ import hxd.Stage;
 class Demo extends flash.display.Sprite{
 	var engine : h3d.Engine;
 	var scene : h2d.Scene;
+	var resLoader : hxd.res.Loader;
 	
+	public function loadWav(path:String):flash.media.Sound {
+		var t0 = haxe.Timer.stamp();
+		var ba : flash.utils.ByteArray;
+		//trace("loading " + path);
+		if ( ! resLoader.fs.exists(path) ) {
+			trace("-wav not found " + path);
+			return null;
+		}
+		
+		ba = resLoader.fs.get(path).getBytes().getData();
+		var wavReader = new format.wav.Reader( new haxe.io.BytesInput( haxe.io.Bytes.ofData( ba )));
+		var waveData :format.wav.Data.WAVE = wavReader.read();
+		if ( waveData == null ){
+			trace("cant read wav " + path);
+			return null;
+		}
+		var f = new flash.media.Sound();
+		var channels = waveData.header.channels;
+		var bytesPerSample = waveData.header.bitsPerSample >> 3;
+		var samples = Math.round( waveData.data.length / ( channels * bytesPerSample ) );
+		var ba = waveData.data.getData();
+		ba.position = 0;
+		var t1 = haxe.Timer.stamp();
+		f.loadPCMFromByteArray( ba, samples, bytesPerSample == 2?"short":"float", channels >= 2, 44100 );//maybe try "short"
+		var t2 = haxe.Timer.stamp();
+		
+		ba = null;
+		
+		return f;
+	}
+	
+				
 	function new() {
 		super();
 		engine = new h3d.Engine();
@@ -13,6 +46,13 @@ class Demo extends flash.display.Sprite{
 		engine.backgroundColor = 0xFFCCCCCC;
 		engine.init();
 		
+		
+		
+		var lfs = new hxd.res.LocalFileSystem( "../../../assets" );
+		resLoader = new hxd.res.Loader( lfs );
+		
+		var snd = loadWav( "GUNDILLAC_START.wav" );
+		var fx = new mt.flash.Sfx( snd );
 	}
 	
 	function init() {

@@ -56,6 +56,7 @@ class FontBuilder {
 		FONTS = new Map();
 	}
 	
+	@:noDebug
 	#if (flash||openfl)
 	function buildPixels( firstBuild : Bool ) : hxd.Pixels {
 		if( firstBuild )
@@ -231,13 +232,18 @@ class FontBuilder {
 				}
 
 				var mem = hxd.impl.Memory.select(pixels.bytes.bytes);
+				var p:Int; 
+				var b:Int; 
+				var g:Int; 
+				var r:Int; 
+				var a:Int; 
 				for( i in 0...pixels.width*pixels.height ) {
-					var p = (i << 2);
+					p = (i << 2);
 
-					var b = mem.b(p);
-					var g = mem.b(p+1);
-					var r = mem.b(p+2);
-					var a = mem.b(p+3);
+					b = mem.b(p);
+					g = mem.b(p+1);
+					r = mem.b(p+2);
+					a = mem.b(p+3);
 					
 					mem.wb(p,   premul(b,a));
 					mem.wb(p+1, premul(g,a));

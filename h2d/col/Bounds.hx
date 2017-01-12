@@ -44,6 +44,10 @@ class Bounds {
 		return !(xMin > b.xMax || yMin > b.yMax || xMax < b.xMin || yMax < b.yMin);
 	}
 	
+	public inline function collidesStrict( b : Bounds ) {
+		return !(xMin >= b.xMax || yMin >= b.yMax || xMax <= b.xMin || yMax <= b.yMin);
+	}
+	
 	public inline function includes( p : Point ) {
 		return p.x >= xMin && p.x < xMax && p.y >= yMin && p.y < yMax;
 	}

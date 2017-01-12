@@ -350,6 +350,17 @@ class LocalFileSystem implements FileSystem {
 		#end
 	}
 	
+	public function listDirForFiles( path:String) {
+		#if air3
+		var f = open(path);
+		return f.getDirectoryListing().filter(function(e) {
+			return !e.isDirectory;
+		});
+		#elseif sys
+		throw "todo";
+		#end
+	}
+	
 	public function exists( path : String ) {
 		#if air3
 		var f = open(path);

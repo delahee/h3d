@@ -16,7 +16,8 @@ class Timer {
 	
 	static var 			frameCount = 0;
 
-	public inline static function update() {
+	public //inline 
+	static function update() {
 		frameCount++;
 		var newTime = haxe.Timer.stamp();
 		rdeltaT = deltaT = newTime - oldTime;

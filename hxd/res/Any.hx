@@ -52,6 +52,10 @@ class Any extends Resource {
 	public override function toString() {
 		return entry.getBytes().toString();
 	}
+	
+	public function toBytes() {
+		return entry.getBytes();
+	}
 
 	public function toImage() {
 		return loader.loadTexture(entry.path);

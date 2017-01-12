@@ -52,6 +52,11 @@ class Point {
 		y += py;
 	}
 	
+	public inline function decr2( px,py ) {
+		x -= px;
+		y -= py;
+	}
+	
 	public inline function add2( px:Float,py:Float ) {
 		return new Point(x + px, y + py);
 	}

@@ -146,7 +146,8 @@ class Vector {
 		return r;
 	}
 
-	public inline function set(x:hxd.Float32,y:hxd.Float32,z:hxd.Float32,w:hxd.Float32=1.) {
+	public inline 
+	function set(x:hxd.Float32,y:hxd.Float32,z:hxd.Float32,w:hxd.Float32=1.) {
 		this.x = x;
 		this.y = y;
 		this.z = z;

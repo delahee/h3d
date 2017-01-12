@@ -135,7 +135,7 @@ class CachedBitmap extends Bitmap {
 	}
 
 	override function drawRec( ctx : RenderContext ) {
-		if( !visible ) return;
+		if( !visible || getTile() == null ) return;
 
 		tile.width = Std.int(realWidth  / targetScale);
 		tile.height = Std.int(realHeight / targetScale);

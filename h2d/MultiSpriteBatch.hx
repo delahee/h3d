@@ -136,7 +136,9 @@ class MultiBatchElement {
 		this.y = y;
 	}
 
-	public inline function setColor(c:Int, ?a:Float = 1.0) {
+	public 
+	inline 
+	function setColor(c:Int, ?a:Float = 1.0) {
 		color.setColor((c & 0xffffff) | (0xff << 24) );
 		color.a = a;
 	}
