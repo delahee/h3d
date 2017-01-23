@@ -1,6 +1,12 @@
 package hxd;
 using StringTools;
 
+enum ConsoleButtonStyle{
+	CBS_PC;
+	CBS_SONY;
+	CBS_MS;
+}
+
 typedef BaseConf = {
 	var ids:Array<String>;	//seems link to port used so unable to match over different pcs
 	var name:String;		//
@@ -27,6 +33,9 @@ typedef BaseConf = {
 	var matchString :String;
 	var metaName : String;
 	var eraseUnconfed:Bool;
+	
+	@:optionnal
+	var style: ConsoleButtonStyle;
 }
 
 class Pad {
@@ -61,6 +70,7 @@ class Pad {
 		names : ["LX", "LY", "RX", "RY", "A", "B", "X", "Y", "LB", "RB", "LT", "RT", "Select", "Start", "LCLK", "RCLK", "DUp", "DDown", "DLeft", "DRight"],
 		defaultYInverted:true,
 		eraseUnconfed:true,
+		style:CBS_MS,
 	};
 	
 	public static var CONFIG_XARCADE : BaseConf = cast {
@@ -126,6 +136,7 @@ class Pad {
 		],
 		defaultYInverted:false,
 		eraseUnconfed:true,
+		style:CBS_SONY,
 	}
 	
 	public static var CONFIG_HORI_MINI_PS4 : BaseConf = cast {
@@ -165,6 +176,7 @@ class Pad {
 		],
 		defaultYInverted:false,
 		eraseUnconfed:true,
+		style:CBS_SONY,
 	}
 	
 	public static var CONFIG_HORI_MINI_PS3 : BaseConf = cast {
@@ -204,6 +216,7 @@ class Pad {
 		],
 		defaultYInverted:false,
 		eraseUnconfed:false,
+		style:CBS_SONY,
 	}
 
 	public static var CONFIG_DUMMY : BaseConf = cast {
@@ -240,6 +253,7 @@ class Pad {
 		],
 		defaultYInverted:false,
 		eraseUnconfed:false,
+		style:CBS_PC,
 	}
 	
 	public static var CONFS :Array<Dynamic> = [CONFIG_DUMMY,CONFIG_XARCADE, CONFIG_XBOX,CONFIG_RAP4 , CONFIG_HORI_MINI_PS4, CONFIG_HORI_MINI_PS3 ];
@@ -295,20 +309,24 @@ class Pad {
 		
 	}
 
-	public inline function isDown(idx:Int) : Bool {
+	public function isDown(idx:Int) : Bool {
 		return values[idx] <= -0.25 || values[idx] >= 0.25;
 	}
 	
-	public inline function wasDown(idx:Int) : Bool {
+	public function wasDown(idx:Int) : Bool {
 		return prevValues[idx] <= -0.25 || prevValues[idx] >= 0.25;
 	}
 	
-	public inline function isAxis(btIdx:Int){
+	public function isAxis(btIdx:Int){
 		return nativeIds[btIdx].startsWith("AXIS_");
 	}
 	
-	public inline function onPress(idx:Int) : Bool {
+	public function onPress(idx:Int) : Bool {
 		return isDown(idx)&&!wasDown(idx);
+	}
+	
+	public function clearPress(idx:Int) {
+		values[idx] = 0.0;
 	}
 	
 	public function getButtonName(idx:Int) {

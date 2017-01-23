@@ -174,7 +174,8 @@ class TextBatchElement implements IText {
 		return v;
 	}
 
-	inline function set_alpha(v:Float) 	{
+	//inline
+	function set_alpha(v:Float) 	{
 		alpha = v;
 		var hasDropShadow = dropShadow != null;
 		var i = 0;
@@ -291,12 +292,12 @@ class TextBatchElement implements IText {
 	function set_textColor(c) {
 		if( c == this.textColor )
 			return c;
-		this.textColor = c;
+		this.textColor = c | (0xff<<24);
 		var hasDropShadow = dropShadow != null;
 		if ( !hasDropShadow) {
 			for ( e in elements) {
 				e.color.setColor( textColor );
-				e.color.a = alpha;
+				e.alpha = this.alpha;
 			}
 		}
 		else {
@@ -308,7 +309,7 @@ class TextBatchElement implements IText {
 				}
 				else {
 					e.color.setColor( textColor  );
-					e.color.a = alpha;
+					e.alpha = this.alpha;
 				}
 			}
 		}
