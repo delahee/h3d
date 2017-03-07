@@ -233,7 +233,31 @@ class Pixels {
 		};
 	}
 	
-	public function setPixel(x, y , color)  {
+	public function fill(color:Int) {
+		var z = 0;
+		
+		var a = color >>> 24;
+		var r = (color >> 16) & 0xFF;
+		var g = (color >> 8) & 0xFF;
+		var b = color & 0xFF;
+		
+		switch (format) {
+			case BGRA:
+				for ( i in 0...width * height ) {
+					var p = (i << 2);
+					bytes.set(		p+bytes.position, b);
+					bytes.set(1	+	p+bytes.position, g);
+					bytes.set(2	+	p+bytes.position, r);
+					bytes.set(3	+	p+bytes.position, a);
+				}
+				
+			default:throw"todo";
+		};
+	}
+	
+	public 
+	inline 
+	function setPixel(x, y , color)  {
 		var p = bytes.position;
 		
 		if( bytesPerPixel(format) == 4) 

@@ -397,7 +397,11 @@ class DrawableShader extends h3d.impl.Shader {
 	public var hasDisplacementMap(default, set) : Bool;	public function set_hasDisplacementMap(v)	{ if( hasDisplacementMap != v ) invalidate();   return hasDisplacementMap = v; }
 	public var hasGradientMap(default,set) : Bool;	    public function set_hasGradientMap(v)		{ if( hasGradientMap != v ) 	invalidate();  	return hasGradientMap = v; }
 	public var hasSecondaryMap(default,set) : Bool;	    public function set_hasSecondaryMap(v)		{ if( hasSecondaryMap != v ) 	invalidate();  	return hasSecondaryMap = v; }
-	public var hasSunBleed(default,set) : Bool;	    	public function set_hasSunBleed(v)			{ if( hasSunBleed != v ) 	invalidate();  		return hasSunBleed = v; }
+	public var hasSunBleed(default, set) : Bool;	    	public function set_hasSunBleed(v)			{ if ( hasSunBleed != v ) 	invalidate();  		return hasSunBleed = v; }
+	
+	public var blurRadius : Float = 1.0; 
+	public var isBlurredG3T = false; 
+	public var isBlurredG3x3T = false; 
 	
 	public var hasFXAA(default, set) : Bool;				
 	inline function set_hasFXAA(v:Bool)	{ 

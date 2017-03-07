@@ -712,6 +712,7 @@ class Component extends Sprite {
 	}
 	
 	override function drawRec( ctx : h2d.RenderContext ) {
+		if ( style == null ) return;
 		if ( style.visibility == false ) return;
 		if ( style.overflowHidden!=null&&style.overflowHidden )
 			__ctxClosure(ctx);

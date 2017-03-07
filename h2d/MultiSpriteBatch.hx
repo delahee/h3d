@@ -68,13 +68,14 @@ class MultiBatchElement {
 		scaleX = e.scaleX;
 		scaleY = e.scaleY;
 		priority = e.priority;
-		color.load( e.color );
-		tile = e.tile;
+		color = e.color.clone();
+		tile = e.tile.clone();
 		visible = e.visible;
+		blendMode = e.blendMode;
 	}
 	
-	public function getClone() {
-		var nu = new MultiBatchElement(tile);
+	public function clone<T>(?s:T) : T {
+		var nu : MultiBatchElement = (s==null) ? new MultiBatchElement(tile) : cast s;
 		nu.x = x; 
 		nu.y = y;
 		nu.alpha = alpha;
@@ -82,10 +83,10 @@ class MultiBatchElement {
 		nu.scaleX = scaleX;
 		nu.scaleY = scaleY;
 		nu.priority = priority;
-		nu.color.load( color );
-		nu.tile = tile;
+		nu.color = color.clone();
+		nu.tile = tile.clone();
 		nu.visible = visible;
-		return nu;
+		return cast nu;
 	}
 
 	@:noDebug
@@ -153,7 +154,9 @@ class MultiBatchElement {
 		return v;
 	}
 	
-	public inline function getBounds() {
+	public 
+	//inline
+	function getBounds() {
 		var bnd = new h2d.col.Bounds();
 		var c = tile.getCenterRatio();
 		bnd.addPoint2( x - c.x * width, y - c.y * height);

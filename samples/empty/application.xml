@@ -12,6 +12,8 @@
 	<window width="1280" height="720" unless="mobile" />
 	<window vsync="true" antialiasing="0" if="cpp" orientation="auto" resizable="true" />
 	
+	<certificate path="YOUR_RELEASE_KEY.keystore" alias="YOUR_ALIAS" password="tototo" if="android" unless="debug"/>
+	
 	<!-- classpath, haxe libs -->
 	<source path="." />
 	<haxelib name="openfl" />

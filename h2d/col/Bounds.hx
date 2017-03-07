@@ -40,7 +40,8 @@ class Bounds {
 	inline function get_bottom() return yMax;
 	inline function set_bottom(v) return yMax=v;
 	
-	public inline function collides( b : Bounds ) {
+	public //inline 
+	function collides( b : Bounds ) {
 		return !(xMin > b.xMax || yMin > b.yMax || xMax < b.xMin || yMax < b.yMin);
 	}
 	
