@@ -205,6 +205,8 @@ class SpriteBatch extends Drawable {
 	}
 
 	public override function dispose() {
+		invalidate();
+		
 		super.dispose();
 
 		removeAllElements();
@@ -227,6 +229,7 @@ class SpriteBatch extends Drawable {
 	}
 
 	public function removeAllElements() {
+		invalidate();
 		for( e in getElements() )
 			e.remove();
 	}
@@ -244,7 +247,7 @@ class SpriteBatch extends Drawable {
 	public inline function invalidate() {
 		computed = false;
 		if ( optBuffer != null) optBuffer.dispose();
-			optBuffer = null;
+		optBuffer = null;
 	}
 
 	/**
