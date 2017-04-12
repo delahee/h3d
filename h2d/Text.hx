@@ -13,7 +13,7 @@ class TextLayoutInfos {
 	public var textAlign:Align;
 	public var maxWidth:Null<Float>;
 	public var lineSpacing:Int;
-	public var letterSpacing:Int;
+	public var letterSpacing:Float;
 
 	public inline function new(t,m,lis,les) {
 		textAlign = t;
@@ -73,7 +73,7 @@ class Text extends Drawable implements IText {
 	public var textWidth(get, null) : Int;
 	public var textHeight(get, null) : Int;
 	public var textAlign(default, set) : Align;
-	public var letterSpacing(default,set) : Int;
+	public var letterSpacing(default,set) : Float;
 	public var lineSpacing(default,set) : Int;
 
 	public var numLines(default, null):Int;
@@ -152,7 +152,7 @@ class Text extends Drawable implements IText {
 		return a;
 	}
 
-	function set_letterSpacing(s) {
+	function set_letterSpacing(s:Float) {
 		if( s == letterSpacing )
 			return s;
 		letterSpacing = s;
@@ -297,7 +297,7 @@ class Text extends Drawable implements IText {
 			}
 			if( e != null ) {
 				if( rebuild ) glyphs.add(x, y, e.t);
-				x += esize + info.letterSpacing;
+				x += Math.round(esize + info.letterSpacing);
 			}
 			if ( newline ) {
 				if( x > xMax ) xMax = x;

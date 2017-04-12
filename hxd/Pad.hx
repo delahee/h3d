@@ -220,10 +220,10 @@ class Pad {
 	}
 
 	public static var CONFIG_DUMMY : BaseConf = cast {
-		ids:["dummy"],
-		name:"dummy",
-		matchString:"dummy",
-		metaName:"dummy",
+		ids:["dummy 汉"],
+		name:"dummy 汉",
+		matchString:"dummy 汉",
+		metaName:"dummy 汉",
 		analogX : 0,
 		analogY : 0,
 		
@@ -313,6 +313,10 @@ class Pad {
 		return values[idx] <= -0.25 || values[idx] >= 0.25;
 	}
 	
+	public function isChanged(idx:Int) : Bool {
+		return (isDown(idx) && !wasDown(idx)) || (!isDown(idx) && wasDown(idx));
+	}
+	
 	public function wasDown(idx:Int) : Bool {
 		return prevValues[idx] <= -0.25 || prevValues[idx] >= 0.25;
 	}
@@ -330,6 +334,9 @@ class Pad {
 	}
 	
 	public function getButtonName(idx:Int) {
+		#if garbageStick
+		var conf = CONFIG_DUMMY;
+		#end
 		return 
 		if ( conf == null)
 			"BUTTON_" + idx;
@@ -445,6 +452,10 @@ class Pad {
 				break;
 			}
 		}
+		
+		#if garbageStick
+		p.conf = CONFIG_DUMMY;
+		#end
 		
 		p.d.enabled = true;
 		var axisCount = 0;

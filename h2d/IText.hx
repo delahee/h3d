@@ -12,6 +12,6 @@ interface IText {
 	public var textWidth(get, null) : Int;
 	public var textHeight(get, null) : Int;
 	public var textAlign(default, set) : h2d.Text.Align;
-	public var letterSpacing(default,set) : Int;
+	public var letterSpacing(default,set) : Float;
 	public var lineSpacing(default,set) : Int;
 }
