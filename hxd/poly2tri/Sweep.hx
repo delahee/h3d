@@ -116,7 +116,6 @@ class Sweep
 		// trace(node.id);
 		// trace(node.triangle);
 		triangle.markNeighborTriangle(node.triangle);
-		this.context.addToMap(triangle);
 
 		var new_node = new Node(point);
 		new_node.next  = node.next;
@@ -145,7 +144,6 @@ class Sweep
 		triangle.markNeighborTriangle(node.prev.triangle);
 		triangle.markNeighborTriangle(node.triangle);
 			
-		this.context.addToMap(triangle);
 
 		// Update the advancing front
 		node.prev.next = node.next;

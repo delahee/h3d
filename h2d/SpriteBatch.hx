@@ -59,6 +59,15 @@ class BatchElement {
 		visible = true;
 	}
 	
+	public inline function init( t : h2d.Tile) {
+		x = 0; y = 0; alpha = 1;
+		rotation = 0; scaleX = scaleY = 1;
+		priority = 0;
+		color.set(1,1,1,1);
+		tile = t;
+		visible = true;
+	}
+	
 	public function copy( e : BatchElement) {
 		x = e.x; 
 		y = e.y;

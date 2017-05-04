@@ -5,13 +5,6 @@ class SweepContext
 	public var triangles:Array<Triangle>;
 	public var points:Array<Point>;
 	public var edge_list:Array<Edge>;
-
-	#if haxe3
-	public var map:Map<String,Triangle>;
-	#else
-	public var map:Hash<Triangle>;
-	#end
-
 	public var front:AdvancingFront;
 	public var head:Point;
 	public var tail:Point;
@@ -19,28 +12,19 @@ class SweepContext
 	public var basin:Basin;
 	public var edge_event:EdgeEvent;
 
-
-
-	public function new()
-	{
+	public function new()	{
 		triangles = new Array();
 		points = new Array();
 		edge_list = new Array();
-		#if haxe3
-		map = new Map();
-		#else
-		map = new Hash();
-		#end
+		
 
 
 		basin = new Basin();
 		edge_event = new EdgeEvent();
-
 	}
 
 
-	function addPoints(points:Array<Point>)
-	{
+	function addPoints(points:Array<Point>)	{
 		for (point in points)
 		{
 			//OPT use concat instead
@@ -49,31 +33,21 @@ class SweepContext
 	}
 
 
-	public function addPolyline(polyline:Array<Point>)
-	{
+	public function addPolyline(polyline:Array<Point>)	{
 		initEdges(polyline);
 		addPoints(polyline);
 	}
-
 
 	function initEdges(polyline:Array<Point>)
 	{
 
 		for (n in 0...polyline.length)
 		{
-
 			var nx = polyline[(n + 1) % polyline.length];
 			edge_list.push ( new Edge(polyline[n], nx) );
 									
 		}
 	}
-
-
-	public function addToMap(triangle:Triangle)
-	{
-		map.set( triangle.toString(), triangle );
-	}
-
 
 	public function initTriangulation()
 	{
@@ -119,7 +93,6 @@ class SweepContext
 		// Initial triangle
 		var triangle = new Triangle(points[0], this.tail, this.head);
 
-		addToMap(triangle);
 
 		var head = new Node( triangle.points[1], triangle );
 		var middle = new Node( triangle.points[0], triangle );

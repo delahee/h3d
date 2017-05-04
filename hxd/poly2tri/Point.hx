@@ -65,6 +65,9 @@ class Point
 	{
 		return "Point(" + x + ", " + y + ")";
 	}
+	
+	public function toStringFast()
+		return x + ", " + y;
 
 	public static var C_ID = 0;
 

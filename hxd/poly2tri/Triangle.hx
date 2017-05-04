@@ -381,7 +381,8 @@ class Triangle
 
 
 	public function toString():String
-	{
-		return "Triangle(" + this.points[0] + ", " + this.points[1] + ", " + this.points[2] + ")";
-	}
+		return "Triangle(" + points[0].toString() + ", " + points[1].toString() + ", " + points[2].toString() + ")";
+		
+	public function toStringFast():String
+		return "T " + points[0].toStringFast() + " " + points[1].toStringFast() + " " + points[2].toStringFast();
 }
