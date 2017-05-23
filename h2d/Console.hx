@@ -332,6 +332,10 @@ class Console extends h2d.Sprite {
 		lastLogTime = haxe.Timer.stamp();
 		return text;
 	}
+	
+	public function showBg() {
+		bg.visible = true;
+	}
 
 	public var baseY :Null<Int>= null;
 	override function sync(ctx:h2d.RenderContext) {

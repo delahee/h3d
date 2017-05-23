@@ -387,7 +387,6 @@ class LocalFileSystem implements FileSystem {
 		var f = open(path);
 		if( f == null ||!sys.FileSystem.exists(f) )
 			throw "File not found " + path;
-			
 		return new LocalEntry(this, path.split("/").pop(), path, f);
 		#end
 	}

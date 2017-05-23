@@ -296,10 +296,14 @@ class Pad {
 	function new() {
 	}
 
+	var _name : String = null;
 	function get_name() {
 		if( index < 0 ) return "Dummy GamePad";
 		#if flash
-		return d.name;
+		if( _name == null)
+			return _name = d.name;
+		else 
+			return _name;
 		#else
 		return "GamePad";
 		#end
@@ -440,7 +444,7 @@ class Pad {
 		
 		//match device to see if known
 		var pid = p.d.id;
-		var pname = p.d.name;
+		var pname = p.name;
 		for ( c in CONFS) {
 			if ( (pname.toLowerCase().indexOf( c.matchString.toLowerCase()  ) >= 0)
 			//&&	(p.d.id == c.ids[0] || p.d.id == c.ids[1]) 

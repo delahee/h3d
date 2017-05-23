@@ -268,6 +268,7 @@ class Text extends Drawable implements IText {
 			for( i in 0...lines.length )
 				lines[i] = (max - lines[i]) >> k;
 			x = lines.shift();
+		
 		default:
 		}
 		var dl = font.lineHeight + info.lineSpacing;
@@ -351,11 +352,10 @@ class Text extends Drawable implements IText {
 	}
 
 	function set_textColor(c) {
-		if( c == this.textColor )
-			return c;
 		this.textColor = c;
-		if( glyphs!=null){
-			glyphs.color = h3d.Vector.fromColor(c);
+		if ( glyphs != null) {
+			if ( glyphs.color == null) 	glyphs.color = h3d.Vector.fromColor(c);
+			else						glyphs.color.setColor(c);
 			glyphs.color.w = alpha;
 		}
 		return c;

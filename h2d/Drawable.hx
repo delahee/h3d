@@ -962,7 +962,7 @@ class Drawable extends Sprite {
 	function get_alpha() : Float return shader.alpha;
 	function set_alpha( v : Float ) : Float{
 		shader.alpha = v;
-		set_hasAlpha( v < 1.0 );
+		set_hasAlpha(true);
 		return v;
 	}
 	
