@@ -230,20 +230,11 @@ class MultiSpriteBatch extends Drawable {
 	/**
 	 */
 	@:noDebug
-	public function add(e:MultiBatchElement, ?prio=0) {
+	public function add(e:MultiBatchElement, ?prio = 0) {
+		
 		e.batch = this;
 		e.priority = prio;
 
-		//if ( prio == null )	{
-			//if( first == null )
-				//first = last = e;
-			//else {
-				//last.next = e;
-				//e.prev = last;
-				//last = e;
-			//}
-		//}
-		//else {
 			if( first == null ){
 				first = last = e;
 			}
@@ -573,6 +564,7 @@ class MultiSpriteBatch extends Drawable {
 			var curTex : h3d.mat.Texture = tile.getTexture();
 			var curBlend : h2d.BlendMode = e.blendMode;
 			var lastElem = null;
+			
 			
 			while ( e != null ) {
 				if ( e.visible ) {
