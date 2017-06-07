@@ -16,9 +16,8 @@ class Triangle
 	// Flags to determine if an edge is a Delauney edge
 	public var delaunay_edge:Array<Bool>;
 
-
-
-	public function new(p1:Point, p2:Point, p3:Point, fixOrientation = false, checkOrientation = true)
+	public inline
+	function new(p1:Point, p2:Point, p3:Point, fixOrientation = false, checkOrientation = true)
 	{
 		if (fixOrientation)
 		{

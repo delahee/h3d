@@ -9,10 +9,11 @@ class Stage {
 	var resizeEvents : List < Void -> Void > ;
 	var eventTargets : List<Event -> Void>;
 	
-	public var width(get, null) : Float;
-	public var height(get, null) : Float;
-	public var mouseX(get, null) : Float;
-	public var mouseY(get, null) : Float;
+	public var width(get, null) 	: Float;
+	public var height(get, null) 	: Float;
+	public var mouseX(get, null) 	: Float;
+	public var mouseY(get, null) 	: Float;
+	public var clicked 				: Bool = false;
 	
 	function new() {
 		
@@ -133,6 +134,7 @@ class Stage {
 
 	function onMouseDown(e:Dynamic) {
 		event(new Event(EPush, mouseX, mouseY));
+		clicked=true;
 	}
 	
 	function onRMouseDown(e:Dynamic) {
@@ -143,6 +145,7 @@ class Stage {
 	
 	function onMouseUp(e:Dynamic) {
 		event(new Event(ERelease, mouseX, mouseY));
+		clicked=false;
 	}
 
 	function onRMouseUp(e:Dynamic) {
@@ -218,12 +221,14 @@ class Stage {
 		var ev = new Event(EPush, e.localX, e.localY);
 		ev.touchId = e.touchPointID;
 		event(ev);
+		clicked=true;
 	}
 
 	function onTouchUp(e:flash.events.TouchEvent) {
 		var ev = new Event(ERelease, e.localX, e.localY);
 		ev.touchId = e.touchPointID;
 		event(ev);
+		clicked=false;
 	}
 	
 	function onTouchMove(e:flash.events.TouchEvent) {
@@ -255,10 +260,12 @@ class Stage {
 
 	function onMouseDown(e:js.html.MouseEvent) {
 		event(new Event(EPush, mouseX, mouseY));
+		clicked=true;
 	}
 
 	function onMouseUp(e:js.html.MouseEvent) {
 		event(new Event(ERelease, mouseX, mouseY));
+		clicked=false;
 	}
 	
 	function onMouseMove(e:js.html.MouseEvent) {

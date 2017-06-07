@@ -109,7 +109,7 @@ class Pad {
 	public static var CONFIG_RAP4 : BaseConf = cast {
 		ids:["E8AFC630-E6DE-11E5-8002-444553540000"],
 		name:"Real Arcade Pro.4",
-		matchString:"Real Arcade",
+		matchString:"Real Arcade Pro.4",
 		metaName:"RAP4",
 		analogX : 30,
 		analogY : 31,

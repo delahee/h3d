@@ -1,8 +1,6 @@
 package hxd.poly2tri;
 
-class Node
-{
-
+class Node {
 
 	public var point:Point;
 	public var triangle:Triangle;
@@ -10,9 +8,7 @@ class Node
 	public var next:Node;
 	public var value:Float;
 
-	public function new(point:Point = null, triangle:Triangle = null)
-	{
-
+	public inline function new(point:Point = null, triangle:Triangle = null) {
 		this.point = point;
 		this.triangle = triangle;
 		this.value = this.point.x;
@@ -23,7 +19,7 @@ class Node
 	 * @param node - middle node
 	 * @return the angle between 3 front nodes
 	 */
-	public function getHoleAngle():Float
+	public inline function getHoleAngle():Float
 	{
 		/* Complex plane
 		 * ab = cosA +i*sinA
@@ -43,7 +39,7 @@ class Node
 		);
 	}
 	
-	public function getBasinAngle():Float
+	public inline function getBasinAngle():Float
 	{
 		return Math.atan2(
 			this.point.y - this.next.next.point.y, // ay

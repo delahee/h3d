@@ -30,7 +30,7 @@ class Point
 	}
 
 
-	function get_edge_list()
+	inline function get_edge_list()
 	{
 		if (edge_list==null) edge_list = new Array();
 		return edge_list;

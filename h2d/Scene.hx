@@ -214,12 +214,12 @@ class Scene extends Layers implements h3d.IDrawable {
 			handled = true;
 			break;
 		}
-		if( cancelFocus && currentFocus != null ) {
+		if( cancelFocus && currentFocus != null && currentFocus.visible ) {
 			event.kind = EFocusLost;
 			currentFocus.handleEvent(event);
 			event.kind = EPush;
 		}
-		if( checkOver && currentOver != null ) {
+		if( checkOver && currentOver != null && currentOver.visible ) {
 			event.kind = EOut;
 			currentOver.handleEvent(event);
 			event.kind = EMove;

@@ -43,7 +43,12 @@ class MultiBatchElement {
 	public var visible : Bool;
 	public var alpha : Float;
 	public var tile : Tile;
-	public var color : h3d.Vector;
+	
+	public var colorR : hxd.Float32 = 1.0;
+	public var colorG : hxd.Float32 = 1.0;
+	public var colorB : hxd.Float32 = 1.0;
+	public var colorA : hxd.Float32 = 1.0;
+	
 	public var batch(default, null) : MultiSpriteBatch;
 	public var blendMode : h2d.BlendMode = h2d.BlendMode.Normal;
 
@@ -55,7 +60,7 @@ class MultiBatchElement {
 		x = 0; y = 0; alpha = 1;
 		rotation = 0; scaleX = scaleY = 1;
 		priority = 0;
-		color = new h3d.Vector(1, 1, 1, 1);
+		setColor(0xffffff,1.0);
 		tile = t;
 		visible = true;
 	}
@@ -68,7 +73,10 @@ class MultiBatchElement {
 		scaleX = e.scaleX;
 		scaleY = e.scaleY;
 		priority = e.priority;
-		color = e.color.clone();
+		colorR = e.colorR;
+		colorG = e.colorG;
+		colorB = e.colorB;
+		colorA = e.colorA;
 		tile = e.tile.clone();
 		visible = e.visible;
 		blendMode = e.blendMode;
@@ -83,7 +91,10 @@ class MultiBatchElement {
 		nu.scaleX = scaleX;
 		nu.scaleY = scaleY;
 		nu.priority = priority;
-		nu.color = color.clone();
+		nu.colorR = colorR;
+		nu.colorG = colorG;
+		nu.colorB = colorB;
+		nu.colorA = colorA;
 		nu.tile = tile.clone();
 		nu.visible = visible;
 		return cast nu;
@@ -140,8 +151,27 @@ class MultiBatchElement {
 	public 
 	inline 
 	function setColor(c:Int, ?a:Float = 1.0) {
-		color.setColor((c & 0xffffff) | (0xff << 24) );
-		color.a = a;
+		colorR = ((c >> 16)	&0xff)	/ 255.0;
+		colorG = ((c >> 8)	&0xff) 	/ 255.0;
+		colorB = ((c 	)	&0xff) 	/ 255.0;
+		colorA = a;
+	}
+	
+	public 
+	inline 
+	function setColorF(r,g,b,a) {
+		colorR = r;
+		colorG = g;
+		colorB = b;
+		colorA = a;
+	}
+	
+	public inline function getColorI() {
+		return 
+			(Math.round(colorA*255) << 24)
+		|	(Math.round(colorR*255) << 16)
+		|	(Math.round(colorG*255) << 8)
+		|	(Math.round(colorB*255));
 	}
 	
 	public function changePriority(v) {
@@ -338,10 +368,10 @@ class MultiSpriteBatch extends Drawable {
 		if( hasVertexAlpha)
 			tmp[pos++] = e.alpha;
 		if ( hasVertexColor ) {
-			tmp[pos++] = e.color.x;
-			tmp[pos++] = e.color.y;
-			tmp[pos++] = e.color.z;
-			tmp[pos++] = e.color.w;
+			tmp[pos++] = e.colorR;
+			tmp[pos++] = e.colorG;
+			tmp[pos++] = e.colorB;
+			tmp[pos++] = e.colorA;
 		}
 		var px = t.dx + hx, py = t.dy;
 		tmp[pos++] = tmpMatrix.transformX(px, py);
@@ -352,10 +382,10 @@ class MultiSpriteBatch extends Drawable {
 		if( hasVertexAlpha)
 			tmp[pos++] = e.alpha;
 		if ( hasVertexColor ) {
-			tmp[pos++] = e.color.x;
-			tmp[pos++] = e.color.y;
-			tmp[pos++] = e.color.z;
-			tmp[pos++] = e.color.w;
+			tmp[pos++] = e.colorR;
+			tmp[pos++] = e.colorG;
+			tmp[pos++] = e.colorB;
+			tmp[pos++] = e.colorA;
 		}
 		var px : hxd.Float32 = t.dx, py = t.dy + hy;
 		tmp[pos++] = tmpMatrix.transformX(px, py);
@@ -365,10 +395,10 @@ class MultiSpriteBatch extends Drawable {
 		if( hasVertexAlpha)
 			tmp[pos++] = e.alpha;
 		if ( hasVertexColor ) {
-			tmp[pos++] = e.color.x;
-			tmp[pos++] = e.color.y;
-			tmp[pos++] = e.color.z;
-			tmp[pos++] = e.color.w;
+			tmp[pos++] = e.colorR;
+			tmp[pos++] = e.colorG;
+			tmp[pos++] = e.colorB;
+			tmp[pos++] = e.colorA;
 		}
 		var px = t.dx + hx, py = t.dy + hy;
 		tmp[pos++] = tmpMatrix.transformX(px, py);
@@ -378,10 +408,10 @@ class MultiSpriteBatch extends Drawable {
 		if( hasVertexAlpha)
 			tmp[pos++] = e.alpha;
 		if ( hasVertexColor ) {
-			tmp[pos++] = e.color.x;
-			tmp[pos++] = e.color.y;
-			tmp[pos++] = e.color.z;
-			tmp[pos++] = e.color.w;
+			tmp[pos++] = e.colorR;
+			tmp[pos++] = e.colorG;
+			tmp[pos++] = e.colorB;
+			tmp[pos++] = e.colorA;
 		}
 
 		return pos;
@@ -406,10 +436,10 @@ class MultiSpriteBatch extends Drawable {
 		if( hasVertexAlpha)
 			tmp[pos++] = e.alpha;
 		if ( hasVertexColor ) {
-			tmp[pos++] = e.color.x;
-			tmp[pos++] = e.color.y;
-			tmp[pos++] = e.color.z;
-			tmp[pos++] = e.color.w;
+			tmp[pos++] = e.colorR;
+			tmp[pos++] = e.colorG;
+			tmp[pos++] = e.colorB;
+			tmp[pos++] = e.colorA;
 		}
 
 		tmp[pos++] = sx + t.width;
@@ -419,10 +449,10 @@ class MultiSpriteBatch extends Drawable {
 		if( hasVertexAlpha)
 			tmp[pos++] = e.alpha;
 		if ( hasVertexColor ) {
-			tmp[pos++] = e.color.x;
-			tmp[pos++] = e.color.y;
-			tmp[pos++] = e.color.z;
-			tmp[pos++] = e.color.w;
+			tmp[pos++] = e.colorR;
+			tmp[pos++] = e.colorG;
+			tmp[pos++] = e.colorB;
+			tmp[pos++] = e.colorA;
 		}
 
 		tmp[pos++] = sx;
@@ -432,10 +462,10 @@ class MultiSpriteBatch extends Drawable {
 		if( hasVertexAlpha)
 			tmp[pos++] = e.alpha;
 		if ( hasVertexColor ) {
-			tmp[pos++] = e.color.x;
-			tmp[pos++] = e.color.y;
-			tmp[pos++] = e.color.z;
-			tmp[pos++] = e.color.w;
+			tmp[pos++] = e.colorR;
+			tmp[pos++] = e.colorG;
+			tmp[pos++] = e.colorB;
+			tmp[pos++] = e.colorA;
 		}
 
 		tmp[pos++] = sx + t.width;
@@ -445,10 +475,10 @@ class MultiSpriteBatch extends Drawable {
 		if( hasVertexAlpha)
 			tmp[pos++] = e.alpha;
 		if ( hasVertexColor ) {
-			tmp[pos++] = e.color.x;
-			tmp[pos++] = e.color.y;
-			tmp[pos++] = e.color.z;
-			tmp[pos++] = e.color.w;
+			tmp[pos++] = e.colorR;
+			tmp[pos++] = e.colorG;
+			tmp[pos++] = e.colorB;
+			tmp[pos++] = e.colorA;
 		}
 
 		return pos;

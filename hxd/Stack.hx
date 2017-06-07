@@ -42,6 +42,7 @@ class Stack<T>  {
 	var pos = 0;
 	
 	public var length(get, never):Int; inline function get_length() return pos;
+	public var quota(get, never):Int; inline function get_quota() return arr.length;
 	
 	public inline function new() {}
 	
@@ -86,6 +87,7 @@ class Stack<T>  {
 		return true;
 	}
 	
+	@:noDebug
 	public inline function reserve(n) {
 		if (arr.length < n )
 			arr[n] = null;
