@@ -52,8 +52,7 @@ class TBLayout implements h2d.Text.ITextPos{
 					e.x = t.x + ((x + d.dx/lnx * dsx) * t.scaleX);
 					e.y = t.y + ((y + d.dy/lnx * dsy) * t.scaleY);
 					e.tile = tile;
-					e.color.setColor( d.color  );
-					e.color.a = t.alpha * d.alpha;
+					e.setColor( d.color,t.alpha * d.alpha );
 					e.scaleX = t.scaleX;
 					e.scaleY = t.scaleY;
 				}
@@ -65,8 +64,7 @@ class TBLayout implements h2d.Text.ITextPos{
 				e.x = t.x + ((x + d.dx) * t.scaleX);
 				e.y = t.y + ((y + d.dy) * t.scaleY);
 				e.tile = tile;
-				e.color.setColor( d.color  );
-				e.color.a = t.alpha * d.alpha;
+				e.setColor( d.color,t.alpha * d.alpha  );
 				e.scaleX = t.scaleX;
 				e.scaleY = t.scaleY;
 			}
@@ -74,13 +72,12 @@ class TBLayout implements h2d.Text.ITextPos{
 
 		var e = t.sp.alloc(tile);
 		es.push(e);
-		e.x = x* t.scaleX + t.x;
+		e.x = x * t.scaleX + t.x;
 		e.y = y * t.scaleY + t.y;
 		e.scaleX = t.scaleX;
 		e.scaleY = t.scaleY;
 		e.tile = tile;
-		e.color.setColor( t.textColor );
-		e.color.a = t.alpha;
+		e.setColor( t.textColor,t.alpha );
 	}
 }
 
@@ -296,21 +293,16 @@ class TextBatchElement implements IText {
 		var hasDropShadow = dropShadow != null;
 		if ( !hasDropShadow) {
 			for ( e in elements) {
-				e.color.setColor( textColor );
-				e.alpha = this.alpha;
+				e.setColor( textColor,this.alpha );
 			}
 		}
 		else {
 			for ( i in 0...elements.length) {
 				var e = elements[i];
-				if ( (i & 1) == 0 ) {
-					e.color.setColor( dropShadow.color);
-					e.color.a = dropShadow.alpha * alpha;
-				}
-				else {
-					e.color.setColor( textColor  );
-					e.alpha = this.alpha;
-				}
+				if ( (i & 1) == 0 ) 
+					e.setColor( dropShadow.color,dropShadow.alpha * alpha);
+				else 
+					e.setColor( textColor ,this.alpha );
 			}
 		}
 		return c;

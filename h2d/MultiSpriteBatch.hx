@@ -637,6 +637,14 @@ class MultiSpriteBatch extends Drawable {
 	public inline function getElements()  {
 		return new MultiElementsIterator(first);
 	}
+	
+	@:noDebug
+	public inline function collectElements()  {
+		var a = [];
+		for (e in getElements())
+			a.push(e);
+		return a;
+	}
 
 	//public static var spin = 0;
 
