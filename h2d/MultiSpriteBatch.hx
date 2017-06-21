@@ -231,11 +231,16 @@ class MultiSpriteBatch extends Drawable {
 	public override function dispose() {
 		super.dispose();
 
-		removeAllElements();
+		disposeAllElements();
 		first = null;
 		last = null;
 	}
 
+	public function disposeAllElements() {
+		for( e in getElements() )
+			e.dispose();
+	}
+	
 	public function removeAllElements() {
 		for( e in getElements() )
 			e.remove();
