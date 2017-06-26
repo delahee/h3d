@@ -615,6 +615,7 @@ class SpriteBatch extends Drawable {
 		return stride;
 	}
 
+	@:noDebug
 	function computeTRS()  	{
 		if ( tmpBuf == null ) tmpBuf = new hxd.FloatBuffer();
 		var stride = getStride();

@@ -638,6 +638,49 @@ class MultiSpriteBatch extends Drawable {
 		}
 	}
 
+	public function getElementBounds( e:MultiBatchElement,relativeTo:h2d.Sprite, ?out) {
+		if( out == null ) 			out = new h2d.col.Bounds();
+		if( relativeTo == null ) 	relativeTo = getScene();
+		if( relativeTo == null )	relativeTo = new Sprite();
+		
+		var ca = Math.cos(e.rotation), sa = Math.sin(e.rotation);
+		var t = e.tile;
+		var hx = t.width, hy = t.height;
+		var px = t.dx, py = t.dy;
+		var x, y;
+		
+		tmpMatrix.identity();
+		tmpMatrix.scale(e.scaleX, e.scaleY);
+		tmpMatrix.rotate(e.rotation);
+		tmpMatrix.translate(e.x, e.y);
+		
+		x = tmpMatrix.transformX(px, py);
+		y = tmpMatrix.transformY(px, py);
+		addBounds(relativeTo, out, x, y,1e-10,1e-10);
+
+		var px = t.dx + hx, py = t.dy;
+		x = tmpMatrix.transformX(px, py);
+		y = tmpMatrix.transformY(px, py);
+		addBounds(relativeTo, out, x, y,1e-10,1e-10);
+
+		var px = t.dx, py = t.dy + hy;
+		x = tmpMatrix.transformX(px, py);
+		y = tmpMatrix.transformY(px, py);
+		addBounds(relativeTo, out, x, y,1e-10,1e-10);
+
+		var px = t.dx + hx, py = t.dy + hy;
+		x = tmpMatrix.transformX(px, py);
+		y = tmpMatrix.transformY(px, py);
+		addBounds(relativeTo, out, x, y, 1e-10, 1e-10);
+		
+		if( out.isEmpty() ) {
+			addBounds(relativeTo, out, 0, 0, 1, 1);
+			out.xMax = out.xMin;
+			out.yMax = out.yMin;
+		}
+		return out;
+	}
+
 	@:noDebug
 	public inline function getElements()  {
 		return new MultiElementsIterator(first);

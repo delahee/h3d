@@ -29,7 +29,7 @@ class Event {
 	public var wheelDelta 	: Float;
 	public var duration 	: Int = 0;
 	
-	public function new(k,x=0.,y=0.) {
+	public inline function new(k,x=0.,y=0.) {
 		kind = k;
 		this.relX = x;
 		this.relY = y;
