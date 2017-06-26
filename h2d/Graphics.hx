@@ -386,10 +386,10 @@ class Graphics extends Drawable {
 		return g;
 	}
 	
-	public static function fromRect(x,y,w,h,?parent:h2d.Sprite,?col=0xFF0000,?alpha=0.5) : Graphics{
+	public static function fromRect(x,y,w,h,?parent:h2d.Sprite,?col=0xFF0000,?alpha=0.5,?hasLine=true) : Graphics{
 		var g = new Graphics(parent);
-		g.lineStyle(1.0);
-		g.beginFill(col, alpha);
+		if(hasLine) g.lineStyle(1.0);
+		g.beginFill(col&0x00ffffff, alpha);
 		g.drawRect(x, y, w, h);
 		g.endFill();
 		return g;

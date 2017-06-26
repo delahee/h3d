@@ -244,9 +244,8 @@ class Tile {
 		return new h2d.Vector(-dx / width, -dy / height );
 	}
 	
-	public inline function getCenterRatioX() : Float {
-		return -dx / width;
-	}
+	public inline function getCenterRatioX() : Float return -dx / width;
+	public inline function getCenterRatioY() : Float return -dy / height;
 	
 	public function setPos(x, y) {
 		this.x = x;
