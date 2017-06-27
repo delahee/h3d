@@ -194,5 +194,67 @@ class HtmlText extends Drawable {
 		}
 		return c;
 	}
+	
+	var bulkColor : h3d.Vector 		= new h3d.Vector(1,1,1,1);
+	var shadowColor : h3d.Vector 	= new h3d.Vector(1,1,1,1);
+	public var useShadowAsOutline = false;
+	
+	public var dropShadow : { dx : Float, dy : Float, color : Int, alpha : Float };
+	
+	override function draw(ctx:RenderContext) {
+		glyphs.filter = filter;
+		glyphs.blendMode = blendMode;
 
+		if ( dropShadow != null ) {
+			
+			if( !useShadowAsOutline ){
+				glyphs.x += dropShadow.dx;
+				glyphs.y += dropShadow.dy;
+				glyphs.calcAbsPos();
+
+				bulkColor.load( color );
+				shadowColor.setColor( dropShadow.color );
+				shadowColor.a = dropShadow.alpha * alpha;
+
+				glyphs.color = shadowColor;
+
+				glyphs.draw(ctx);
+				glyphs.x -= dropShadow.dx;
+				glyphs.y -= dropShadow.dy;
+
+				glyphs.color = bulkColor;
+			}
+			else {
+				var ox = glyphs.x;
+				var oy = glyphs.y;
+				
+				if( color != null)
+					bulkColor.load( color );
+					
+				shadowColor.setColor( dropShadow.color );
+				shadowColor.a = dropShadow.alpha * alpha;
+				glyphs.color = shadowColor;
+				for ( i in 0...4) {
+					var dsx = 0;
+					var dsy = 0;
+					
+					switch(i) {
+						case 0: dsx = 1; dsy = 1;
+						case 1: dsx = -1; dsy = -1;
+						case 2: dsx = 1; dsy = -1;
+						case 3: dsx = -1; dsy = 1;
+					}
+					glyphs.x += dropShadow.dx*dsx;
+					glyphs.y += dropShadow.dy * dsy;
+					
+					glyphs.calcAbsPos();
+					glyphs.draw(ctx);
+					glyphs.x = ox;
+					glyphs.y = oy;
+				}
+				glyphs.color = bulkColor;
+			}
+		}
+		super.draw(ctx);
+	}
 }
