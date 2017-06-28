@@ -47,7 +47,7 @@ class Stack<T>  {
 	public inline function new() {}
 	
 	/**
-	 * slow, breaks order but no realloc
+	 * slow, breaks order but no realloc nor mass move
 	 */
 	public inline function remove(v:T):Bool{
 		var i = arr.indexOf(v);
