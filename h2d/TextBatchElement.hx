@@ -293,16 +293,21 @@ class TextBatchElement implements IText {
 		var hasDropShadow = dropShadow != null;
 		if ( !hasDropShadow) {
 			for ( e in elements) {
-				e.setColor( textColor,this.alpha );
+				e.setColor( textColor );
+				e.alpha = this.alpha;
 			}
 		}
 		else {
 			for ( i in 0...elements.length) {
 				var e = elements[i];
-				if ( (i & 1) == 0 ) 
-					e.setColor( dropShadow.color,dropShadow.alpha * alpha);
-				else 
-					e.setColor( textColor ,this.alpha );
+				if ( (i & 1) == 0 ) {
+					e.setColor( dropShadow.color, dropShadow.alpha );
+					e.alpha = this.alpha;
+				}
+				else {
+					e.setColor( textColor );
+					e.alpha = this.alpha;
+				}
 			}
 		}
 		return c;

@@ -170,14 +170,22 @@ class Bounds {
 	public inline function getSize() 	return new Point(xMax - xMin, yMax - yMin);
 	public inline function getMax() 	return new Point(xMax, yMax);
 	public inline function isEmpty() 	return xMax <= xMin || yMax <= yMin;
+	
 	public inline function empty() {
 		xMin = 1e20;
 		yMin = 1e20;
 		xMax = -1e20;
 		yMax = -1e20;
+		return this;
 	}
 	
-	
+	public inline function zero() {
+		xMin = 0;
+		yMin = 0;
+		xMax = 0;
+		yMax = 0;
+		return this;
+	}
 
 	public inline function all() {
 		xMin = -1e20;

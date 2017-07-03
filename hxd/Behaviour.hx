@@ -22,4 +22,6 @@ class Behaviour {
 		throw "Please implement me";
 		return null;
 	}
+	
+	
 }
