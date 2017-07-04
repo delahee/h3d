@@ -320,8 +320,8 @@ class Vector {
 	inline function set_b(v) return z = v;
 	inline function set_a(v) return w = v;
 
-	public inline function setColor( c : Int, scale : hxd.Float32 = 1.0 ) {
-		var s = scale / 255;
+	public inline function setColor( c : Int ) {
+		var s = 1.0 / 255;
 		r = ((c >> 16) & 0xFF) * s;
 		g = ((c >> 8) & 0xFF) * s;
 		b = (c & 0xFF) * s;

@@ -29,4 +29,11 @@ class Entity extends Sprite {
 	public function anon(proc:h2d.Entity->Void) {
 		h2d.Behaviour.anon( proc, this );
 	}
+	
+	public function getBhvByName(name:String) : Null<h2d.Behaviour> {
+		for ( b in bhvs ) 
+			if ( b.name == name )
+				return b;
+		return null;
+	}
 }

@@ -6,6 +6,7 @@ class Behaviour {
 	public var 		onDispose = new hxd.Signal();
 	public var 		onUpdate = new hxd.Signal();
 	public var 		disposed = false;
+	public var		name:String = null;
 	
 	public function new(o: h2d.Entity) 				{ 
 		o.bhvs.push(this);
