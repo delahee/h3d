@@ -257,4 +257,12 @@ class HtmlText extends Drawable {
 		}
 		super.draw(ctx);
 	}
+	
+	public function assignChain( arr : Array<{txt:String,color:Int}> ) {
+		htmlText = arr
+		.map( function(e) {
+			return "<font color='#" + StringTools.hex( e.color ) + "'>" + e.txt + "</font>";
+		})
+		.join("");
+	}
 }
