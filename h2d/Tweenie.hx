@@ -112,8 +112,6 @@ class Tween {
 		}
 	}
 	
-	
-	
 	public inline function kill( withCbk = true ) {
 		if ( withCbk )	
 			man.terminateTween( this );
@@ -124,6 +122,7 @@ class Tween {
 }
 
 private typedef TSprite = h2d.Sprite;
+private typedef TTw = Tween;
 
 /**
  * tween order is not respected
@@ -132,15 +131,12 @@ class Tweenie {
 	static var 	DEFAULT_DURATION = DateTools.seconds(1);
 	public var 	fps = hxd.Stage.getInstance().getFrameRate();
 
-	var delayList		: hxd.Stack<Tween> = new hxd.Stack<Tween>();
-	var tlist			: hxd.Stack<Tween> = new hxd.Stack<Tween>();
-	var errorHandler	: String->Void;
+	var delayList		: hxd.Stack<TTw> = new hxd.Stack<TTw>();
+	var tlist			: hxd.Stack<TTw> = new hxd.Stack<TTw>();
 
-	public function new() {
-		errorHandler = onError;
-	}
+	public function new() {}
 	
-	function onError(e) trace(e);
+	dynamic function onError(e) trace(e);
 	
 	public inline function count() return tlist.length;
 	
@@ -164,20 +160,17 @@ class Tweenie {
 		var v = varName;
 		if ( duration_ms==null )
 			duration_ms = DEFAULT_DURATION;
-
-		if ( p==null )
-			errorHandler("tween creation failed : null parent, v=" + varName + " tp=" + tp);
 			
 		if ( tp==null )
 			tp = TLinear;
 			
-		
-		
 		switch( varName ) {
 			default:
 			case VR, VG, VB, VA, VAlpha: 
-				if ( !Std.is( p, h2d.Drawable )){
-					errorHandler("tween creation failed : not drawable parent, v=" + varName + " tp=" + tp);
+				if ( !Std.is( p, h2d.Drawable )) {
+					#if debug		
+					onError("tween creation failed : not drawable parent, v=" + varName + " tp=" + tp);
+					#end
 					p = null;
 				}
 		}
@@ -205,7 +198,7 @@ class Tweenie {
 		var z = 0.0;
 		
 		// ajout
-		var t : Tween = new Tween(
+		var t : TTw = new TTw(
 			p,
 			v,
 			z,
@@ -287,11 +280,11 @@ class Tweenie {
 				terminateTween(t);
 	}
 	
-	public function forceTerminateTween(t:Tween) {
+	public function forceTerminateTween(t:TTw) {
 		tlist.remove(t);
 	}
 	
-	public function terminateTween(t:Tween, ?fl_allowLoop=false) {
+	public function terminateTween(t:TTw, ?fl_allowLoop=false) {
 		var v = t.from+(t.to-t.from)*t.interpolate(1);
 		if (t.fl_pixel)
 			v = Math.round(v);
@@ -313,15 +306,12 @@ class Tweenie {
 	}
 	
 	
-	inline function onUpdate(t:Tween, n:Float) {
-		if ( t.onUpdate!=null )
-			t.onUpdate();
-		if ( t.onUpdateT!=null )
-			t.onUpdateT(n);
+	inline function onUpdate(t:TTw, n:Float) {
+		if ( t.onUpdate!=null ) 	t.onUpdate();
+		if ( t.onUpdateT!=null )	t.onUpdateT(n);
 	}
-	inline function onEnd(t:Tween) {
-		if ( t.onEnd!=null )
-			t.onEnd();
+	inline function onEnd(t:TTw) {
+		if ( t.onEnd!=null )		t.onEnd();
 	}
 	
 	static inline function identityStep(step) 	return step;

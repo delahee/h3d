@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	<!-- NMML reference: https://gist.github.com/1763850 -->
+	
+	<!-- metadata, make sure 'package' is at least 3 segments (ie. com.mycompany.myproject) -->
+	<meta title="empty" package="h2d.samples.empty" version="1.0.0" company=""  />
+	
+	<!-- output -->
+	<app main="Demo" file="empty" path="bin" swf-version="11.6" />
+	
+	<window background="#FFFFFF" fps="60" />
+	<window width="1280" height="720" unless="mobile" />
+	<window vsync="true" antialiasing="0" if="cpp" orientation="auto" resizable="true" />
+	
+	<haxeflag name="-D advanced-telemetry" /><haxedef name="advanced-telemetry" /> 
+	<!--
+	<certificate path="YOUR_RELEASE_KEY.keystore" alias="YOUR_ALIAS" password="tototo" if="android" unless="debug"/>
+	-->
+	<!-- classpath, haxe libs -->
+	<source path="." />
+	<haxelib name="openfl" />
+	<haxelib name="format" />
+	<haxelib name="h3d" />
+	<haxelib name="hxsl" if="flash"/>
+	<haxelib name="air3" if="flash"/>
+	
+	<haxelib name="hxmidilib" />
+	<haxelib name="stb_ogg_sound" />
+	
+	<assets path="assets" rename="assets" />
+	
+	<haxeflag name="-dce" value="no" />
+</project>
