@@ -225,7 +225,7 @@ class Text extends Drawable implements IText {
 						case 3: dsx = -1; dsy = 1;
 					}
 					glyphs.x += dropShadow.dx*dsx;
-					glyphs.y += dropShadow.dy * dsy;
+					glyphs.y += dropShadow.dy*dsy;
 					
 					glyphs.calcAbsPos();
 					glyphs.draw(ctx);

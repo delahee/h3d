@@ -246,7 +246,7 @@ class Graphics extends Drawable {
 			pindex = 0;
 	}
 	
-	function flush() {
+	public function flush() {
 		flushFill();
 		flushLine();
 	}

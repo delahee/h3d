@@ -773,7 +773,7 @@ class DrawableShader extends h3d.impl.Shader {
 	#end
 }
 
-class Drawable extends Sprite {
+class Drawable extends h2d.Sprite {
 	
 	public static inline var HAS_SIZE = 1;
 	public static inline var HAS_UV_SCALE = 2;
