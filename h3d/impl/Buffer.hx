@@ -71,7 +71,6 @@ class Buffer {
 			if( cur == null ) throw "Too many vertexes";
 			var count = nverts > cur.nvert ? cur.nvert : nverts;
 			
-			Assert.notNull(cur.b.vbuf != null);
 			cur.b.mem.driver.uploadVertexBuffer(cur.b.vbuf, cur.pos, count, data, dataPos);
 			dataPos += count * b.stride;
 			nverts -= count;

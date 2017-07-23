@@ -204,11 +204,6 @@ class BLib {
 		return be;
 	}
 
-	public function addColoredBatchElement(sb:SpriteBatch, ?priority=0, k:String, col:UInt, ?alpha=1.0) {
-		var e = addBatchElement(sb, priority, k, 0);
-		e.color = h3d.Vector.fromColor( Color.addAlphaF(col, alpha), 1 );
-		return e;
-	}
 
 	public function addBatchElementRandom(sb:SpriteBatch, k:String, ?xr=0.0, ?yr=0.0, ?rndFunc:Int->Int) : Null<h2d.SpriteBatch.BatchElement> {
 		return addBatchElement(sb, k, getRandomFrame(k, rndFunc), xr,yr);

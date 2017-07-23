@@ -1,19 +1,6 @@
 import h2d.Graphics;
 import hxd.Stage;
 
-import com.newgonzo.midi.file.MIDITrack;
-import com.newgonzo.midi.messages.VoiceMessage;
-import com.newgonzo.midi.file.MIDIFile;
-
-//import flash.system.WorkerDomain;
-//import flash.system.Worker;
-import flash.events.Event;
-
-import stb.format.vorbis.Reader;
-import stb.format.vorbis.flash.VorbisSound;
-import stb.format.vorbis.flash.VorbisSoundChannel;
-
-
 class Demo extends flash.display.Sprite{
 	var engine : h3d.Engine;
 	var scene : h2d.Scene;
@@ -26,28 +13,68 @@ class Demo extends flash.display.Sprite{
 		engine.backgroundColor = 0xFFCCCCCC;
 		engine.init();
 		
+		f = openfl.Assets.getFont("assets/nokiafc22.ttf");
+		
 	}
+	public var nokia8 : h2d.Font;
+	public var nokia16 : h2d.Font;
+	var f:flash.text.Font;
+	var sb :h2d.SpriteBatch;
 	
 	function init() {
+		var opt : hxd.res.FontBuilder.FontBuildOptions= { antiAliasing:false};
+		nokia16 = hxd.res.FontBuilder.getFont( f.fontName, 16,opt);
+		
 		hxd.System.setLoop(update);
 		scene = new h2d.Scene();
+		
 		var g = new h2d.Graphics(scene);
 		g.beginFill(0x00FFFF,0.5);
 		g.lineStyle(2.0);
 		g.drawRect( 0, 0, 50, 50);
 		g.endFill();
 		
-		
-		var g = new h2d.Graphics(scene);
-		g.beginFill();
-		g.addPointFull( 100, 100, 1, 0, 0, 1 );
-		g.addPointFull( 200, 100, 0, 1, 0, 0 );
-		g.addPointFull( 200, 200, 1, 0, 1, 0.3 );
-		g.addPointFull( 100, 200, 1, 1, 0, 1 );
+		g.beginFill(0x00FFFF,0.2);
+		g.drawRect( 50, 50, 50, 500);
 		g.endFill();
+		
+		var s = new h2d.Sprite(scene );
+		s.x = 50;
+		s.y = 250;
+		s.scaleX = (0.5); 
+		s.scaleY = (1.5); 
+		
+		var t = h2d.Tile.fromColor(0xffcd00cd, 4, 8);
+		sb = new h2d.SpriteBatch( t ,s  );
+		var e = sb.alloc( t );
+		e.setSize (32 , 32 );
+		
+		var e = sb.alloc( t );
+		e.setSize (32 , 32 );
+		e.x = 100;
+		e.y = 100;
+		
+		var t = t.centerRatio(0.5, 0.5);
+		var e = sb.alloc( t );
+		e.setSize (32 , 32 );
+		e.x = 200;
+		e.y = 100;
+		
+		var t = t.centerRatio(1, 1);
+		var e = sb.alloc( t );
+		e.setSize (32 , 32 );
+		e.x = 300;
+		e.y = 100;
 	}
 	
 	function update() 	{
+		
+		for ( e in sb.getElements() ) {
+			e.rotation += 0.1;
+			var g = h2d.Graphics.fromBounds( sb.getElementBounds(e,scene),scene, 0xff0000,0.1);
+			haxe.Timer.delay( g.dispose , 30);
+		}
+		
 		engine.render(scene);
 		engine.restoreOpenfl();
 	}

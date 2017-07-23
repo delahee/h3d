@@ -101,7 +101,7 @@ class Tween {
  */
 class Tweenie {
 	static var DEFAULT_DURATION = DateTools.seconds(1);
-	public var fps = 30.0;
+	public var fps 		= C.FPS;
 
 	var tlist			: hxd.Stack<Tween>;
 	var errorHandler	: String->Void;
@@ -132,6 +132,13 @@ class Tweenie {
 			if (t.parent == p && t.vname == v)
 				return true;
 		return false;
+	}
+	
+	public function retrieve(p:Dynamic, v:String) {
+		for (t in tlist)
+			if (t.parent == p && t.vname == v)
+				return t;
+		return null;
 	}
 
 	function create_(p:Dynamic, v:String, to:Float, ?tp:TType, ?duration_ms:Float) {

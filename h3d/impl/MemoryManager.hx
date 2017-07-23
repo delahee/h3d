@@ -405,23 +405,23 @@ class MemoryManager {
 		return idx;
 	}
 
-	public function allocBytes( bytes : haxe.io.Bytes, stride : Int, align, ?isDynamic=false,?allocPos : AllocPos ) : Buffer {
+	public function allocBytes( bytes : haxe.io.Bytes, stride : Int, align, ?isDynamic=false /*,?allocPos : AllocPos*/ ) : Buffer {
 		var count = Std.int(bytes.length / (stride * 4));
-		var b = alloc(count, stride, align, isDynamic,allocPos);
+		var b = alloc(count, stride, align, isDynamic /*,allocPos*/);
 		b.uploadBytes(bytes, 0, count);
 		return b;
 	}
 
-	public function allocStack( v : hxd.FloatStack, stride, align, ?isDynamic=false,?allocPos : AllocPos ) : Buffer {
+	public function allocStack( v : hxd.FloatStack, stride, align, ?isDynamic=false /*,?allocPos : AllocPos*/ ) : Buffer {
 		var nvert = Std.int(v.length / stride);
-		var b = alloc(nvert, stride, align, isDynamic, allocPos);
+		var b = alloc(nvert, stride, align, isDynamic /*, allocPos*/);
 		b.uploadVector(v.toData(), 0, nvert);
 		return b;
 	}
 	
-	public function allocVector( v : hxd.FloatBuffer, stride, align, ?isDynamic=false,?allocPos : AllocPos ) : Buffer {
+	public function allocVector( v : hxd.FloatBuffer, stride, align, ?isDynamic=false /*,?allocPos : AllocPos*/ ) : Buffer {
 		var nvert = Std.int(v.length / stride);
-		var b = alloc(nvert, stride, align, isDynamic,allocPos);
+		var b = alloc(nvert, stride, align, isDynamic /*,allocPos*/);
 		b.uploadVector(v, 0, nvert);
 		return b;
 	}
@@ -456,7 +456,7 @@ class MemoryManager {
 		align is the modulo of desired vector so that their start adress are all aligne on same multiple.
 		@return Buffer with stride, pos (which is a strided pos)
 	 **/
-	public function alloc( nvect : Int, stride, align, ?isDynamic = false, ?allocPos : AllocPos ) : Buffer {
+	public function alloc( nvect : Int, stride, align, ?isDynamic = false /*, ?allocPos : AllocPos*/ ) : Buffer {
 		#if debug
 		//trace( "gpu alloc:"+allocPos.fileName+" " + allocPos.lineNumber+" size:"+(nvect*stride*4));
 		#end
@@ -586,7 +586,7 @@ class MemoryManager {
 					else
 						throw  "Memory full : not enough vertex buffers ( " + mem +" )"+ bufferCount + " for "+size;
 				}
-				return alloc(nvect, stride, align, isDynamic,allocPos);
+				return alloc(nvect, stride, align, isDynamic /*,allocPos*/);
 			}
 			usedMemory += mem;
 			bufferCount++;
@@ -607,7 +607,7 @@ class MemoryManager {
 		free.count -= alloc;
 		var b = new Buffer(b, fpos, alloc);
 		nvect -= alloc;
-		#if debug
+		#if false
 		var head = b.b.allocHead;
 		b.allocPos = allocPos;
 		b.allocNext = head;
@@ -616,7 +616,7 @@ class MemoryManager {
 		#end
 		if ( nvect > 0 ) {
 			//System.trace3("not enough space, loooping");
-			b.next = this.alloc(nvect, stride, align , isDynamic #if debug, allocPos #end);
+			b.next = this.alloc(nvect, stride, align , isDynamic /*, allocPos */);
 		}
 			
 		//System.trace3("found suitable buffer..."+b);
