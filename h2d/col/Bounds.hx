@@ -252,12 +252,16 @@ class Bounds {
 		return "{" + getMin() + "," + getMax() + "}";
 	}
 
+	public inline function load4( x : Float, y : Float, width : Float, height : Float ) {
+		xMin = x;
+		yMin = y;
+		xMax = x + width;
+		yMax = y + height;
+	}
+	
 	public static inline function fromValues( x : Float, y : Float, width : Float, height : Float ) {
 		var b = new Bounds();
-		b.xMin = x;
-		b.yMin = y;
-		b.xMax = x + width;
-		b.yMax = y + height;
+		b.load4(x, y, width, height);
 		return b;
 	}
 	

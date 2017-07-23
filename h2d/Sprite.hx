@@ -672,8 +672,12 @@ class Sprite {
 	}
 	
 	public function setChildIndex(c,idx) {
-		if( childs.remove(c) )
-			childs.insert(idx, c);
+		var oidx = childs.indexOf(c);
+		if( oidx < 0 ) 		return;
+		if( oidx == idx ) 	return;
+		
+		childs.remove(c);
+		childs.insert(idx, c);
 	}
 	
 	inline function get_numChildren() {
