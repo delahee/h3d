@@ -333,8 +333,17 @@ class Pad {
 		return isDown(idx)&&!wasDown(idx);
 	}
 	
-	public function clearPress(idx:Int) {
+	public function onRelease(idx:Int) : Bool {
+		return wasDown(idx)&&!isDown(idx);
+	}
+	
+	public function clearIsDown(idx:Int) {
 		values[idx] = 0.0;
+	}
+	
+	public function clearOnPress(idx:Int) {
+		values[idx] = 0.0;
+		prevValues[idx] = 0.0;
 	}
 	
 	public function getButtonName(idx:Int) {

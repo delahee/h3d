@@ -1,6 +1,7 @@
 package hxd.res;
 import hxd.System;
 
+using StringTools;
 #if (air3 || sys)
 
 @:allow(hxd.res.LocalFileSystem)
@@ -182,6 +183,14 @@ private class LocalEntry extends FileEntry {
 		#end
 	}
 	
+	public override function debugString() {
+		#if air3
+		return file.nativePath;
+		#else 
+		return "";
+		#end
+	}
+	
 	override function get_path() {
 		return relPath == null ? "<root>" : relPath;
 	}
@@ -343,15 +352,10 @@ class LocalFileSystem implements FileSystem {
 	function open( path : String ) {
 		#if air3
 		var f = new flash.filesystem.File(baseDir + path);
-		// ensure exact case / no relative path
 		f.canonicalize();
-		if( f.nativePath.split("\\").join("/") != baseDir + path )
-			return null;
 		return f;
 		#elseif sys
-		var f = sys.FileSystem.fullPath(baseDir + path).split("\\").join("/");
-		if( f != baseDir + path )
-			return null;
+		var f = sys.FileSystem.fullPath(baseDir + path).replace("\\","/");
 		return f;
 		#end
 	}

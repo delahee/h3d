@@ -8,7 +8,7 @@ class Entity extends Sprite {
 	
 	public override function dispose() {
 		super.dispose();
-		for (b in bhvs) {
+		for (b in bhvs.backWardIterator()) {
 			b.obj = null;
 			b.dispose();
 		}

@@ -41,4 +41,9 @@ class FileEntry {
 		var np = name.split(".");
 		return np.length == 1 ? "" : np.pop().toLowerCase();
 	}
+	
+	
+	public function debugString() {
+		return "";
+	}
 }

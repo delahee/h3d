@@ -101,8 +101,11 @@ opengl
 	}
 	
 	public static var setCursor = setNativeCursor;
+	public static var currentCursor : Cursor;
 	
+	public static function isCursorHidden() return currentCursor == Hide;
 	public static function setNativeCursor( c : Cursor ) {
+		currentCursor = c;
 		flash.ui.Mouse.cursor = switch( c ) {
 		case Default: "auto";
 		case Button: "button";
