@@ -25,7 +25,8 @@ class Matrix {
 	}
 	
 	public inline function identity() {
-		a = 1.; b = 0.; c = 0.; d = 1.; tx = 0.; ty = 0.;
+		a = d = 1.; 
+		b = c = tx = ty = 0.;
 	}
 	
 	public inline function setTo(a=1.,b=0.,c=0.,d=1.,tx=0.,ty=0.) {
@@ -65,20 +66,20 @@ class Matrix {
 	
 	public inline function rotate(angle:hxd.Float32):Void {
 		var c = Math.cos(angle);
-		var s=  Math.sin(angle);
+		var s =  Math.sin(angle);
+		var z = 0.0;
 		concat32(	c, s, 
 					-s, c,
-					0.0,0.0 );
+					z,z );
 	}
 
 	public inline function scale (x:hxd.Float32, y:hxd.Float32):Void {
 		a *= x;
-		b *= y;
-
 		c *= x;
-		d *= y;
-
 		tx *= x;
+		
+		b *= y;
+		d *= y;
 		ty *= y;
 	}
 	

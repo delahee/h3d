@@ -384,12 +384,9 @@ class SpriteBatch extends Drawable {
 	@:noDebug
 	public function pushElemSRT( tmp : FloatBuffer, e:BatchElement, pos :Int):Int {
 		var t = e.tile;
-
-		#if debug
-		Assert.notNull( t , "all elem must have tiles");
-		#end
 		if ( t == null ) return 0;
-
+		if ( e.scaleX == 1.0 && e.scaleY == 1.0 && e.rotation == 0.0 ) return pushElem(tmp, e, pos);
+ 
 		var px : hxd.Float32 = t.dx, py = t.dy;
 		var hx : hxd.Float32 = t.width;
 		var hy : hxd.Float32 = t.height;
@@ -459,10 +456,6 @@ class SpriteBatch extends Drawable {
 	@:noDebug
 	public function pushElem( tmp : FloatBuffer, e:BatchElement, pos :Int):Int {
 		var t = e.tile;
-
-		#if debug
-		Assert.notNull( t , "all elem must have tiles");
-		#end
 		if ( t == null ) return 0;
 
 		var sx : hxd.Float32 = e.x + t.dx;
@@ -524,7 +517,9 @@ class SpriteBatch extends Drawable {
 	}
 
 	override function getBoundsRec( relativeTo, out,forSize) {
-		super.getBoundsRec(relativeTo, out,forSize);
+		super.getBoundsRec(relativeTo, out, forSize);
+		
+		var eps = 1e-10;
 		var e = first;
 		while( e != null ) {
 			var t = e.tile;
@@ -541,22 +536,22 @@ class SpriteBatch extends Drawable {
 
 				x = tmpMatrix.transformX(px, py);
 				y = tmpMatrix.transformY(px, py);
-				addBounds(relativeTo, out, x, y,1e-10,1e-10);
+				addBounds(relativeTo, out, x, y, eps,eps);
 
 				var px = t.dx + hx, py = t.dy;
 				x = tmpMatrix.transformX(px, py);
 				y = tmpMatrix.transformY(px, py);
-				addBounds(relativeTo, out, x, y,1e-10,1e-10);
+				addBounds(relativeTo, out, x, y, eps,eps);
 
 				var px = t.dx, py = t.dy + hy;
 				x = tmpMatrix.transformX(px, py);
 				y = tmpMatrix.transformY(px, py);
-				addBounds(relativeTo, out, x, y,1e-10,1e-10);
+				addBounds(relativeTo, out, x, y, eps,eps);
 
 				var px = t.dx + hx, py = t.dy + hy;
 				x = tmpMatrix.transformX(px, py);
 				y = tmpMatrix.transformY(px, py);
-				addBounds(relativeTo, out, x, y,1e-10,1e-10);
+				addBounds(relativeTo, out, x, y, eps,eps);
 			} else
 				addBounds(relativeTo, out, e.x + tile.dx, e.y + tile.dy, tile.width, tile.height);
 			e = e.next;
@@ -564,10 +559,11 @@ class SpriteBatch extends Drawable {
 	}
 	
 	public function getElementBounds( e:BatchElement,relativeTo:h2d.Sprite, ?out) {
-		if ( out == null ) out = new h2d.col.Bounds();
+		if ( out == null ) 			out = new h2d.col.Bounds();
 		if( relativeTo == null ) 	relativeTo = getScene();
 		if ( relativeTo == null )	relativeTo = new Sprite();
 		
+		var eps = 1e-10;
 		var ca = Math.cos(e.rotation), sa = Math.sin(e.rotation);
 		var t = e.tile;
 		var hx = t.width, hy = t.height;
@@ -581,22 +577,22 @@ class SpriteBatch extends Drawable {
 		
 		x = tmpMatrix.transformX(px, py);
 		y = tmpMatrix.transformY(px, py);
-		addBounds(relativeTo, out, x, y,1e-10,1e-10);
+		addBounds(relativeTo, out, x, y, eps,eps);
 
 		var px = t.dx + hx, py = t.dy;
 		x = tmpMatrix.transformX(px, py);
 		y = tmpMatrix.transformY(px, py);
-		addBounds(relativeTo, out, x, y,1e-10,1e-10);
+		addBounds(relativeTo, out, x, y, eps,eps);
 
 		var px = t.dx, py = t.dy + hy;
 		x = tmpMatrix.transformX(px, py);
 		y = tmpMatrix.transformY(px, py);
-		addBounds(relativeTo, out, x, y,1e-10,1e-10);
+		addBounds(relativeTo, out, x, y, eps,eps);
 
 		var px = t.dx + hx, py = t.dy + hy;
 		x = tmpMatrix.transformX(px, py);
 		y = tmpMatrix.transformY(px, py);
-		addBounds(relativeTo, out, x, y, 1e-10, 1e-10);
+		addBounds(relativeTo, out, x, y, eps,eps);
 		
 		if( out.isEmpty() ) {
 			addBounds(relativeTo, out, 0, 0, 1, 1);
@@ -664,7 +660,7 @@ class SpriteBatch extends Drawable {
 			#if debug
 			//are you really sure that is what you wanted to do...
 			//smells like a leak...
-			throw "SpriteBatch asssertion : too many elements..."+nbQuad()+" is too much";
+			throw "SpriteBatch asssertion : too many elements..."+nbQuad()+" is too much "+name;
 			#else
 			//prevent buffer fragmentations and crash
 			return;

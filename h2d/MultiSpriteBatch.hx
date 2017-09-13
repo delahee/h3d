@@ -207,8 +207,6 @@ class MultiBatchElement {
 class MultiSpriteBatch extends Drawable {
 
 	public var hasRotationScale : Bool; // costs is nearly 0
-	public var hasVertexColor(default,set) : Bool; 
-	public var hasVertexAlpha(default,set) : Bool; 
 
 	var first : MultiBatchElement;
 	var last : MultiBatchElement;
@@ -219,9 +217,9 @@ class MultiSpriteBatch extends Drawable {
 	public function new(?parent : h2d.Sprite) {
 		super(parent);
 
-		hasVertexColor = true;
 		hasRotationScale = true;
-		hasVertexAlpha = true;
+		shader.hasVertexAlpha = true;
+		shader.hasVertexColor = true;
 
 		tmpMatrix = new Matrix();
 	}
@@ -252,15 +250,6 @@ class MultiSpriteBatch extends Drawable {
 		length = 0;
 	}
 
-	inline function set_hasVertexColor(b) {
-		hasVertexColor=shader.hasVertexColor = b;
-		return b;
-	}
-
-	inline function set_hasVertexAlpha(b) {
-		hasVertexAlpha=shader.hasVertexAlpha = b;
-		return b;
-	}
 
 	/**
 	 */
@@ -350,10 +339,7 @@ class MultiSpriteBatch extends Drawable {
 	@:noDebug
 	public function pushElemSRT( tmp : FloatBuffer, e:MultiBatchElement, pos :Int):Int {
 		var t = e.tile;
-
-		#if debug
-		Assert.notNull( t , "all elem must have tiles");
-		#end
+		if ( e.scaleX == 1.0 && e.scaleY == 1.0 && e.rotation == 0.0 ) return pushElem(tmp, e, pos);
 		if ( t == null ) return 0;
 
 		var px : hxd.Float32 = t.dx, py = t.dy;
@@ -370,54 +356,44 @@ class MultiSpriteBatch extends Drawable {
 		tmp[pos++] = t.u;
 		tmp[pos++] = t.v;
 
-		if( hasVertexAlpha)
-			tmp[pos++] = e.alpha;
-		if ( hasVertexColor ) {
-			tmp[pos++] = e.colorR;
-			tmp[pos++] = e.colorG;
-			tmp[pos++] = e.colorB;
-			tmp[pos++] = e.colorA;
-		}
+		tmp[pos++] = e.alpha;
+		tmp[pos++] = e.colorR;
+		tmp[pos++] = e.colorG;
+		tmp[pos++] = e.colorB;
+		tmp[pos++] = e.colorA;
 		var px = t.dx + hx, py = t.dy;
 		tmp[pos++] = tmpMatrix.transformX(px, py);
 		tmp[pos++] = tmpMatrix.transformY(px, py);
 		tmp[pos++] = t.u2;
 		tmp[pos++] = t.v;
 
-		if( hasVertexAlpha)
-			tmp[pos++] = e.alpha;
-		if ( hasVertexColor ) {
-			tmp[pos++] = e.colorR;
-			tmp[pos++] = e.colorG;
-			tmp[pos++] = e.colorB;
-			tmp[pos++] = e.colorA;
-		}
+		tmp[pos++] = e.alpha;
+		tmp[pos++] = e.colorR;
+		tmp[pos++] = e.colorG;
+		tmp[pos++] = e.colorB;
+		tmp[pos++] = e.colorA;
+		
 		var px : hxd.Float32 = t.dx, py = t.dy + hy;
 		tmp[pos++] = tmpMatrix.transformX(px, py);
 		tmp[pos++] = tmpMatrix.transformY(px, py);
 		tmp[pos++] = t.u;
 		tmp[pos++] = t.v2;
-		if( hasVertexAlpha)
-			tmp[pos++] = e.alpha;
-		if ( hasVertexColor ) {
-			tmp[pos++] = e.colorR;
-			tmp[pos++] = e.colorG;
-			tmp[pos++] = e.colorB;
-			tmp[pos++] = e.colorA;
-		}
+		tmp[pos++] = e.alpha;
+		tmp[pos++] = e.colorR;
+		tmp[pos++] = e.colorG;
+		tmp[pos++] = e.colorB;
+		tmp[pos++] = e.colorA;
+		
 		var px = t.dx + hx, py = t.dy + hy;
 		tmp[pos++] = tmpMatrix.transformX(px, py);
 		tmp[pos++] = tmpMatrix.transformY(px, py);
 		tmp[pos++] = t.u2;
 		tmp[pos++] = t.v2;
-		if( hasVertexAlpha)
-			tmp[pos++] = e.alpha;
-		if ( hasVertexColor ) {
-			tmp[pos++] = e.colorR;
-			tmp[pos++] = e.colorG;
-			tmp[pos++] = e.colorB;
-			tmp[pos++] = e.colorA;
-		}
+		tmp[pos++] = e.alpha;
+		tmp[pos++] = e.colorR;
+		tmp[pos++] = e.colorG;
+		tmp[pos++] = e.colorB;
+		tmp[pos++] = e.colorA;
 
 		return pos;
 	}
@@ -425,10 +401,6 @@ class MultiSpriteBatch extends Drawable {
 	@:noDebug
 	public function pushElem( tmp : FloatBuffer, e:MultiBatchElement, pos :Int):Int {
 		var t = e.tile;
-
-		#if debug
-		Assert.notNull( t , "all elem must have tiles");
-		#end
 		if ( t == null ) return 0;
 
 		var sx : hxd.Float32 = e.x + t.dx;
@@ -438,53 +410,41 @@ class MultiSpriteBatch extends Drawable {
 		tmp[pos++] = sy;
 		tmp[pos++] = t.u;
 		tmp[pos++] = t.v;
-		if( hasVertexAlpha)
-			tmp[pos++] = e.alpha;
-		if ( hasVertexColor ) {
-			tmp[pos++] = e.colorR;
-			tmp[pos++] = e.colorG;
-			tmp[pos++] = e.colorB;
-			tmp[pos++] = e.colorA;
-		}
+		tmp[pos++] = e.alpha;
+		tmp[pos++] = e.colorR;
+		tmp[pos++] = e.colorG;
+		tmp[pos++] = e.colorB;
+		tmp[pos++] = e.colorA;
 
 		tmp[pos++] = sx + t.width;
 		tmp[pos++] = sy;
 		tmp[pos++] = t.u2;
 		tmp[pos++] = t.v;
-		if( hasVertexAlpha)
-			tmp[pos++] = e.alpha;
-		if ( hasVertexColor ) {
-			tmp[pos++] = e.colorR;
-			tmp[pos++] = e.colorG;
-			tmp[pos++] = e.colorB;
-			tmp[pos++] = e.colorA;
-		}
+		tmp[pos++] = e.alpha;
+		tmp[pos++] = e.colorR;
+		tmp[pos++] = e.colorG;
+		tmp[pos++] = e.colorB;
+		tmp[pos++] = e.colorA;
 
 		tmp[pos++] = sx;
 		tmp[pos++] = sy + t.height;
 		tmp[pos++] = t.u;
 		tmp[pos++] = t.v2;
-		if( hasVertexAlpha)
-			tmp[pos++] = e.alpha;
-		if ( hasVertexColor ) {
-			tmp[pos++] = e.colorR;
-			tmp[pos++] = e.colorG;
-			tmp[pos++] = e.colorB;
-			tmp[pos++] = e.colorA;
-		}
+		tmp[pos++] = e.alpha;
+		tmp[pos++] = e.colorR;
+		tmp[pos++] = e.colorG;
+		tmp[pos++] = e.colorB;
+		tmp[pos++] = e.colorA;
 
 		tmp[pos++] = sx + t.width;
 		tmp[pos++] = sy + t.height;
 		tmp[pos++] = t.u2;
 		tmp[pos++] = t.v2;
-		if( hasVertexAlpha)
-			tmp[pos++] = e.alpha;
-		if ( hasVertexColor ) {
-			tmp[pos++] = e.colorR;
-			tmp[pos++] = e.colorG;
-			tmp[pos++] = e.colorB;
-			tmp[pos++] = e.colorA;
-		}
+		tmp[pos++] = e.alpha;
+		tmp[pos++] = e.colorR;
+		tmp[pos++] = e.colorG;
+		tmp[pos++] = e.colorB;
+		tmp[pos++] = e.colorA;
 
 		return pos;
 	}
@@ -492,12 +452,20 @@ class MultiSpriteBatch extends Drawable {
 	override function getBoundsRec( relativeTo, out,forSize) {
 		super.getBoundsRec(relativeTo, out,forSize);
 		var e = first;
+		var t = e.tile;
+		var ca = Math.cos(e.rotation), sa = Math.sin(e.rotation);
+		var hx = t.width, hy = t.height;
+		var px = t.dx, py = t.dy;
+		var x, y;
+		var eps = 1e-10;
+		
 		while( e != null ) {
-			var t = e.tile;
-			var ca = Math.cos(e.rotation), sa = Math.sin(e.rotation);
-			var hx = t.width, hy = t.height;
-			var px = t.dx, py = t.dy;
-			var x, y;
+			t = e.tile;
+			ca = Math.cos(e.rotation);
+			sa = Math.sin(e.rotation);
+			hx = t.width; hy = t.height;
+			px = t.dx;
+			py = t.dy;
 
 			tmpMatrix.identity();
 			tmpMatrix.scale(e.scaleX, e.scaleY);
@@ -506,22 +474,22 @@ class MultiSpriteBatch extends Drawable {
 
 			x = tmpMatrix.transformX(px, py);
 			y = tmpMatrix.transformY(px, py);
-			addBounds(relativeTo, out, x, y,1e-10,1e-10);
+			addBounds(relativeTo, out, x, y, eps, eps);
 
 			var px = t.dx + hx, py = t.dy;
 			x = tmpMatrix.transformX(px, py);
 			y = tmpMatrix.transformY(px, py);
-			addBounds(relativeTo, out, x, y,1e-10,1e-10);
+			addBounds(relativeTo, out, x, y, eps, eps);
 
 			var px = t.dx, py = t.dy + hy;
 			x = tmpMatrix.transformX(px, py);
 			y = tmpMatrix.transformY(px, py);
-			addBounds(relativeTo, out, x, y,1e-10,1e-10);
+			addBounds(relativeTo, out, x, y, eps, eps);
 
 			var px = t.dx + hx, py = t.dy + hy;
 			x = tmpMatrix.transformX(px, py);
 			y = tmpMatrix.transformY(px, py);
-			addBounds(relativeTo, out, x, y,1e-10,1e-10);
+			addBounds(relativeTo, out, x, y, eps, eps);
 			
 			e = e.next;
 		}
@@ -531,8 +499,8 @@ class MultiSpriteBatch extends Drawable {
 
 	inline function getStride() {
 		var stride = 4;
-		if ( hasVertexColor ) stride += 4;
-		if ( hasVertexAlpha ) stride += 1;
+		stride += 4;
+		stride += 1;
 		return stride;
 	}
 

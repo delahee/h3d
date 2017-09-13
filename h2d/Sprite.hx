@@ -216,7 +216,8 @@ class Sprite {
 		out.yMax = ymax;
 	}
 
-	function addBounds( relativeTo : Sprite, out : h2d.col.Bounds, dx : Float, dy : Float, width : Float, height : Float ) {
+	@:noDebug
+	public function addBounds( relativeTo : Sprite, out : h2d.col.Bounds, dx : Float, dy : Float, width : Float, height : Float ) {
 
 		if( width <= 0 || height <= 0 ) return;
 
