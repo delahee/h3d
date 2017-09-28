@@ -43,6 +43,22 @@ class TileGroupAsPos implements ITextPos {
 	}
 }
 
+@:structInit
+class DropShadow {
+	
+	public var dx  		: Float;
+	public var dy		: Float;
+	public var color 	: Int;
+	public var alpha	: Float;
+	
+	public inline function new(dx, dy, color, alpha){
+		this.dx = dx;
+		this.dy = dy;
+		this.color = color;
+		this.alpha = alpha;
+	}
+}
+
 /**
  * @see h2d.Font for the font initalisation
  *
@@ -68,7 +84,7 @@ class Text extends Drawable implements IText {
 	public var textColor(default, set) : Int;
 	public var maxWidth(default, set) : Null<Float>;
 	
-	public var dropShadow : { dx : Float, dy : Float, color : Int, alpha : Float };
+	public var dropShadow : DropShadow;
 
 	public var textWidth(get, null) : Int;
 	public var textHeight(get, null) : Int;

@@ -34,7 +34,6 @@ typedef BaseConf = {
 	var metaName : String;
 	var eraseUnconfed:Bool;
 	
-	@:optionnal
 	var style: ConsoleButtonStyle;
 }
 
@@ -294,6 +293,7 @@ class Pad {
 	public var destroyed = false;
 
 	function new() {
+		conf = Reflect.copy(CONFIG_DUMMY);
 	}
 
 	var _name : String = null;

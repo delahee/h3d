@@ -31,7 +31,7 @@ class Buffer {
 	}
 	
 	//this buffer is potentially under draw process, it should not be allocated now to avoid stall
-	public function dirty() {
+	public inline function dirty() {
 		b.flags.set( BBF_DIRTY );
 	}
 
@@ -39,11 +39,11 @@ class Buffer {
 		return 'id:$id pos:$pos nvert:$nvert ' + ((next == null)?"":'next:${next.id}');
 	}
 	
-	public function isDisposed() {
+	public inline function isDisposed() {
 		return b == null || b.isDisposed();
 	}
 	
-	public function getDepth() {
+	public inline function getDepth() {
 		return 1 + ((next == null) ? 0 : next.getDepth());
 	}
 	

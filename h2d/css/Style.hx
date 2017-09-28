@@ -75,7 +75,7 @@ class Style {
 	public var opacity : Null<Float> = null;
 	public var transform : Null<Array<Transform>> = null;
 	
-	public var textShadow : { dx : Float, dy : Float, color : Int, alpha : Float } = null;
+	public var textShadow : h2d.Text.DropShadow = null;
 	
 	public inline function new() {
 	}
