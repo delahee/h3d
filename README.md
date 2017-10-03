@@ -44,12 +44,15 @@ Licence
 This whole code is licensed to it's contributors, namely
 
 Nicolas Cannasse for Motion Twin and Shiro Games
+
 David Elahee for Motion Twin
 
 The Motion Twin Team
+
 The Shiro Games Team
 
 The other contributors
+
 The Headbang Club
 
 under the MIT License.
