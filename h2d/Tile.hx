@@ -184,13 +184,15 @@ class Tile {
 	#end
 	
 	//I wonder if returning the empty texture is useful...
-	public function getTexture() : h3d.mat.Texture {
+	public inline function getTexture() : h3d.mat.Texture {
+		return 
 		if ( innerTex == null ) 
-			return Tools.getCoreObjects().getVoidTexture();
-		return innerTex;
+			innerTex;
+		else 
+			Tools.getCoreObjects().getVoidTexture();
 	}
 
-	public function isDisposed() {
+	public inline function isDisposed() {
 		return innerTex == null || innerTex.isDisposed();
 	}
 

@@ -128,7 +128,7 @@ class MultiBatchElement {
 		return h;
 	}
 	
-	public function setSize(w:Float, h:Float) : Void {
+	public inline function setSize(w:Float, h:Float) : Void {
 		set_width(w);
 		set_height(h);
 	}
@@ -185,8 +185,8 @@ class MultiBatchElement {
 	}
 	
 	public 
-	//inline
-	function getBounds() {
+	inline
+	function getBounds() : h2d.col.Bounds{
 		var bnd = new h2d.col.Bounds();
 		var c = tile.getCenterRatio();
 		bnd.addPoint2( x - c.x * width, y - c.y * height);

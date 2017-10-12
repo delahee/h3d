@@ -504,7 +504,7 @@ class Sprite {
 	@:noDebug
 	function calcAbsPos() {
 		if ( parent == null ) {
-			var t = h2d.Tools.getCoreObjects().tmpMatrix2D;
+			var t = new h2d.Matrix();
 			t.identity();
 			
 			if ( skewX != 0 || skewY != 0) 		t.skew( skewX, skewY );
@@ -522,14 +522,14 @@ class Sprite {
 			
 		} else { 
 			
-			var t = h2d.Tools.getCoreObjects().tmpMatrix2D;
+			var t = new h2d.Matrix();
 			t.identity();
 			
 			if ( skewX != 0 || skewY != 0) 		t.skew( skewX, skewY );
 			t.scale( scaleX, scaleY);
 			if ( rotation != 0) 				t.rotate(rotation);
 			
-			var p = h2d.Tools.getCoreObjects().tmpMatrix2D_2;
+			var p = new h2d.Matrix();
 			p.identity();
 			
 			p.a = parent.matA;

@@ -148,7 +148,7 @@ class Part extends h3d.scene.Mesh  {
 	
 	var idx : Int;
 	
-	//@:noDebug
+	@:noDebug
 	override function sync(ctx : h3d.scene.RenderContext) { 
 		if (!visible) return;
 		
