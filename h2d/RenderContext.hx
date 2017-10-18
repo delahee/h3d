@@ -40,11 +40,13 @@ class RenderContext {
 		buffer.reset();
 	}
 	
-	public function begin() {
+	public inline 
+	function begin() {
 		reset();
 	}
 	
-	public function end() {
+	public inline 
+	function end() {
 		flush();
 	}
 	
@@ -149,8 +151,6 @@ class RenderContext {
 		engine.selectMaterial(mat);
 	}
 	
-	
-	
 	public function flush(force=false) {
 		if ( buffer.length == 0 ) {
 			reset();
@@ -177,7 +177,8 @@ class RenderContext {
 	 * @return true if draw was flushed
 	 * @param	t
 	 */
-	public function addTexture(t:h3d.mat.Texture) : Int {
+	public  
+	function addTexture(t:h3d.mat.Texture) : Int {
 		for ( i in 0...MAX_TEXTURES ) 
 			if ( t == textures[i] )
 				return i;
@@ -191,7 +192,7 @@ class RenderContext {
 		return -1;
 	}
 	
-	function flushTextures() {
+	inline function flushTextures() {
 		for ( i in 0...MAX_TEXTURES ) 
 			textures[i] = null;
 	}

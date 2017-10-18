@@ -360,6 +360,7 @@ class Stage3dDriver extends Driver {
 		if( ctx != null ) ctx.enableErrorChecking = d && isHardware();
 	}
 	
+	@:noDebug
 	override function uploadVertexBuffer( v : VertexBuffer, startVertex : Int, vertexCount : Int, buf : hxd.FloatBuffer, bufPos : Int ) {
 		var data = buf.getNative();
 		
@@ -367,22 +368,26 @@ class Stage3dDriver extends Driver {
 		v.vbuf.uploadFromVector( bufPos == 0 ? data : data.slice(bufPos, vertexCount * v.stride + bufPos), startVertex, vertexCount );
 	}
 
+	@:noDebug
 	override function uploadVertexBytes( v : VertexBuffer, startVertex : Int, vertexCount : Int, bytes : haxe.io.Bytes, bufPos : Int ) {
 		apiCall();
 		v.vbuf.uploadFromByteArray( bytes.getData(), bufPos, startVertex, vertexCount );
 	}
 
+	@:noDebug
 	override function uploadIndexesBuffer( i : IndexBuffer, startIndice : Int, indiceCount : Int, buf : hxd.IndexBuffer, bufPos : Int ) {
 		var data = buf.getNative();
 		apiCall();
 		i.uploadFromVector( bufPos == 0 ? data : data.slice(bufPos, indiceCount + bufPos), startIndice, indiceCount );
 	}
 
+	@:noDebug
 	override function uploadIndexesBytes( i : IndexBuffer, startIndice : Int, indiceCount : Int, buf : haxe.io.Bytes, bufPos : Int ) {
 		apiCall();
 		i.uploadFromByteArray(buf.getData(), bufPos, startIndice, indiceCount );
 	}
 	
+	@:noDebug
 	override function selectMaterial( mbits : Int ) {
 		var diff = curMatBits ^ mbits;
 		if( diff != 0 ) {

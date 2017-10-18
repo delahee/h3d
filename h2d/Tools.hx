@@ -48,12 +48,12 @@ private class CoreObjects  {
 		planBuffer = h3d.Engine.getCurrent().mem.allocVector(vector, 4, 4);
 	}
 	
-	public function getEmptyTile() {
+	public inline function getEmptyTile() {
 		getEmptyTexture();
 		return emptyTile;
 	}
 	
-	public function getVoidTile() {
+	public inline function getVoidTile() {
 		getVoidTexture();
 		return voidTile;
 	}
@@ -100,21 +100,21 @@ class Tools {
 	
 	static var CORE : CoreObjects = null;
 	
-	public static function getEmptyTexture() 	return getCoreObjects().getEmptyTexture();
-	public static function getVoidTexture() 	return getCoreObjects().getVoidTexture();
+	public inline static function getEmptyTexture() return getCoreObjects().getEmptyTexture();
+	public inline static function getVoidTexture() 	return getCoreObjects().getVoidTexture();
 	
-	public static function getVoidTile() 		return getCoreObjects().getVoidTile();
-	public static function getEmptyTile() 		return getCoreObjects().getEmptyTile();
-	public static function getWhiteTile() 		return new Tile(getCoreObjects().getWhiteTexture(), 0, 0, 4, 4);
+	public inline static function getVoidTile() 	return getCoreObjects().getVoidTile();
+	public inline static function getEmptyTile() 	return getCoreObjects().getEmptyTile();
+	public inline static function getWhiteTile() 	return new Tile(getCoreObjects().getWhiteTexture(), 0, 0, 4, 4);
+	
+	
+	public static function createCoreObjects() {
+		if( CORE == null ) CORE = new CoreObjects();
+	}
 	
 	@:allow(h2d)
-	static function getCoreObjects() : CoreObjects {
-		var c = CORE;
-		if( c == null ) {
-			c = new CoreObjects();
-			CORE = c;
-		}
-		return c;
+	static inline function getCoreObjects() : CoreObjects {
+		return CORE;
 	}
 	
 	@:allow(h2d)

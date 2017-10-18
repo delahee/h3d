@@ -55,8 +55,11 @@ class Console extends h2d.Sprite {
 		cursor = new h2d.Bitmap(h2d.Tile.fromColor(tf.textColor | 0xFF000000, 1, font.lineHeight), tf);
 		commands = new Map();
 		aliases = new Map();
+		defaultCommands();
+	}
+	
+	public function defaultCommands(){
 		addCommand("help", "Show help", [ { name : "command", t : AString, opt : true } ], showHelp);
-		
 		addCommand("set", "sets a console's value", [ { name : "name", t : AString }, { name : "val", t : AString } ], setVal);
 		addCommand("setInt", "sets a console's value", [ { name : "name", t : AString }, { name : "val", t : AInt } ], setVal);
 		addCommand("setFloat", "sets a console's value", [ { name : "name", t : AString }, { name : "val", t : AFloat} ], setVal);
@@ -71,7 +74,7 @@ class Console extends h2d.Sprite {
 		aliases.set(name, command); 
 		#if debug
 		if ( !commands.exists(command) )
-			throw "invalid alias";
+			trace("invalid alias "+name+" > "+command);
 		#end
 	}
 

@@ -1089,11 +1089,11 @@ class Drawable extends h2d.Sprite {
 		return shader.colorMul;
 	}	
 
-	function get_filter() {
+	inline function get_filter() {
 		return shader.filter;
 	}
 	
-	function set_filter(v) {
+	inline function set_filter(v) {
 		return shader.filter = v;
 	}
 

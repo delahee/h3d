@@ -181,7 +181,8 @@ class Driver {
 		
 	}
 
-	public function apiCall() {
+	@:noDebug
+	public inline function apiCall() {
 		h3d.Engine.getCurrent().apiCalls++;
 	}
 	

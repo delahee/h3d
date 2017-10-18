@@ -16,6 +16,11 @@ class Point {
 		this.y = y;
 	}
 	
+	public inline function load(v:h2d.Vector){
+		x = v.x;
+		y = v.y;
+	}
+	
 	public inline function clone() {
 		return new Point(x,y);
 	}

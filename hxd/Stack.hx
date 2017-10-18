@@ -152,9 +152,8 @@ class Stack<T>  {
 		return s;
 	}
 	
-	public inline function toData() {
-		return arr;
-	}
+	public inline function toData() 	return arr;
+	public inline function toArray() 	return arr;
 	
 	public inline function fill(arr:Array<T>) {
 		for ( a in arr )

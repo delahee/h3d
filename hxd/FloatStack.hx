@@ -15,6 +15,10 @@ class FloatStack {
 		pos = 0;
 	}
 	
+	public inline function iterator(){
+		return buf.iterator();
+	}
+	
 	public inline function reserve(nb) {
 		if ( nb >= buf.length - 1 ) {
 			buf.grow( hxd.Math.imax( Std.int(buf.length * 1.75), nb + 1 ));
@@ -33,6 +37,15 @@ class FloatStack {
 	
 	public inline function toData() : hxd.FloatBuffer {
 		return buf;
+	}
+	
+	public inline function removeOrderedAt(idx:Int):Bool {
+		if ( idx < 0 ) return false;
+		if ( pos == 0 ) return false;
+		for ( i in idx...pos)
+			buf[i] = buf[i + 1];
+		pos--;
+		return true;
 	}
 	
 }
