@@ -1,6 +1,7 @@
 package h2d.col;
 import hxd.Math;
 
+@:structInit
 class Point {
 	
 	public var x : hxd.Float32;
@@ -14,6 +15,10 @@ class Point {
 	public inline function set(x = 0., y = 0.) {
 		this.x = x;
 		this.y = y;
+	}
+	
+	public inline function zero(){
+		x = y = 0.0;
 	}
 	
 	public inline function load(v:h2d.Vector){

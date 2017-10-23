@@ -144,6 +144,8 @@ class CachedBitmap extends Bitmap {
 			draw(ctx);
 	}
 	
+	var m = new h2d.Matrix();
+	
 	override function sync( ctx : RenderContext ) {
 		if( posChanged ) {
 			calcAbsPos();
@@ -168,7 +170,6 @@ class CachedBitmap extends Bitmap {
 			//
 			var w =  2 / tex.width  * targetScale;
 			var h = -2 / tex.height * targetScale;
-			var m = Tools.getCoreObjects().tmpMatrix2D;
 			
 			m.identity();
 			m.scale(w, h);

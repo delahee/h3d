@@ -109,7 +109,7 @@ class Tools {
 	
 	
 	public static function createCoreObjects() {
-		if( CORE == null ) CORE = new CoreObjects();
+		CORE = new CoreObjects();
 	}
 	
 	@:allow(h2d)
