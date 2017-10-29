@@ -320,6 +320,7 @@ class Vector {
 	inline function set_b(v) return z = v;
 	inline function set_a(v) return w = v;
 
+	///32 bit color set with alpha inclusion
 	public inline function setColor( c : Int ) {
 		var s = 1.0 / 255;
 		r = ((c >> 16) & 0xFF) * s;

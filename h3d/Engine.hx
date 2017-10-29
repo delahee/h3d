@@ -283,11 +283,11 @@ class Engine {
 	}
 	
 	public dynamic function onContextLost() {
-		if ( System.debugLevel>=1) trace('onContextLost');
+		trace('onContextLost');
 	}
 
 	public dynamic function onReady() {
-		if ( System.debugLevel>=1) trace('onReady');
+		trace('onReady');
 	}
 	
 	function onStageResize() {

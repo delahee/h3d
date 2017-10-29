@@ -151,7 +151,7 @@ class SwarmingPart extends ent.PartData {
 		var start = bm.Dice.roll(0, Math.floor(ags.length * (1.0-SAMPLE_FACTOR)) );
 		var end = start + Math.floor(ags.length * SAMPLE_FACTOR);
 		for ( i in start...end ) {
-			var a = ags.unsafeGet(i);
+			var a = ags.unsascfeGet(i);
 			if( a!=this && a.pos.dist2(pos) < IS_CLOSE*IS_CLOSE){
 				cohesion.incr( a.pos );
 				nb++;

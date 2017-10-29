@@ -56,9 +56,9 @@ class Tween {
 	var plays		: Int; // -1 = infini, 1 et plus = nombre d'exécutions (1 par défaut)
 	var fl_pixel	: Bool; // arrondi toutes les valeurs si TRUE (utile pour les anims pixelart)
 	
-	var onUpdate	: Null<Void->Void>;
-	var onUpdateT	: Null<Float->Void>; // callback appelé avec la progression (0->1) en paramètre
-	var onEnd		: Null<Void->Void>;
+	var onUpdate	: Null<TSprite->Void>;
+	var onUpdateT	: Null<TSprite->Float->Void>; // callback appelé avec la progression (0->1) en paramètre
+	var onEnd		: Null<TSprite->Void>;
 	
 	var interpolate	: Float->Float;
 	var delayMs		: Float;
@@ -305,13 +305,13 @@ class Tweenie {
 		update();
 	}
 	
-	
 	inline function onUpdate(t:TTw, n:Float) {
-		if ( t.onUpdate!=null ) 	t.onUpdate();
-		if ( t.onUpdateT!=null )	t.onUpdateT(n);
+		if ( t.onUpdate!=null ) 	t.onUpdate(t.parent);
+		if ( t.onUpdateT!=null )	t.onUpdateT(t.parent,n);
 	}
+	
 	inline function onEnd(t:TTw) {
-		if ( t.onEnd!=null )		t.onEnd();
+		if ( t.onEnd!=null )		t.onEnd(t.parent);
 	}
 	
 	static inline function identityStep(step) 	return step;
