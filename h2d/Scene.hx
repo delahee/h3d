@@ -564,6 +564,30 @@ class Scene extends Layers implements h3d.IDrawable {
 
 		return new Bitmap(target);
 	}
+	
+	public override function traverseWithDepth(f:h2d.Sprite-> Int->Void, ?depth = 0 ) {
+		var i = 0;
+		for ( p in prePasses ){
+			if ( Std.is(p, Sprite)){
+				var s = cast(p,Scene);
+				//trace("PREPASS / #"+i);
+				s.traverseWithDepth(f, depth);
+			}
+			i++;
+		}
+		//trace("SCENE "+name);
+		super.traverseWithDepth(f, depth);
+		var i = 0;
+		for ( p in extraPasses ){
+			if ( Std.is(p, Sprite)){
+				var s = cast(p,Scene);
+				//trace("EXTRAPASS / #"+i);
+				s.traverseWithDepth(f, depth);
+			}
+			i++;
+		}
+	}
+	
 
 	public function removeAllPasses() {
 		extraPasses = [];

@@ -132,22 +132,21 @@ class Stage3dDriver extends Driver {
 		return activated > 0;
 	}
 	
-	public var activated = 0;
+	public var activated = 1;
 	
-	function onActivate() {
-		trace("onActivate");
+	function onActivate(e) {
+		//trace("onActivate");
 		activated++;
 	}
 	
-	function onDectivate() {
-		trace("onDeactivate");
+	function onDectivate(e) {
+		//trace("onDeactivate");
 		activated--;
 	}
 	
 	override function init( onCreate, forceSoftware = false ) {
 		this.onCreateCallback = onCreate;
 		s3d.addEventListener(flash.events.Event.CONTEXT3D_CREATE, this.onCreate);
-		
 		s3d.addEventListener(flash.events.Event.ACTIVATE, this.onActivate);
 		s3d.addEventListener(flash.events.Event.DEACTIVATE, this.onDectivate);
 		
@@ -293,9 +292,7 @@ class Stage3dDriver extends Driver {
 		
 		apiCall();
 		
-		if ( !isActive ) {
-			return null;
-		}
+		if ( isDisposed() )  return null;
 		
 		//error 3694 here indicates texture creation attempt bfore context is restored
 		return ( t.isCubic ) 

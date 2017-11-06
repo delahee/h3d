@@ -145,6 +145,10 @@ class Texture {
 	}
 	
 	public function uploadBitmap( bmp : hxd.BitmapData, ?mipLevel = 0, ?side = 0 ) {
+		var disposed = h3d.Engine.getCurrent().driver.isDisposed();
+		
+		if (disposed) return;
+		
 		alloc();
 		mem.driver.uploadTextureBitmap(this, bmp, mipLevel, side);
 		

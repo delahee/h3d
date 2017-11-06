@@ -147,8 +147,11 @@ class Text extends Drawable implements IText {
 		if( glyphs != null && font == this.font )
 			return font;
 		this.font = font;
-		if( glyphs != null ) glyphs.remove();
+		
+		if ( glyphs != null )  { glyphs.remove(); glyphs = null; }
+		
 		glyphs = new TileGroup(font == null ? null : font.tile, this, shader);
+		glyphs.name = name+" subGlyphs";
 		shader = glyphs.shader;
 		rebuild();
 		return font;
@@ -202,9 +205,7 @@ class Text extends Drawable implements IText {
 	override function draw(ctx:RenderContext) {
 		glyphs.filter = filter;
 		glyphs.blendMode = blendMode;
-
 		if ( dropShadow != null ) {
-			
 			if( !useShadowAsOutline ){
 				glyphs.x += dropShadow.dx;
 				glyphs.y += dropShadow.dy;

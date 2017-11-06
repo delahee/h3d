@@ -41,6 +41,7 @@ class HtmlText extends Drawable {
 		}
 			
 		glyphs = new TileColorGroup(font == null ? null : font.tile, this);
+		glyphs.name = name+" html glyphs";
 		this.htmlText = htmlText;
 		return f;
 	}

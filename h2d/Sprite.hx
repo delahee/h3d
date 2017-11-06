@@ -765,6 +765,12 @@ class Sprite {
 			c.traverse(f);
 	}
 	
+	public function traverseWithDepth(f:h2d.Sprite->Int->Void,?depth = 0 ) {
+		f(this,depth);
+		for (c in this)
+			c.traverseWithDepth(f,depth++);
+	}
+	
 	function get_mouseX():Float {
 		return globalToLocal( new h2d.col.Point( stage.mouseX, stage.mouseY)).x;
 	}
