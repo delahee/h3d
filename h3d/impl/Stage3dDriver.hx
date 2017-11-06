@@ -127,9 +127,30 @@ class Stage3dDriver extends Driver {
 			curSamplerBits[i] = -1;
 	}
 	
+	
+	public override function isActive() {
+		return activated > 0;
+	}
+	
+	public var activated = 0;
+	
+	function onActivate() {
+		trace("onActivate");
+		activated++;
+	}
+	
+	function onDectivate() {
+		trace("onDeactivate");
+		activated--;
+	}
+	
 	override function init( onCreate, forceSoftware = false ) {
 		this.onCreateCallback = onCreate;
 		s3d.addEventListener(flash.events.Event.CONTEXT3D_CREATE, this.onCreate);
+		
+		s3d.addEventListener(flash.events.Event.ACTIVATE, this.onActivate);
+		s3d.addEventListener(flash.events.Event.DEACTIVATE, this.onDectivate);
+		
 		#if (flash12)//wait for adobe to fix their mess
 		if( flashVersion >= 12 && !forceSoftware ){
 			//experimental
@@ -271,6 +292,12 @@ class Stage3dDriver extends Driver {
 		t.lastFrame = frame;
 		
 		apiCall();
+		
+		if ( !isActive ) {
+			return null;
+		}
+		
+		//error 3694 here indicates texture creation attempt bfore context is restored
 		return ( t.isCubic ) 
 		? ctx.createCubeTexture(t.width, flash.display3D.Context3DTextureFormat.BGRA, t.isTarget, t.getMipLevels() )
 		: ctx.createTexture(t.width, t.height, flash.display3D.Context3DTextureFormat.BGRA, t.isTarget,  t.getMipLevels() );

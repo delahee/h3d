@@ -136,6 +136,10 @@ class Driver {
 	public function setDebug( b : Bool ) {
 	}
 	
+	public function isActive() {
+		return true;
+	}
+	
 	public function allocTexture( t : h3d.mat.Texture ) : Texture {
 		throw "assert";
 	}
