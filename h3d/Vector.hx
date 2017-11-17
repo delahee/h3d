@@ -328,6 +328,16 @@ class Vector {
 		b = (c & 0xFF) * s;
 		a = (c >>> 24) * s;
 	}
+	
+	///32 bit color set with alpha exclusion
+	public inline function setColorAlpha( c : Int,f:Float ) {
+		var s = 1.0 / 255;
+		r = ((c >> 16) & 0xFF) * s;
+		g = ((c >> 8) & 0xFF) * s;
+		b = (c & 0xFF) * s;
+		a = f;
+		return this;
+	}
 
 	public inline function toColor() : Int{
 		return (Std.int(a.clamp() * 255 + 0.499) << 24) | (Std.int(r.clamp() * 255 + 0.499) << 16) | (Std.int(g.clamp() * 255 + 0.499) << 8) | Std.int(b.clamp() * 255 + 0.499);

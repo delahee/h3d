@@ -159,6 +159,24 @@ class MultiBatchElement {
 	
 	public 
 	inline 
+	function setColor4(v:h3d.Vector) {
+		colorR = v.r;
+		colorG = v.g;
+		colorB = v.b;
+		colorA = v.a;
+	}
+	
+	public 
+	inline 
+	function setColor32(c:Int) {
+		colorR = ((c >> 16)	&0xff)	/ 255.0;
+		colorG = ((c >> 8)	&0xff) 	/ 255.0;
+		colorB = ((c 	)	&0xff) 	/ 255.0;
+		colorA = ((c >>>24)	&0xff) 	/ 255.0;
+	}
+	
+	public 
+	inline 
 	function setColorF(r,g,b,a) {
 		colorR = r;
 		colorG = g;
