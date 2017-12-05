@@ -272,14 +272,16 @@ class Engine {
 		set_fullScreen(fullScreen);
 		resize(width, height);
 		
-		if( disposed )
+		
+		
+		if( disposed ){
 			onContextLost();
-		else {
+			h2d.Tools.createCoreObjects();
+		} else {
+			h2d.Tools.createCoreObjects();
 			onReady();//do not reenter
 			onReady = function() { };
 		}
-		
-		h2d.Tools.createCoreObjects();
 	}
 	
 	public dynamic function onContextLost() {

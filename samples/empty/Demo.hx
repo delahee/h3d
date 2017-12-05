@@ -13,17 +13,10 @@ class Demo extends flash.display.Sprite{
 		engine.backgroundColor = 0xFFCCCCCC;
 		engine.init();
 		
-		f = openfl.Assets.getFont("assets/nokiafc22.ttf");
-		
 	}
-	public var nokia8 : h2d.Font;
-	public var nokia16 : h2d.Font;
-	var f:flash.text.Font;
 	var sb :h2d.SpriteBatch;
 	
 	function init() {
-		var opt : hxd.res.FontBuilder.FontBuildOptions= { antiAliasing:false};
-		nokia16 = hxd.res.FontBuilder.getFont( f.fontName, 16,opt);
 		
 		hxd.System.setLoop(update);
 		scene = new h2d.Scene();

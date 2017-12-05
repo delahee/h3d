@@ -313,6 +313,9 @@ class FontBuilder {
 				key += ";opt-chars:" + haxe.crypto.Crc32.make(haxe.io.Bytes.ofString(options.chars));
 			key += ";opt-premul:" + options.alphaPremultiplied;
 			
+			if( options.edgify != null )
+				key += ";opt-edgify:" + haxe.crypto.Crc32.make(haxe.io.Bytes.ofString(Std.string(options.edgify)));
+			
 			if (options.filters != null && options.filters.length > 0) {
 				var buf = new haxe.io.BytesBuffer();
 				for (filter in options.filters) {
