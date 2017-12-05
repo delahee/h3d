@@ -27,11 +27,15 @@ class Signal {
 		signalsOnce.remove(f);
 	}
 	
-	public function dispose() {
+	public inline function purge() {
+		dispose();
+	}
+	
+	public inline function dispose() {
 		signals = [];
 		signalsOnce = [];
 	}
 	
 	
-	public function getHandlerCount() return signals.length + signalsOnce.length;
+	public inline function getHandlerCount() return signals.length + signalsOnce.length;
 }

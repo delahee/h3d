@@ -170,6 +170,11 @@ class Stack<T>  {
 		return v;
 	}
 	
+	public function has( v:T ){
+		var idx = arr.indexOf(v);
+		return idx >= 0 && idx < pos;
+	}
+	
 	public function scramble() {
 		var rd = Std.random;
 		for(x in 0...(length + rd( length )) ){
