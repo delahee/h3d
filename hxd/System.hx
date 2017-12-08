@@ -176,7 +176,7 @@ opengl
 		var canvas = js.Browser.document.getElementById("webgl");
 		if( canvas != null ) {
 			canvas.style.cursor = switch( c ) {
-			case Default:
+			case Default: "";
 			case Button: "pointer";
 			case Move: "move";
 			case TextInput: "text";

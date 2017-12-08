@@ -36,16 +36,30 @@ class Demo extends flash.display.Sprite{
 	var fontName = "nokia";
 	var fontPath = "assets/nokiafc22.ttf";
 	
-	var fontNames 	= ['nokia','_3572','basis33','Hardpixel','Roboto-Black','Roboto-Regular', 'Haeccity DW','Haeccity DW Bold'];
+	var fontNames 	= ['nokia',"amaz","con",'caps','red alert','Red October-Regular','Soviet Punk','_3572',"namco",'basis33','Hardpixel','Roboto-Black','Roboto-Regular', 'Haeccity DW','Haeccity DW Bold',"cyrillic","UKIJKuYB","Minion Cyrillic Regular","MB","Capsmall C","sup"];
 	var fontPathes 	= [	
 		'assets/nokiafc22.ttf', 
+		'assets/AmazOOSTROVv.2.ttf', 
+		'assets/Consolas.ttf', 
+		
+		'assets/Capsmall.ttf', 
+		'assets/red alert extended.ttf', 
+		'assets/RedOctober.otf', 
+		'assets/Soviet Punk.ttf', 
 		'assets/_3572.ttf', 
+		'assets/PressStart2P.ttf', 
 		'assets/basis33.ttf', 
 		'assets/Hardpixel.OTF', 
 		'assets/Roboto-Black.ttf', 
 		'assets/Roboto-Regular.ttf', 
 		"assets/Haeccity DW.ttf",
 		"assets/Haeccity DW Bold.ttf",
+		"assets/cyrillic.ttf",
+		"assets/UKIJKuYB.ttf",
+		"assets/Minion Cyrillic Regular.ttf",
+		"assets/MB_Underground.ttf",
+		"assets/Capsmall_clean.ttf",
+		"assets/Suplexmentary Comic NC.ttf",
 	];
 	var pos = 0;
 	
@@ -59,6 +73,10 @@ class Demo extends flash.display.Sprite{
 	var defaultLum		= 0.99;
 	var defaultA		= 250;
 	public function createDoc(p)  {
+		
+		fontName = fontNames[pos];
+		fontPath = fontPathes[pos];
+	
 		var stage : hxd.Stage = hxd.Stage.getInstance();
 		var wid = 300;
 		var s = new h2d.Sprite(p);
@@ -87,7 +105,7 @@ class Demo extends flash.display.Sprite{
 			f.isVertical = false;
 			f.maxWidth = 200;
 			new h2d.Text(nokia16, f, "size");
-			iSize = new h2d.Input({font:nokia16, txt:"10", width:40}, f);
+			iSize = new h2d.Input({font:nokia16, txt:"8", width:40}, f);
 		}
 		
 		{
@@ -156,12 +174,16 @@ class Demo extends flash.display.Sprite{
 						} : null, 
 					chars: hxd.Charset.DEFAULT_CHARS + hxd.Charset.CYRILLIC };
 				trace(opt);
-				var f = hxd.res.FontBuilder.getFont( openfl.Assets.getFont(fontPath).fontName, Std.parseInt(iSize.value),opt);
-				var t = new h2d.Text(f, scene, "toto Здравствуйте!");
-				t.x = 50;
+				var f = hxd.res.FontBuilder.getFont( openfl.Assets.getFont(fontPath).fontName, Std.parseInt(iSize.value), opt);
+				
+				var text = "ver: 0.6669 rev:d832 _steam__d_\n";
+				text += "ARCADE\n";
+				text +=  "toto \n" + hxd.Charset.CYRILLIC;
+				var t = new h2d.Text(f, scene,text);
+				t.x = 20;
 				t.y =  Math.round(cy);
 				t.filter = false;
-				t.setScale(3);
+				t.setScale(2);
 				cy += Math.round(t.textHeight * 2 + 2);
 				
 				if ( cy > stage.height - 50 ){
@@ -175,6 +197,7 @@ class Demo extends flash.display.Sprite{
 				
 			};
 		}
+		
 		
 		
 	}

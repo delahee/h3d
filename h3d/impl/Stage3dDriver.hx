@@ -157,19 +157,20 @@ class Stage3dDriver extends Driver {
 			
 			#if !compatibilityMode
 			
-			/*
-				#if (air3&&flash17)
-				vec.push("standard_extended"));
+			
+				#if (air3 && flash17)
+				var STANDARD_EXTENDED = "standardExtended";
+				vec.push(Std.string(STANDARD_EXTENDED));
 				#end
-			*/
+			
 				#if flash14
-				vec.push("standard");
+				vec.push(Std.string(flash.display3D.Context3DProfile.STANDARD));
 				#end
-			/*
+			
 				#if flash16
-				vec.push("standard_constrained");
+				//vec.push(Std.string(flash.display3D.Context3DProfile.STANDARD_CONSTRAINED));
 				#end
-				*/
+				
 				vec.push(Std.string(flash.display3D.Context3DProfile.BASELINE_EXTENDED));
 				vec.push(Std.string(flash.display3D.Context3DProfile.BASELINE));
 			#end

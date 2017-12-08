@@ -9,7 +9,7 @@
 	<app main="Demo" file="empty" path="bin" swf-version="11.6" />
 	
 	<window background="#FFFFFF" fps="30" />
-	<window width="1280" height="720" unless="mobile" />
+	<window width="1800" height="960" unless="mobile" />
 	<window vsync="true" antialiasing="0" if="cpp" orientation="auto" resizable="true" />
 	
 	<!--
