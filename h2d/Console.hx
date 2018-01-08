@@ -153,8 +153,12 @@ class Console extends h2d.Sprite {
 		}
 	}
 
+	public function isInactive() {
+		return !bg.visible&&!logTxt.visible;
+	}
+	
 	public function isActive() {
-		return bg.visible;
+		return !isInactive();
 	}
 
 	function set_cursorPos(v:Int) {
@@ -163,7 +167,8 @@ class Console extends h2d.Sprite {
 	}
 
 	function handleKey( e : hxd.Event ) {
-		if( (shortKeyChars.indexOf(e.charCode)>=0) && !bg.visible ) {
+		if ( (shortKeyChars.indexOf(e.charCode) >= 0) && !bg.visible ) {
+			lastLogTime = haxe.Timer.stamp();
 			bg.visible = true;
 			logIndex = -1;
 		}
@@ -198,10 +203,11 @@ class Console extends h2d.Sprite {
 				cursorPos--;
 			}
 			return;
-		case Key.ENTER:
+		case Key.ENTER,Key.CTRL:
 			var cmd = tf.text;
 			tf.text = "";
 			cursorPos = 0;
+			lastLogTime = haxe.Timer.stamp();
 			handleCommand(cmd);
 			if( !logTxt.visible ) bg.visible = false;
 			return;
@@ -305,6 +311,7 @@ class Console extends h2d.Sprite {
 					if( v == v2 ) {
 						found = true;
 						vargs.push(v2);
+						break;
 					}
 				if( !found ) {
 					log('$v should be [${values.join("|")}] for argument ${a.name}', errorColor);

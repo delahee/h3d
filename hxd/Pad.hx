@@ -102,6 +102,7 @@ class Pad {
 		],
 		defaultYInverted:false, 
 		eraseUnconfed:true,
+		style:CBS_MS,
 	}
 	
 	

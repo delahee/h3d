@@ -394,4 +394,15 @@ class Graphics extends Drawable {
 		g.endFill();
 		return g;
 	}
+	
+	public static function fromPoint(x:Float,y:Float,?parent:h2d.Sprite,?col=0xFF0000,?alpha=0.5,?hasLine=false) : Graphics{
+		var g = new Graphics(parent);
+		if(hasLine) g.lineStyle(1.0);
+		g.beginFill(col & 0xffffffff, alpha);
+		g.x = x;
+		g.y = y;
+		g.drawRect(-2, -2, 4, 4);
+		g.endFill();
+		return g;
+	}
 }

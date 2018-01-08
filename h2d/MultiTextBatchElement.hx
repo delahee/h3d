@@ -27,8 +27,8 @@ class MTBLayout implements h2d.Text.ITextPos{
 			e.x = t.x + ((x + d.dx) * t.scaleX);
 			e.y = t.y + ((y + d.dy) * t.scaleY);
 			e.tile = tile;
-			e.color.setColor( d.color  );
-			e.color.a = t.alpha * d.alpha;
+			e.setColor( d.color );
+			e.alpha = t.alpha * d.alpha;
 			e.scaleX = t.scaleX;
 			e.scaleY = t.scaleY;
 		}
@@ -40,8 +40,8 @@ class MTBLayout implements h2d.Text.ITextPos{
 		e.scaleX = t.scaleX;
 		e.scaleY = t.scaleY;
 		e.tile = tile;
-		e.color.setColor( t.textColor );
-		e.color.a = t.alpha;
+		e.setColor( t.textColor );
+		e.alpha = t.alpha;
 	}
 }
 
@@ -66,7 +66,7 @@ class MultiTextBatchElement implements IText {
 	public var textWidth(get, null) 		: Int;
 	public var textHeight(get, null)	 	: Int;
 	public var textAlign(default, set) 		: h2d.Text.Align;
-	public var letterSpacing(default,set) 	: Int;
+	public var letterSpacing(default,set) 	: Float;
 	public var lineSpacing(default, set) 	: Int;
 
 	var elements : Array<MultiBatchElement>=[];
@@ -75,19 +75,18 @@ class MultiTextBatchElement implements IText {
 	public var x(default,set) 	: Float = 0.0;
 	public var y(default, set)	: Float = 0.0;
 
-	public var alpha(default, set)	:Float = 1.0;
-	public var scaleX(default, set) : Float = 1.0;
-	public var scaleY(default, set) : Float = 1.0;
-	public var visible(default, set) : Bool = true;
+	public var alpha(default, set)		: Float = 1.0;
+	public var scaleX(default, set) 	: Float = 1.0;
+	public var scaleY(default, set) 	: Float = 1.0;
+	public var visible(default, set) 	: Bool = true;
 
 	public function new(font:h2d.Font, master:MultiSpriteBatch) {
 		this.font = font;
 		this.sp = master;
-		sp.hasVertexColor = true;
 		layout = new MTBLayout(this);
 
 		textAlign = Left;
-		letterSpacing = 1;
+		letterSpacing = 1.0;
 		text = "";
 		textColor = 0xFFFFFF;
 		alpha = 1.0;
@@ -253,21 +252,17 @@ class MultiTextBatchElement implements IText {
 		var hasDropShadow = dropShadow != null;
 		if ( !hasDropShadow) {
 			for ( e in elements) {
-				e.color.setColor( textColor );
-				e.color.a = alpha;
+				e.setColor( textColor);
+				e.alpha = alpha;
 			}
 		}
 		else {
 			for ( i in 0...elements.length) {
 				var e = elements[i];
-				if ( (i & 1) == 0 ) {
-					e.color.setColor( dropShadow.color);
-					e.color.a = dropShadow.alpha * alpha;
-				}
-				else {
-					e.color.setColor( textColor  );
-					e.color.a = alpha;
-				}
+				if ( (i & 1) == 0 ) 
+					e.setColor( dropShadow.color,dropShadow.alpha * alpha);
+				else 
+					e.setColor( textColor ,alpha );
 			}
 		}
 		return c;

@@ -42,6 +42,11 @@ class IntStack {
 		return v;
 	}
 	
+	public inline function last() : Int {
+		if ( pos == 0 ) return 0;
+		return arr[pos - 1];
+	}
+	
 	public inline function unsafeGet(idx:Int) {
 		return arr[idx];
 	}

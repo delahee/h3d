@@ -41,7 +41,7 @@ class MultiBatchElement {
 	public var rotation : hxd.Float32;
 
 	public var visible : Bool;
-	public var alpha : Float;
+	public var alpha : Float = 1.0;
 	public var tile : Tile;
 	
 	public var colorR : hxd.Float32 = 1.0;
@@ -57,12 +57,13 @@ class MultiBatchElement {
 
 	@:noDebug
 	public inline function new( t : h2d.Tile) {
-		x = 0; y = 0; alpha = 1;
+		x = 0; y = 0; alpha = 1.0;
 		rotation = 0; scaleX = scaleY = 1;
 		priority = 0;
 		setColor(0xffffff,1.0);
 		tile = t;
 		visible = true;
+		blendMode = h2d.BlendMode.Normal;
 	}
 	
 	public function copy( e : MultiBatchElement) {
@@ -97,6 +98,7 @@ class MultiBatchElement {
 		nu.colorA = colorA;
 		nu.tile = tile.clone();
 		nu.visible = visible;
+		nu.blendMode = blendMode;
 		return cast nu;
 	}
 
@@ -468,7 +470,9 @@ class MultiSpriteBatch extends Drawable {
 	}
 
 	override function getBoundsRec( relativeTo, out,forSize) {
-		super.getBoundsRec(relativeTo, out,forSize);
+		super.getBoundsRec(relativeTo, out, forSize);
+		if ( first == null ) return;
+		
 		var e = first;
 		var t = e.tile;
 		var ca = Math.cos(e.rotation), sa = Math.sin(e.rotation);
@@ -586,7 +590,6 @@ class MultiSpriteBatch extends Drawable {
 			var curBlend : h2d.BlendMode = e.blendMode;
 			var lastElem = null;
 			
-			
 			while ( e != null ) {
 				if ( e.visible ) {
 					curTex = e.tile==null?null:e.tile.getTexture();
@@ -680,10 +683,7 @@ class MultiSpriteBatch extends Drawable {
 		return a;
 	}
 
-	//public static var spin = 0;
-
 	public inline function isEmpty() {
 		return first == null;
 	}
-
 }
