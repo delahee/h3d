@@ -272,6 +272,10 @@ class Bounds {
 		return b;
 	}
 	
+	public static inline function fromPoints2( minx : Float,miny : Float, maxx : Float,maxy : Float ) {
+		return fromPoints( new h2d.Vector(minx,miny),new h2d.Vector(maxx,maxy));
+	}
+	
 	public inline function random() : h2d.col.Point {
 		return new h2d.col.Point(
 			xMin + Math.random() * (xMax - xMin),

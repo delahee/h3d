@@ -178,7 +178,6 @@ class Demo extends flash.display.Sprite{
 				
 				var text = "ver: 0.6669 rev:d832 _steam__d_\n";
 				text += "ARCADE\n";
-				text +=  "toto \n" + hxd.Charset.CYRILLIC;
 				var t = new h2d.Text(f, scene,text);
 				t.x = 20;
 				t.y =  Math.round(cy);
