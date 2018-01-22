@@ -324,5 +324,4 @@ class TextBatchElement implements IText {
 		sp = null;
 		layout = null;
 	}
-
 }

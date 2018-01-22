@@ -204,6 +204,11 @@ class MultiBatchElement {
 		return v;
 	}
 	
+	public function safeChangePriority(v) {
+		if ( v == priority ) return v;
+		return changePriority(v);
+	}
+	
 	public 
 	inline
 	function getBounds() : h2d.col.Bounds{

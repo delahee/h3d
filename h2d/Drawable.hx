@@ -1196,7 +1196,6 @@ class Drawable extends h2d.Sprite {
 	}
 	
 	
-	
 	@:noDebug
 	function setupShader( engine : h3d.Engine, tile : h2d.Tile, options : Int ) {
 		var core = Tools.getCoreObjects();
