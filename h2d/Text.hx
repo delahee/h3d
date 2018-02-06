@@ -14,6 +14,7 @@ class TextLayoutInfos {
 	public var maxWidth:Null<Float>;
 	public var lineSpacing:Int;
 	public var letterSpacing:Float;
+	public var onGlyph:Int->Float->Float->Void;
 
 	public inline function new(t,m,lis,les) {
 		textAlign = t;
@@ -108,9 +109,8 @@ class Text extends Drawable implements IText {
 		textColor = 0xFFFFFFFF;
 	}
 
-	public inline function nbQuad() {
-		return dropShadow == null ? utf.length : utf.length*2;
-	}
+	public inline function nbQuad() return dropShadow == null ? utf.length : utf.length*2;
+	public inline function getGlyphs() return glyphs;
 
 	public override function clone<T>(?s:T) : T {
 		var t : Text = (s == null) ? new Text(font, parent) : cast s;
@@ -236,20 +236,20 @@ class Text extends Drawable implements IText {
 					var dsy = 0;
 					
 					switch(i) {
-						case 0: dsx = 1; dsy = 1;
-						case 1: dsx = -1; dsy = -1;
-						case 2: dsx = 1; dsy = -1;
-						case 3: dsx = -1; dsy = 1;
+						case 0: dsx = 1; dsy = 0;
+						case 1: dsx = -1; dsy = 0;
+						case 2: dsx = 0; dsy = -1;
+						case 3: dsx = 0; dsy = 1;
 					}
-					glyphs.x += dropShadow.dx*dsx;
-					glyphs.y += dropShadow.dy*dsy;
+					var ddx = dropShadow.dx * dsx;
+					var ddy = dropShadow.dy * dsy;
+					glyphs.x += ddx;
+					glyphs.y += ddy;
 					
 					glyphs.calcAbsPos();
 					glyphs.draw(ctx);
 					glyphs.x = ox;
 					glyphs.y = oy;
-
-					
 				}
 				glyphs.color = bulkColor;
 			}
@@ -280,6 +280,30 @@ class Text extends Drawable implements IText {
 		else 				rebuild();
 		return t;
 	}
+	
+	/**
+	 * @return the 
+	 */
+	public 
+	function getGlyphsPosition( pos:Int ) : h2d.Vector {
+		var v = new h2d.Vector(0,0);
+		initGlyphs(utf, true, null, function(idx:Int, x:Float, y:Float){
+			if( idx <= pos ){
+				v.x = x;
+				v.y = y;
+			}
+		});
+		return v;
+	}
+	
+	public 
+	function getAllGlyphsPositions() : Array<h2d.Vector> {
+		var a = [];
+		initGlyphs(utf, true, null, function(idx:Int, x:Float, y:Float){
+			a.push( new h2d.Vector( x, y ));
+		});
+		return a;
+	}
 
 	function rebuild() {
 		if ( allocated && text != null && font != null ) {
@@ -296,16 +320,17 @@ class Text extends Drawable implements IText {
 	}
 
 	@:noDebug
-	function initGlyphs( utf : hxd.IntStack, rebuild = true, lines : Array<Int> = null ) : h2d.col.PointInt {
+	function initGlyphs( utf : hxd.IntStack, rebuild = true, lines : Array<Int> = null , ?onGlyph:Int->Float->Float->Void) : h2d.col.PointInt {
 		var info = new TextLayoutInfos(textAlign, maxWidth, lineSpacing, letterSpacing);
+		if( onGlyph!=null ) info.onGlyph = onGlyph;
 		var r = _initGlyphs( new TileGroupAsPos(glyphs), font, info, utf, rebuild, lines);
 		numLines = 	if( font == null || r == null || info == null ) 1
 					else Std.int(r.y / (font.lineHeight + info.lineSpacing));
 		return r;
 	}
 
-	static var utf8Text = new hxd.IntStack();
-
+	static var 	utf8Text = new hxd.IntStack();
+	
 	@:noDebug
 	static
 	function _initGlyphs( glyphs :ITextPos, font:h2d.Font,info : TextLayoutInfos, utf : hxd.IntStack, rebuild = true, lines : Array<Int> = null ) : h2d.col.PointInt {
@@ -350,7 +375,10 @@ class Text extends Drawable implements IText {
 				}
 			}
 			if( e != null ) {
-				if( rebuild ) glyphs.add(x, y, e.t);
+				if ( rebuild ) {
+					if ( info.onGlyph != null) info.onGlyph(i, x, y);
+					glyphs.add(x, y, e.t);
+				}
 				x += Math.round(esize + info.letterSpacing);
 			}
 			if ( newline ) {
@@ -370,7 +398,9 @@ class Text extends Drawable implements IText {
 			} else
 				prevChar = cc;
 		}
-		if( calcLines ) lines.push(x);
+		if ( calcLines ) lines.push(x);
+		
+		if ( info.onGlyph != null) info.onGlyph( utf.length, x, y);
 
 		var ret = new h2d.col.PointInt(
 			x > xMax ? x : xMax,

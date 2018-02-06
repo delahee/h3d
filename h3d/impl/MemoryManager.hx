@@ -148,6 +148,8 @@ class MemoryManager {
 	
 	public inline function textureCount() return textures.length;
 	
+	public inline function getTextures() return textures;
+	
 	@:noDebug
 	function initIndexes() {
 		var indices = new hxd.IndexBuffer();
@@ -730,8 +732,13 @@ class MemoryManager {
 			
 		t.t = driver.allocTexture(t);
 		if( t.t == null ) {
-			if( !cleanTextures(true) ) throw "Maximum texture memory reached";
+			if ( !cleanTextures(true) ) throw "Maximum texture memory reached";
+			
+			#if debug
+			trace("tex alloc reentrance");
+			#end
 			allocTexture(t);
+			
 			return;
 		}
 		textures.push(t);

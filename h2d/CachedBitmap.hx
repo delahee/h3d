@@ -122,7 +122,7 @@ class CachedBitmap extends Bitmap {
 		
 		tex = new h3d.mat.Texture(tw, th, h3d.mat.Texture.TargetFlag() );
 		#if debug
-		//tex.name = 'CachedBitmap[$name]';
+		tex.name = 'CachedBitmap:'+name;
 		#end
 		
 		tex.realloc = innerRealloc.bind(tex);

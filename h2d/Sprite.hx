@@ -21,9 +21,6 @@ class Sprite {
 	public var 	scaleX(default,set) : hxd.Float32 = 1.0;
 	public var 	scaleY(default, set) : hxd.Float32 = 1.0;
 		
-	public var 	skewX(default,set) : hxd.Float32 = 0.0;
-	public var 	skewY(default, set) : hxd.Float32 = 0.0;
-	
 	/**
 	 * In radians
 	 */
@@ -68,7 +65,6 @@ class Sprite {
 	public function new( ?parent : Sprite ) {
 		matA = 1; matB = 0; matC = 0; matD = 1; absX = 0; absY = 0;
 		x = 0; y = 0; scaleX = 1; scaleY = 1; rotation = 0;
-		skewX = 0; skewY = 0;
 		
 		posChanged = true;
 		visible = true;
@@ -91,8 +87,6 @@ class Sprite {
 		s.scaleY 	= scaleY;
 		s.rotation 	= rotation;
 		s.visible 	= visible;
-		s.skewX 	= skewX;
-		s.skewY		= skewY;
 		
 		for ( c in childs )
 			s.addChild( c.clone() );
@@ -501,13 +495,21 @@ class Sprite {
 		}
 	}
 	
+	public function getMatrix() : h2d.Matrix{
+		var t = new h2d.Matrix();
+		t.identity();
+		t.scale( scaleX, scaleY);
+		t.rotate(rotation);
+		t.translate(x, y );
+		return t;
+	}
+	
 	@:noDebug
 	function calcAbsPos() {
 		if ( parent == null ) {
 			var t = new h2d.Matrix();
 			t.identity();
 			
-			if ( skewX != 0 || skewY != 0) 		t.skew( skewX, skewY );
 			t.scale( scaleX, scaleY);
 			if( rotation != 0) 					t.rotate(rotation);
 			
@@ -525,7 +527,6 @@ class Sprite {
 			var t = new h2d.Matrix();
 			t.identity();
 			
-			if ( skewX != 0 || skewY != 0) 		t.skew( skewX, skewY );
 			t.scale( scaleX, scaleY);
 			if ( rotation != 0) 				t.rotate(rotation);
 			
@@ -589,18 +590,6 @@ class Sprite {
 	
 	inline function set_scaleY(v) {
 		scaleY = v;
-		posChanged = true;
-		return v;
-	}
-	
-	inline function set_skewX(v) {
-		skewX = v;
-		posChanged = true;
-		return v;
-	}
-	
-	inline function set_skewY(v) {
-		skewY = v;
 		posChanged = true;
 		return v;
 	}

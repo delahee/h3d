@@ -35,7 +35,7 @@ class Interactive extends Drawable {
 	}
 
 	override function draw( ctx : RenderContext ) {
-		if ( backgroundColor != null && (backgroundColor>>>24) > 0 ) {
+		if ( backgroundColor != null && (backgroundColor>>>24) > 0 ) { //don't use for prod content please, cuz may have a weird alloc policy if width and height changes a lot
 			ctx.flush();
 			drawTile(ctx,h2d.Tile.fromColor(backgroundColor,Std.int(width),Std.int(height)));
 		}

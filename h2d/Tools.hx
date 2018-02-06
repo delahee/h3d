@@ -72,7 +72,7 @@ private class CoreObjects  {
 	
 	public function getWhiteTexture() {
 		if( whiteTexture == null || whiteTexture.isDisposed() ) {
-			if( whiteTexture != null ) whiteTexture.dispose();
+			if( whiteTexture != null  ) whiteTexture.dispose();
 			whiteTexture = h3d.mat.Texture.fromColor(0xFFFFFFFF);
 			#if debug
 			whiteTexture.name = 'whiteTexture';

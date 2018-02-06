@@ -32,9 +32,7 @@ private class TileLayerContent extends h3d.prim.Primitive {
 		yMax = hxd.Math.NEGATIVE_INFINITY;
 	}
 	
-	
-	
-	public inline function add( /*p:h2d.Drawable, */x : Int, y : Int, t : Tile ) {
+	public inline function add( x : Int, y : Int, t : Tile ) {
 		var sx = x + t.dx;
 		var sy = y + t.dy;
 		var sx2 = sx + t.width;
@@ -64,6 +62,12 @@ private class TileLayerContent extends h3d.prim.Primitive {
 		if( sy < yMin ) yMin = sy;
 		if( sx2 > xMax ) xMax = sx2;
 		if( sy2 > yMax ) yMax = sy2;
+	}
+	
+	public inline function getVertex(idx:Int){
+		var x = tmp.get(idx >> 4);
+		var y = tmp.get(idx >> 4) + 1;
+		return new h2d.Vector(x, y);
 	}
 	
 	override public function triCount() {
@@ -163,6 +167,10 @@ class TileGroup extends Drawable {
 	override function onDelete() {
 		content.dispose();
 		super.onDelete();
+	}
+	
+	public function getVertex(idx:Int){
+		return content.getVertex(idx);
 	}
 	
 	public inline function add(x:Int, y:Int, t) {

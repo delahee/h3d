@@ -105,6 +105,10 @@ class Texture {
 		return wrap = w;
 	}
 	
+	public inline function toString() {
+		return "id:" + id +"name:"+name+ " sz:" + width + "x" + height;
+	}
+	
 	inline function hasDefaultFlags() {
 		return bits & 0x80000 == 0;
 	}
@@ -251,7 +255,7 @@ class Texture {
 		var fl = haxe.EnumFlags.ofInt(0);
 		fl.set(NoAlloc);
 		var t = new Texture( 4, 4, fl);
-		t.name = "h3d.fromColor#" + fromColorUid;
+		t.name = "h3d.fromColor#" + fromColorUid+" col: #"+ StringTools.hex(color);
 		
 		var color = color;
 		t.realloc = function() t.clear(color);
