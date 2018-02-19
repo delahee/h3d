@@ -780,7 +780,7 @@ class Drawable extends h2d.Sprite {
 	public static inline var HAS_UV_POS = 4;
 	public static inline var BASE_TILE_DONT_CARE = 8;
 
-	public var shader(default,null) : DrawableShader;
+	public var shader : DrawableShader;
 	
 	//public var alpha(get, set) : Float;
 	
