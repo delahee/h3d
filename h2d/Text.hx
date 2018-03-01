@@ -141,6 +141,10 @@ class Text extends Drawable implements IText {
 		return initGlyphs(textToUtf(text),false).x;
 	}
 	
+	public function calcTextHeight( text : String ) {
+		return initGlyphs(textToUtf(text),false).y;
+	}
+	
 	public function centered() textAlign = Center;
 
 	function set_font(font) {
