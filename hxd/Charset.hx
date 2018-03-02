@@ -23,6 +23,30 @@ class Charset {
 	**/
 	public static var CYRILLIC = "АБВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯабвгдежзийклмнопрстуфхцчшщъыьэюя—";
 	
+	/**
+		Polish support
+	**/
+	public static var POLISH = "ĄĆĘŁŃÓŚŹŻąćęłńóśźż";
+	
+	/**
+		HANGUL_SYL support for korean
+	**/
+	public static function HANGUL_SYL(){
+		var s = new StringBuf();
+		for ( i in 0xAC00...0xD7A3+1){
+			s.addChar( i );
+		}
+		return s.toString();
+	};
+	
+	public static function HANGUL_JAMMO(){
+		var s = new StringBuf();
+		for ( i in 0x1100...0x11FF){
+			s.addChar( i );
+		}
+		return s.toString();
+	};
+	
 	public static var DEFAULT_CHARS = ASCII + LATIN1;
 	
 	var map : Map<Int,Int>;
