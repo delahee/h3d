@@ -348,6 +348,10 @@ class Vector {
 		return new Vector(((c>>16)&0xFF)*s,((c>>8)&0xFF)*s,(c&0xFF)*s,(c >>> 24)*s);
 	}
 	
+	public static inline function fromColorAlpha( c : Int, alpha : Float = 1.0 ) {
+		return new Vector(((c>>16)&0xFF),((c>>8)&0xFF),(c&0xFF),alpha);
+	}
+	
 	public static var ONE = new h3d.Vector(1.0, 1.0, 1.0, 1.0);
 	public static var ZERO = new h3d.Vector(0.0,0.0,0.0,0.0);
 
