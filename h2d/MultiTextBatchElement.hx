@@ -75,10 +75,11 @@ class MultiTextBatchElement implements IText {
 	public var x(default,set) 	: Float = 0.0;
 	public var y(default, set)	: Float = 0.0;
 
-	public var alpha(default, set)		: Float = 1.0;
-	public var scaleX(default, set) 	: Float = 1.0;
-	public var scaleY(default, set) 	: Float = 1.0;
-	public var visible(default, set) 	: Bool = true;
+	public var alpha(default, set)		: Float 	= 1.0;
+	public var scaleX(default, set) 	: Float 	= 1.0;
+	public var scaleY(default, set) 	: Float 	= 1.0;
+	public var visible(default, set) 	: Bool 		= true;
+	public var name						: String	= null;
 
 	public function new(font:h2d.Font, master:MultiSpriteBatch) {
 		this.font = font;

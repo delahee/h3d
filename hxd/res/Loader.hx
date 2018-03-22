@@ -2,7 +2,9 @@ package hxd.res;
 
 class Loader {
 	
-	public var fs(default,null) : FileSystem;
+	public var fs(default, null) : FileSystem;
+	public var useCache = false;
+	
 	var cache : Map<String,Dynamic>;
 	
 	public function new(fs) {
@@ -19,6 +21,8 @@ class Loader {
 	}
 	
 	function loadTexture( path : String ) : Texture {
+		if ( !useCache ) return new Texture(fs.get(path));
+		
 		var t = cache.get(path);
 		if( t == null ) {
 			t = new Texture(fs.get(path));
@@ -36,7 +40,6 @@ class Loader {
 		return m;
 	}
 
-	
 	function loadSound( path : String , ?cached = true) : Sound {
 		var s : Sound = cache.get(path);
 		if( s == null ) {

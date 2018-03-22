@@ -127,14 +127,11 @@ class Charset {
 	}
 	
 	public function isBreakChar(cc : Int) {
-		
+		//indo europeean
 		if ( cc == code('!') || cc == code('?') || cc ==code('.') || cc ==code(',') || cc == code(':') )
 			return true;
-			
-		if ( cc == code('！')|| cc == code('？') || cc ==code('.') || cc ==code(',') || cc == code(':') )
-			return true;
-			
-		if ( cc == code('!') )
+		//japanese separators
+		if ( cc == code("？")|| cc == code("！") || cc ==code('、') || cc ==code('。') || cc == code('を') )
 			return true;
 			
 		return isSpace(cc);
