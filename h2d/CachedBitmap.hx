@@ -29,6 +29,8 @@ class CachedBitmap extends Bitmap {
 	public var onBeforeRealloc : Void->Void;
 	public var onAfterRealloc : Void->Void;
 	
+	public var skipRender = false;
+	
 	/**
 	 * This tile always is always filled with something, it starts as an empty tile and then gets hotloaded with content 
 	 * as it is rendered
@@ -121,10 +123,7 @@ class CachedBitmap extends Bitmap {
 		#end
 		
 		tex = new h3d.mat.Texture(tw, th, h3d.mat.Texture.TargetFlag() );
-		#if debug
 		tex.name = 'CachedBitmap:'+name;
-		#end
-		
 		tex.realloc = innerRealloc.bind(tex);
 		
 		renderDone = false;
@@ -166,7 +165,7 @@ class CachedBitmap extends Bitmap {
 		if ( hasSizeChanged && !freezed)
 			clean();
 		
-		if( !freezed || !renderDone ) {
+		if( (!freezed || !renderDone) && !skipRender ) {
 			ctx.flush();
 
 			var tile = getTile();
