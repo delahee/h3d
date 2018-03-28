@@ -64,13 +64,15 @@ class Font {
 	
 	public var sharedTex:Bool = false;
 	var glyphs : Map<Int,FontChar>;
-	var defaultChar : FontChar;
+	
+	public var emptyChar(default,null) : FontChar;//let's see what happens
+	public var defaultChar : FontChar;//let's see what happens
 	
 	function new(name,size) {
 		this.name = name;
 		this.size = size;
 		glyphs = new Map();
-		defaultChar = new FontChar(new Tile(null, 0, 0, 0, 0),0);
+		defaultChar = emptyChar = new FontChar(new Tile(null, 0, 0, 0, 0),0);
 		charset = hxd.Charset.getDefault();
 	}
 	
@@ -79,10 +81,6 @@ class Font {
 		var c = glyphs.get(code);
 		if( c == null ) {
 			c = charset.resolveChar(code, glyphs);
-			#if debug
-			//if ( c == null ) 
-			//	throw "cannot resolve tile for character : 0x" + StringTools.hex(code);
-			#end
 			if ( c == null ) c = defaultChar;
 		}
 		return c;

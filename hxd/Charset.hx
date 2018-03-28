@@ -134,6 +134,14 @@ class Charset {
 		if ( cc == code("？")|| cc == code("！") || cc ==code('、') || cc ==code('。') || cc == code('を') )
 			return true;
 			
+		//chinese separators
+		if ( cc == code("？")|| cc == code("！") || cc ==code("，") || cc ==code("。")  )
+			return true;
+		
+		//korean separators
+		if ( cc == code("!")|| cc == code(".") || cc ==code("?") )
+			return true;
+			
 		return isSpace(cc);
 	}
 
