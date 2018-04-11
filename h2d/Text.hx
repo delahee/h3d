@@ -348,6 +348,9 @@ class Text extends Drawable implements IText {
 
 		for ( i in 0...utf.length ) {
 			var cc = utf.unsafeGet(i);
+			
+			//trace( "code: 0x" + StringTools.hex(cc) );
+			
 			var e = font.getChar(cc);
 			var newline = cc == '\n'.code;
 			var esize : Int = e.width + e.getKerningOffset(prevChar);

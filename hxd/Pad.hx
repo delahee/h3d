@@ -220,10 +220,10 @@ class Pad {
 	}
 
 	public static var CONFIG_DUMMY : BaseConf = cast {
-		ids:["dummy 汉"],
-		name:"dummy 汉",
-		matchString:"dummy 汉",
-		metaName:"dummy 汉",
+		ids:["dummy"],
+		name:"dummy",
+		matchString:"dummy",
+		metaName:"dummy",
 		analogX : 0,
 		analogY : 0,
 		
@@ -249,7 +249,11 @@ class Pad {
 		"", "DUp", "DDown", "DLeft", "DRight", //5-9
 		"SQUARE", "CROSS", "CIRCLE", "TRIANGLE", "L1",//10-14
 		"R1", "L2", "R2", "Share", "Options", //15-19
-		"L3","R3","PS Button",//20-24
+		"L3", "R3", "PS Button",//20-24
+		
+		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+		"","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",//for pads with exotic button count
 		],
 		defaultYInverted:false,
 		eraseUnconfed:false,
@@ -354,8 +358,12 @@ class Pad {
 		return 
 		if ( conf == null)
 			"BUTTON_" + idx;
-		else 
-			conf.names[idx];
+		else {
+			var n : String = conf.names[idx];
+			if ( n == null)
+				n = "#"+idx;
+			return n;
+		}
 	}
 	/**
 		Creates a new dummy unconnected game pad, which can be used instead of checking for null everytime. Use wait() to get real physical game pad access.
@@ -465,6 +473,10 @@ class Pad {
 				if ( c.defaultYInverted ) p.yInverted = true;
 				break;
 			}
+		}
+		
+		if ( p.conf == null){
+			p.conf = CONFIG_DUMMY;
 		}
 		
 		#if garbageStick

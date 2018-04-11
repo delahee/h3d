@@ -76,7 +76,8 @@ class Font {
 		charset = hxd.Charset.getDefault();
 	}
 	
-	public inline 
+	public 
+	inline 
 	function getChar( code : Int ) : FontChar{
 		var c = glyphs.get(code);
 		if( c == null ) {
