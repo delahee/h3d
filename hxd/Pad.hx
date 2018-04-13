@@ -319,6 +319,10 @@ class Pad {
 	}
 
 	public function isDown(idx:Int) : Bool {
+		if ( idx >= values.length ) {
+			//button/axis cannot be bound
+			return false;
+		}
 		return values[idx] <= -0.25 || values[idx] >= 0.25;
 	}
 	
@@ -327,10 +331,15 @@ class Pad {
 	}
 	
 	public function wasDown(idx:Int) : Bool {
+		if ( idx >= values.length ) {
+			return false;
+		}
 		return prevValues[idx] <= -0.25 || prevValues[idx] >= 0.25;
 	}
 	
 	public function isAxis(btIdx:Int){
+		if ( btIdx >= nativeIds.length)
+			return false;
 		return nativeIds[btIdx].startsWith("AXIS_");
 	}
 	
