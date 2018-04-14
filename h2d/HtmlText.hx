@@ -9,7 +9,7 @@ class HtmlText extends Drawable {
 	public var textWidth(get, null) : Int;
 	public var textHeight(get, null) : Int;
 	
-	public var letterSpacing : Int;
+	public var letterSpacing : Float = 0.0;
 	public var lineSpacing:Int;
 	public var maxWidth : Null<Float>;
 	
@@ -113,7 +113,7 @@ class HtmlText extends Drawable {
 				}
 			}
 			if( e != null )
-				x += esize + letterSpacing;
+				x += Math.round(esize + letterSpacing);
 			if( newline ) {
 				x = 0;
 				prevChar = -1;
@@ -164,7 +164,7 @@ class HtmlText extends Drawable {
 				var e = font.getChar(cc);
 				xPos += e.getKerningOffset(prevChar);
 				if( rebuild ) glyphs.add(xPos, yPos, e.t);
-				xPos += e.width + letterSpacing;
+				xPos += Math.round(e.width + letterSpacing);
 				prevChar = cc;
 			}
 		}

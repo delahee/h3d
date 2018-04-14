@@ -16,7 +16,7 @@ class Charset {
 	/**
 		The Latin1 (ISO 8859-1) charset (only the extra chars, no the ASCII part)
 	**/
-	public static var LATIN1 = "¡¢£¤¥¦§¨©ª«¬-®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿ";
+	public static var LATIN1 = "¡¢£¤¥¦§¨©ª«¬-®¯°±²³´µ¶·¸¹º»¼½¾¿ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿёÞßÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ÷ØÙÚÛÜÝÞŸЁ";
 	
 	/**
 		Russian support
@@ -48,6 +48,7 @@ class Charset {
 	};
 	
 	public static var DEFAULT_CHARS = ASCII + LATIN1;
+	public static var KEEP_ACCENTS = false;
 	
 	var map : Map<Int,Int>;
 
@@ -61,41 +62,45 @@ class Charset {
 		inline function m(a, b) {
 			map.set(a, b);
 		}
+		
 		// fullwidth unicode to ASCII (if missing)
 		for( i in 1...0x5E )
 			m(0xFF01 + i, 0x21 + i);
 			
-		// Latin1 accents
-		for( i in code("À")...code("Æ") + 1 )
-			m(i, code("A"));
-		for( i in code("à")...code("æ") + 1 )
-			m(i, code("a"));
-		for( i in code("È")...code("Ë") + 1 )
-			m(i, code("E"));
-		for( i in code("è")...code("ë") + 1 )
-			m(i, code("e"));
-		for( i in code("Ì")...code("Ï") + 1 )
-			m(i, code("I"));
-		for( i in code("ì")...code("ï") + 1 )
-			m(i, code("i"));
-		for( i in code("Ò")...code("Ö") + 1 )
-			m(i, code("O"));
-		for( i in code("ò")...code("ö") + 1 )
-			m(i, code("o"));
-		for( i in code("Ù")...code("Ü") + 1 )
-			m(i, code("U"));
-		for( i in code("ù")...code("ü") + 1 )
-			m(i, code("u"));
-			
-		m(code("Ç"), code("C"));
-		m(code("ç"), code("C"));
-		m(code("Ð"), code("D"));
-		m(code("Þ"), code("d"));
-		m(code("Ñ"), code("N"));
-		m(code("ñ"), code("n"));
-		m(code("Ý"), code("Y"));
-		m(code("ý"), code("y"));
-		m(code("ÿ"), code("y"));
+		if( !KEEP_ACCENTS ){
+			// Latin1 accents
+			for( i in code("À")...code("Æ") + 1 )
+				m(i, code("A"));
+			for( i in code("à")...code("æ") + 1 )
+				m(i, code("a"));
+			for( i in code("È")...code("Ë") + 1 )
+				m(i, code("E"));
+			for( i in code("è")...code("ë") + 1 )
+				m(i, code("e"));
+			for( i in code("Ì")...code("Ï") + 1 )
+				m(i, code("I"));
+			for( i in code("ì")...code("ï") + 1 )
+				m(i, code("i"));
+			for( i in code("Ò")...code("Ö") + 1 )
+				m(i, code("O"));
+			for( i in code("ò")...code("ö") + 1 )
+				m(i, code("o"));
+			for( i in code("Ù")...code("Ü") + 1 )
+				m(i, code("U"));
+			for( i in code("ù")...code("ü") + 1 )
+				m(i, code("u"));
+				
+			m(code("Ç"), code("C"));
+			m(code("ç"), code("C"));
+			m(code("Ð"), code("D"));
+			m(code("Þ"), code("d"));
+			m(code("Ñ"), code("N"));
+			m(code("ñ"), code("n"));
+			m(code("Ý"), code("Y"));
+			m(code("ý"), code("y"));
+			m(code("ÿ"), code("y"));
+		}
+		
 		// unicode spaces
 		m(0x3000, 0x20); // full width space
 		m(0xA0, 0x20); // nbsp
