@@ -238,7 +238,6 @@ class Text extends Drawable implements IText {
 				for ( i in 0...4) {
 					var dsx = 0;
 					var dsy = 0;
-					
 					switch(i) {
 						case 0: dsx = 1; dsy = 0;
 						case 1: dsx = -1; dsy = 0;

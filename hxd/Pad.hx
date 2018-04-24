@@ -445,7 +445,9 @@ class Pad {
 	}
 	
 	static function onDeviceRemoved(e:flash.events.GameInputEvent) {
+		#if debug
 		//trace(e.device.name+" is removed");
+		#end
 		for (p in padList.copy()) {
 			if (p.d == e.device ) {
 				p.destroyed = true;
@@ -456,7 +458,9 @@ class Pad {
 	}
 	
 	static function onDeviceAdded(onPad:Pad->Void, e:flash.events.GameInputEvent) {
-		//trace(e.device.name+" is added "+ e.device.id);
+		#if debug
+		//trace(e.device.name+" is added " + e.device.id);
+		#end
 		var p = new Pad();
 		p.d = e.device;
 		
@@ -507,7 +511,9 @@ class Pad {
 			p.nativeControls.push(c);
 			p.buttons.push(false);
 			
-			//trace("add ctrl : "+c.id);
+			#if debug
+			//trace("add ctrl : " + c.id);
+			#end
 			if( StringTools.startsWith(c.id, "AXIS_") ) {
 				var axisID = axisCount++;
 				p.axis[valID] = true;
@@ -592,6 +598,6 @@ class Pad {
 				}
 			}
 		}
-		
+		var toto = 0;
 	}
 } 
