@@ -214,6 +214,8 @@ private class LocalEntry extends FileEntry {
 	override function iterator() {
 		#if air3
 		var arr = new Array<FileEntry>();
+		
+		if( file.exists )
 		for( f in file.getDirectoryListing() )
 			switch( f.name ) {
 			case ".svn", ".git" if( f.isDirectory ):
@@ -363,9 +365,14 @@ class LocalFileSystem implements FileSystem {
 	public function listDirForFiles( path:String) {
 		#if air3
 		var f = open(path);
-		return f.getDirectoryListing().filter(function(e) {
-			return !e.isDirectory;
-		});
+		
+		if( f.exists )
+			return f.getDirectoryListing().filter(function(e) {
+				return !e.isDirectory;
+			});
+		else 
+			return [];
+			
 		#elseif sys
 		throw "todo";
 		#end
