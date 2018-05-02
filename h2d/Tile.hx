@@ -341,6 +341,11 @@ class Tile {
 		if( innerTex != null ) innerTex.dispose();
 		innerTex = null;
 	}
+	
+	public function destroy(){
+		if( innerTex != null ) innerTex.destroy();
+		innerTex = null;
+	}
 
 	public inline function clone() {
 		var t = new Tile(null, x, y, width, height, dx, dy);
