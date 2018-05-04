@@ -132,6 +132,10 @@ class Flow extends Sprite {
 		super(parent);
 		halign = Left;
 	}
+	
+	public inline function getLastProperties() : Null<FlowProperties>{
+		return properties[properties.length-1];
+	}
 
 	/**
 		Get the per-element properties. Returns null if the element is not currently part of the flow.
