@@ -4,13 +4,21 @@ import h3d.mat.Texture;
 class Bitmap extends Drawable {
 	public var tile : Tile;
 	
+	public var destroyTexture = false;
 	/** 
 	 * Passing in a similar shader ( same constants will vastly improve performances )
 	 */
 	public function new( ?tile:h2d.Tile, ?parent:h2d.Sprite, ?sh:h2d.Drawable.DrawableShader) {
-	
 		super(parent,sh);
 		this.tile = tile;
+	}
+	
+	public override function dispose(){
+		super.dispose();
+		if ( destroyTexture && tile != null ){
+			tile.destroy();
+			tile = null;
+		}
 	}
 	
 	override function getBoundsRec( relativeTo, out,forSize ) {

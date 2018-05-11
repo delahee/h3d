@@ -834,7 +834,6 @@ class Drawable extends h2d.Sprite {
 	
 	public static var DEFAULT_EMIT = false;
 	public static var DEFAULT_FILTER = false;
-
 	
 	/**
 	 * Passing in a similar shader will vastly improve performances
