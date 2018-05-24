@@ -587,10 +587,13 @@ class Scene extends Layers implements h3d.IDrawable {
 			i++;
 		}
 	}
-	
 
 	public function removeAllPasses() {
 		extraPasses = [];
 		prePasses = [];
+	}
+	
+	public function getAllPasses() {
+		return Lambda.array( Lambda.concat( extraPasses, prePasses));
 	}
 }

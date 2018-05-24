@@ -351,6 +351,10 @@ class Pad {
 		return wasDown(idx)&&!isDown(idx);
 	}
 	
+	public function onHold(idx:Int) : Bool {
+		return wasDown(idx)&&isDown(idx);
+	}
+	
 	public function clearIsDown(idx:Int) {
 		values[idx] = 0.0;
 	}
