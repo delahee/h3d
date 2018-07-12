@@ -1,0 +1,10 @@
+-main Demo 
+-lib format
+-lib h3d
+-cp src
+-D tools=1.4.0
+--macro allowPackage('flash')
+-dce no
+-swf bin/debug/bin/empty.swf
+
+

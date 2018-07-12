@@ -43,7 +43,7 @@ class TBLayout implements h2d.Text.ITextPos{
 					}
 					
 					var d = t.dropShadow;
-					var e = t.sp.alloc(tile);
+					var e = t.batch.alloc(tile);
 					es.push(e);
 					
 					var lnx = Math.sqrt(d.dx * d.dx + d.dy * d.dy);
@@ -59,7 +59,7 @@ class TBLayout implements h2d.Text.ITextPos{
 			}
 			else {
 				var d = t.dropShadow;
-				var e = t.sp.alloc(tile);
+				var e = t.batch.alloc(tile);
 				es.push(e);
 				e.x = t.x + ((x + d.dx) * t.scaleX);
 				e.y = t.y + ((y + d.dy) * t.scaleY);
@@ -70,7 +70,7 @@ class TBLayout implements h2d.Text.ITextPos{
 			}
 		}
 
-		var e = t.sp.alloc(tile);
+		var e = t.batch.alloc(tile);
 		es.push(e);
 		e.x = x * t.scaleX + t.x;
 		e.y = y * t.scaleY + t.y;
@@ -89,7 +89,7 @@ class TBLayout implements h2d.Text.ITextPos{
 @:allow(h2d.TextBatchElement.TBLayout)
 class TextBatchElement implements IText {
 	public var font(default,null) 		: Font;
-	public var sp 						: h2d.SpriteBatch;
+	public var batch 						: h2d.SpriteBatch;
 
 	public var text(default, set) 		: String;
 	var utf : hxd.IntStack = new hxd.IntStack();
@@ -119,8 +119,8 @@ class TextBatchElement implements IText {
 
 	public function new(font:h2d.Font, master:SpriteBatch) {
 		this.font = font;
-		this.sp = master;
-		sp.hasVertexColor = true;
+		this.batch = master;
+		batch.hasVertexColor = true;
 		layout = new TBLayout(this);
 
 		textAlign = Left;
@@ -140,7 +140,7 @@ class TextBatchElement implements IText {
 		scaleY = v;
 	}
 
-	public inline function getTexture() return sp.tile.getTexture();
+	public inline function getTexture() return batch.tile.getTexture();
 
 	public inline function nbQuad() {
 		return (dropShadow == null) ? text.length : ( useShadowAsOutline ? text.length * 5: text.length * 2);
@@ -315,13 +315,19 @@ class TextBatchElement implements IText {
 
 	public inline function isDisposed() return elements==null;
 
+	
+	public function remove(){
+		for(e in elements)
+			e.remove();
+	}
+	
 	public function dispose() {
 		for(e in elements)
 			e.remove();
 		elements = null;
 
 		font = null;
-		sp = null;
+		batch = null;
 		layout = null;
 	}
 }
