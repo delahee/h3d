@@ -28,6 +28,7 @@ class FlowProperties {
 
 	public var calculatedWidth : Float = 0.;
 	public var calculatedHeight : Float = 0.;
+	public var forceBreak = false;
 
 	public var isBreak(default, null) : Bool;
 
@@ -133,7 +134,7 @@ class Flow extends Sprite {
 		halign = Left;
 	}
 	
-	public inline function getLastProperties() : Null<FlowProperties>{
+	public inline function getLastProperty() : Null<FlowProperties>{
 		return properties[properties.length-1];
 	}
 
@@ -421,7 +422,7 @@ class Flow extends Sprite {
 				p.calculatedHeight = b.yMax + p.paddingTop + p.paddingBottom;
 				if( p.minWidth != null && p.calculatedWidth < p.minWidth ) p.calculatedWidth = p.minWidth;
 				if( p.minHeight != null && p.calculatedHeight < p.minHeight ) p.calculatedHeight = p.minHeight;
-				if( x + p.calculatedWidth > maxWidth && x > startX ) {
+				if( p.forceBreak || (x + p.calculatedWidth > maxWidth && x > startX) ) {
 					br = true;
 					alignLine(i);
 					y += Math.round(maxLineHeight + verticalSpacing);
@@ -541,7 +542,7 @@ class Flow extends Sprite {
 				if( p.minWidth != null && p.calculatedWidth < p.minWidth ) p.calculatedWidth = p.minWidth;
 				if( p.minHeight != null && p.calculatedHeight < p.minHeight ) p.calculatedHeight = p.minHeight;
 
-				if( y + p.calculatedHeight > maxHeight && y > startY ) {
+				if( p.forceBreak || (y + p.calculatedHeight > maxHeight && y > startY) ) {
 					br = true;
 					alignLine(i);
 					x += maxColWidth + horizontalSpacing;
