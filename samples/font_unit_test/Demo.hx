@@ -18,6 +18,7 @@ class Soup extends flash.text.Font{
 }
 #end
 
+
 class Demo extends flash.display.Sprite{
 	var engine : h3d.Engine;
 	var scene : h2d.Scene;
@@ -30,8 +31,6 @@ class Demo extends flash.display.Sprite{
 		engine.onReady = init;
 		engine.backgroundColor = 0xFFCCCCCC;
 		engine.init();
-
-		
 	}
 	
 	function init() {
@@ -43,6 +42,26 @@ class Demo extends flash.display.Sprite{
 		g.drawRect( 0, 0, 50, 50);
 		g.endFill();
 		
+		
+		//var font = com.furusystems.bmfont.Reader.read( openfl.Assets.getText("assets/arial_16.fnt") );
+		var font = hxd.fmt.fnt.Reader.read( openfl.Assets.getText("assets/chopin.fnt") );
+		var b = new hxd.res.BMFont( font, function(str) return h2d.Tile.fromAssets( "assets/" + str) );
+		
+		var t = new h2d.Text( b.nativeFont, scene );
+		t.x = 100;
+		t.y = 100;
+		//t.color = h3d.Vector.fromColor(0xff00FF00);
+		t.text = "Je NE suis pas la.je suis à poil\nMOURREZZZ";
+		t.setScale( 3 );
+		t.filter = false;
+		
+		
+		var bmp : h2d.Bitmap = new h2d.Bitmap( b.pageTextures[0], scene);
+		bmp.x = 100;
+		bmp.y = 140;
+		
+		
+		var a = 0;
 		
 		for( f in flash.text.Font.enumerateFonts() ) {
 			trace( f.fontName );
@@ -145,21 +164,9 @@ class Demo extends flash.display.Sprite{
 		t.color = h3d.Vector.fromColor(0xff000000);
 		t.text = text;
 		
-		var font = hxd.res.FontBuilder.getFont("arial", 10);
-		var t = new h2d.Text( font, scene );
-		t.text = "Blend Mode : Soft Overlay TF tf pgq";
-		t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
-		t.y = 80;
-		t.x = 200;
-
-
-		var bytes = openfl.Assets.getBytes("assets/test.pvr");
-		var t = new hxd.fmt.pvr.Reader(bytes);
-		var d : hxd.fmt.pvr.Data = t.read();
 		
-		var t = h2d.Tile.fromPixels( d.toPixels() );
-		var bmp = new h2d.Bitmap( t, scene );
-
+		
+		var a = 0;
 	}
 	
 	function update() 	{

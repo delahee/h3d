@@ -324,7 +324,7 @@ class Text extends Drawable implements IText {
 
 	static var 	utf8Text = new hxd.IntStack();
 	
-	@:noDebug
+	//@:noDebug
 	static
 	function _initGlyphs( glyphs :ITextPos, font:h2d.Font,info : TextLayoutInfos, utf : hxd.IntStack, rebuild = true, lines : Array<Int> = null ) : h2d.col.PointInt {
 		if ( rebuild ) glyphs.reset();
