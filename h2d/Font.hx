@@ -68,6 +68,7 @@ class Font {
 	public var emptyChar(default,null) : FontChar;//let's see what happens
 	public var defaultChar : FontChar;//let's see what happens
 	
+	public
 	function new(name,size) {
 		this.name = name;
 		this.size = size;
@@ -110,7 +111,11 @@ class Font {
 	}
 	
 	public function aliasGlyph( dest:Int, from:Int) {
-		glyphs.set( dest , glyphs.get(from).clone() );
+		if (  glyphs.exists(from))
+			glyphs.set( dest , glyphs.get(from).clone() );
+		else 
+			glyphs.set( dest , defaultChar.clone() );
+		
 	}
 	
 	/**
