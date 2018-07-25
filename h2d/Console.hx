@@ -62,6 +62,11 @@ class Console extends h2d.Sprite {
 		defaultCommands();
 	}
 	
+	public function setFont( font:h2d.Font ){
+		logTxt.font = font;
+		tf.font = font;
+	}
+	
 	public function defaultCommands(){
 		addCommand("help", "Show help", [ { name : "command", t : AString, opt : true } ], showHelp);
 		addCommand("set", "sets a console's value", [ { name : "name", t : AString }, { name : "val", t : AString } ], setVal);
