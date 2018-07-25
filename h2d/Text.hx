@@ -105,6 +105,7 @@ class Text extends Drawable implements IText {
 
 		textAlign = Left;
 		letterSpacing = 1;
+		lineSpacing = 0;
 		text = txt==null?"":txt;
 		textColor = 0xFFFFFFFF;
 	}

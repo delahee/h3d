@@ -312,12 +312,25 @@ class Reader
 		currentFont.blueChannel = input.readByte();
 	}
 	
+	static function changeEndianS16(v:Int){
+		return (v >>> 8) | (v << 8);
+	}
+	
+	static function changeEndianU16(num:Int){
+		return 	((num>>24)&0xff) | // move byte 3 to byte 0
+				((num<<8)&0xff0000) | // move byte 1 to byte 2
+				((num>>8)&0xff00) | // move byte 2 to byte 1
+				((num<<24)&0xff000000); // byte 0 to byte 3
+	}
+	
 	static function readInfo(input:BytesInput, blockSize:Int) 
 	{
 		var start = input.position;
 		var end = input.position + blockSize;
 		var pre:Int = input.position;
-		currentFont.size = input.readInt16();
+		
+		var size = - input.readInt16();
+		currentFont.size = size;
 		
 		var bits = input.readByte();
 		currentFont.smooth = bits & 128 > 0; 

@@ -14,6 +14,7 @@ class BMFont{
 		this.font = font;
 		this.loadTexture = loadTexture;
 		nativeFont = new h2d.Font( font.name, font.size);
+		nativeFont.sharedTex = false;
 		loadPageTextures();
 		loadChars();
 		hxd.res.FontBuilder.addFont( font.name, nativeFont );
@@ -27,13 +28,12 @@ class BMFont{
 	
 	public function loadChars(){
 		var i = 0;
-		@:privateAccess nativeFont.sharedTex = true;
-			
 		@:privateAccess nativeFont.charset = new hxd.Charset();
 		for ( c in font.charMap)
 			@:privateAccess nativeFont.charset.map.set( c.id, c.id);
 		
 		@:privateAccess nativeFont.tile = pageTextures[0];
+		@:privateAccess nativeFont.lineHeight = Math.round(font.lineHeight);
 		
 		for ( c in font.charMap){
 			var tex = pageTextures[c.page];
@@ -53,8 +53,6 @@ class BMFont{
 			
 			@:privateAccess nativeFont.glyphs.set( c.id, char );
 			
-			if( nativeFont.lineHeight < c.height )
-				@:privateAccess nativeFont.lineHeight = Math.round(c.height);
 			i++;
 		}
 		nbChars = i;
