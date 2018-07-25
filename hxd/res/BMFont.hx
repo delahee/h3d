@@ -33,7 +33,7 @@ class BMFont{
 			@:privateAccess nativeFont.charset.map.set( c.id, c.id);
 		
 		@:privateAccess nativeFont.tile = pageTextures[0];
-		@:privateAccess nativeFont.lineHeight = Math.round(font.lineHeight);
+		//@:privateAccess nativeFont.lineHeight = Math.round(font.lineHeight);
 		
 		for ( c in font.charMap){
 			var tex = pageTextures[c.page];
@@ -52,6 +52,9 @@ class BMFont{
 				char.addKerning( k, c.kerningPairs.get(k));
 			
 			@:privateAccess nativeFont.glyphs.set( c.id, char );
+			
+			if ( c.height > @:privateAccess nativeFont.lineHeight )
+				@:privateAccess nativeFont.lineHeight = Math.round(c.height);
 			
 			i++;
 		}

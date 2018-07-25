@@ -42,23 +42,32 @@ class Demo extends flash.display.Sprite{
 		g.drawRect( 0, 0, 50, 50);
 		g.endFill();
 		
-		
-		//var font = com.furusystems.bmfont.Reader.read( openfl.Assets.getText("assets/arial_16.fnt") );
 		var font = hxd.fmt.fnt.Reader.read( openfl.Assets.getText("assets/chopin.fnt") );
 		var b = new hxd.res.BMFont( font, function(str) return h2d.Tile.fromAssets( "assets/" + str) );
-		
 		var t = new h2d.Text( b.nativeFont, scene );
 		t.x = 100;
 		t.y = 100;
-		//t.color = h3d.Vector.fromColor(0xff00FF00);
-		t.text = "Je NE suis pas la.je suis à poil\nMOURREZZZ";
-		t.setScale( 3 );
+		t.text = "Je NE suis pas la.je suis à poil MOURREZZZ";
+		//t.setScale( 3 );
 		t.filter = false;
-		
-		
 		var bmp : h2d.Bitmap = new h2d.Bitmap( b.pageTextures[0], scene);
-		bmp.x = 100;
-		bmp.y = 140;
+		bmp.x = 300;
+		bmp.y = 400;
+		
+		//var font = hxd.fmt.fnt.Reader.read( openfl.Assets.getText("assets/simsun_12.txt.fnt") );
+		var font = hxd.fmt.fnt.Reader.read( hxd.ByteConversions.byteArrayToBytes(openfl.Assets.getBytes("assets/simsun_12.bin.fnt") ));
+		var b = new hxd.res.BMFont( font, function(str) return h2d.Tile.fromAssets( "assets/" + str) );
+		var t = new h2d.Text( b.nativeFont, scene );
+		t.x = 100;
+		t.y = 200;
+		t.text = "Je NE suis pas la.je suis à poil\nMOURREZZZ\n顿颁预领颇频颗题颜额风";
+		//t.setScale( 3 );
+		t.filter = false;
+		var bmp : h2d.Bitmap = new h2d.Bitmap( b.pageTextures[0], scene);
+		bmp.x = 600;
+		bmp.y = 400;
+		
+		#if false
 		
 		
 		var a = 0;
@@ -164,7 +173,7 @@ class Demo extends flash.display.Sprite{
 		t.color = h3d.Vector.fromColor(0xff000000);
 		t.text = text;
 		
-		
+		#end
 		
 		var a = 0;
 	}
