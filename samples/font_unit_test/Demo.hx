@@ -42,27 +42,98 @@ class Demo extends flash.display.Sprite{
 		g.drawRect( 0, 0, 50, 50);
 		g.endFill();
 		
-		var font = hxd.fmt.fnt.Reader.read( openfl.Assets.getText("assets/chopin.fnt") );
-		var b = new hxd.res.BMFont( font, function(str) return h2d.Tile.fromAssets( "assets/" + str) );
-		var t = new h2d.Text( b.nativeFont, scene );
-		t.x = 100;
-		t.y = 100;
-		t.text = "Je NE suis pas la.je suis à poil MOURREZZZ";
-		//t.setScale( 3 );
-		t.filter = false;
-		var bmp : h2d.Bitmap = new h2d.Bitmap( b.pageTextures[0], scene);
-		bmp.x = 300;
-		bmp.y = 400;
+		if( false ){
+			var font = hxd.fmt.fnt.Reader.read( openfl.Assets.getText("assets/chopin.fnt") );
+			var b = new hxd.res.BMFont( font, function(str) return h2d.Tile.fromAssets( "assets/" + str) );
+			var t = new h2d.Text( b.nativeFont, scene );
+			t.x = 100;
+			t.y = 100;
+			t.text = "Je NE suis pas la.je suis à poil MOURREZZZ";
+			//t.setScale( 3 );
+			t.filter = false;
+			var bmp : h2d.Bitmap = new h2d.Bitmap( b.pageTextures[0], scene);
+			bmp.x = 300;
+			bmp.y = 400;
+		}
+		//var font = hxd.fmt.fnt.Reader.read( hxd.ByteConversions.byteArrayToBytes(openfl.Assets.getBytes("assets/simsun_12.bin.fnt") ));
+		//var b = new hxd.res.BMFont( font, function(str) return h2d.Tile.fromAssets( "assets/" + str) );
+		//var t = new h2d.Text( b.nativeFont, scene );
+		//t.x = 100;
+		//t.y = 180;
+		//t.text = "Je NE suis pas la.je suis à poil\nMOURREZZZ\n顿颁预领颇频颗题颜额风";
+		//t.filter = false;
+		//
+		//var font = hxd.fmt.fnt.Reader.read( hxd.ByteConversions.byteArrayToBytes(openfl.Assets.getBytes("assets/simsun_12.bin.fnt") ));
+		//var b = new hxd.res.BMFont( font, function(str) return h2d.Tile.fromAssets( "assets/" + str) );
+		//var t = new h2d.Text( b.nativeFont, scene );
+		//t.x = 100;
+		//t.y = 200;
+		//t.textColor = 0;
+		//t.text = "\"\"";
+		//t.filter = false;
+		//
+		//var font = hxd.fmt.fnt.Reader.read( hxd.ByteConversions.byteArrayToBytes(openfl.Assets.getBytes("assets/simsun_16.bin.fnt") ));
+		//var b = new hxd.res.BMFont( font, function(str) return h2d.Tile.fromAssets( "assets/" + str) );
+		//var t = new h2d.Text( b.nativeFont, scene );
+		//t.x = 100;
+		//t.y = 220;
+		//t.textColor = 0;
+		//t.text = "我脑子都蒙了。我们需要休息，需要计划。人类文明，电脑，网络…什么都没了我该怎么活啊？？？";
+		//t.filter = false;
 		
-		//var font = hxd.fmt.fnt.Reader.read( openfl.Assets.getText("assets/simsun_12.txt.fnt") );
-		var font = hxd.fmt.fnt.Reader.read( hxd.ByteConversions.byteArrayToBytes(openfl.Assets.getBytes("assets/simsun_12.bin.fnt") ));
+		//var font = hxd.fmt.fnt.Reader.read( hxd.ByteConversions.byteArrayToBytes(openfl.Assets.getBytes("assets/simsun_16.bin.fnt") ));
+		var font = hxd.fmt.fnt.Reader.read( openfl.Assets.getText("assets/simsun_16.txt.fnt") );
+		var hacks = hxd.fmt.fnt.Reader.readHacks(openfl.Assets.getText("assets/simsun_16.txt.hacks.json") ) ;
+		var b = new hxd.res.BMFont( font, function(str) return h2d.Tile.fromAssets( "assets/" + str),hacks);
+		var t = new h2d.Text( b.nativeFont, scene );
+		t.x = 100;
+		t.y = 240;
+		t.textColor = 0;
+		t.text = "…A";
+		t.filter = false;
+		
+		h2d.Graphics.fromRect( 0, 240, 500,1, scene, false );
+		h2d.Graphics.fromRect( 0, 246, 500,1, scene, false );
+		h2d.Graphics.fromRect( 0, 240 + b.font.base, 500,1, scene, false );
+		//h2d.Graphics.fromRect( 0, 246, 500,1, scene, false );
+		
+		trace( b.font );
+		
+		var cdef : hxd.fmt.fnt.CharacterDef = b.font.charMap.get( ".".code);
+		trace("."+cdef);
+		
+		var cdef : hxd.fmt.fnt.CharacterDef = b.font.charMap.get( "…".code);
+		trace("…" + cdef);
+		
+		
+		var cdef : hxd.fmt.fnt.CharacterDef = b.font.charMap.get( "A".code);
+		trace("A"+cdef);
+		
+		
 		var b = new hxd.res.BMFont( font, function(str) return h2d.Tile.fromAssets( "assets/" + str) );
 		var t = new h2d.Text( b.nativeFont, scene );
 		t.x = 100;
-		t.y = 200;
-		t.text = "Je NE suis pas la.je suis à poil\nMOURREZZZ\n顿颁预领颇频颗题颜额风";
-		//t.setScale( 3 );
+		t.y = 260;
+		t.textColor = 0;
+		t.text = "...A";
 		t.filter = false;
+		
+		var cdef : hxd.fmt.fnt.CharacterDef = b.font.charMap.get( ".".code);
+		trace(cdef);
+		
+		var cdef : hxd.fmt.fnt.CharacterDef = b.font.charMap.get( "A".code);
+		trace(cdef);
+		
+		var font = hxd.fmt.fnt.Reader.read( hxd.ByteConversions.byteArrayToBytes(openfl.Assets.getBytes("assets/saza_16.bin.fnt") ));
+		var b = new hxd.res.BMFont( font, function(str) return h2d.Tile.fromAssets( "assets/" + str) );
+		var t = new h2d.Text( b.nativeFont, scene );
+		t.x = 100;
+		t.y = 300;
+		t.setScale(3);
+		t.textColor = 0;
+		t.text = "戻る";
+		t.filter = false;
+		
 		var bmp : h2d.Bitmap = new h2d.Bitmap( b.pageTextures[0], scene);
 		bmp.x = 600;
 		bmp.y = 400;

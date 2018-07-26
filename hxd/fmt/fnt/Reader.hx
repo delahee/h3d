@@ -16,6 +16,23 @@ class Reader
 {
 	static var bytes:Bytes;
 	static var currentFont:FontDef = null;
+	
+	public static function readHacks(str:String):Map<Int,FontCharHack>{
+		var m = new Map();
+		if ( str == null || str.length == 0) return m;
+		
+		var j = haxe.Json.parse(str);
+		var jhacks :Array<Dynamic>= j.hacks;
+		for ( h in jhacks ){
+			var v = new hxd.fmt.fnt.FontCharHack();
+			if ( h.xOffsetDelta != null) v.xOffsetDelta = h.xOffsetDelta;
+			if ( h.yOffsetDelta != null) v.yOffsetDelta = h.yOffsetDelta;
+			if ( h.xAdvanceDelta != null) v.xAdvanceDelta = h.xAdvanceDelta;
+			m.set( h.id, v);
+		}
+		return m;
+	}
+	
 	public static function read(bytesOrString:Dynamic):FontDef {
 		
 		currentFont = new FontDef();

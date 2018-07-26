@@ -18,7 +18,7 @@
 	<haxelib name="format" />
 	<haxelib name="h3d" />
 	<haxelib name="hxsl" if="flash"/>
-	<haxelib name="BMFontHX" if="flash"/>
+	<!--<haxelib name="BMFontHX" if="flash"/>-->
 	
 	<assets path="assets" rename="assets" />
 	

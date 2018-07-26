@@ -417,6 +417,7 @@ class Flow extends Sprite {
 				if( p.isAbsolute ) continue;
 				var c = childs[i];
 				var b = c.getSize(tmpBounds);
+				
 				var br = false;
 				p.calculatedWidth = b.xMax + p.paddingLeft + p.paddingRight;
 				p.calculatedHeight = b.yMax + p.paddingTop + p.paddingBottom;

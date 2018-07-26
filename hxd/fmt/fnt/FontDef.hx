@@ -46,6 +46,11 @@ class FontDef
 	
 	public function toString():String 
 	{
-		return "[FontDef name=" + name + " size=" + size + " textures=" + pageFileNames +"]";
+		return "[FontDef name=" + name + " size=" + size + " textures=" + pageFileNames +"]"
+		+'\n paddingUp:$paddingUp paddingRight:$paddingRight paddingDown:$paddingDown paddingLeft:$paddingLeft '
+		+'\n spacingHorizontal:$spacingHorizontal spacingVertical:$spacingVertical'
+		+'\n texWidth:$texWidth texHeight:$texHeight'
+		+'\n lineHeight:$lineHeight base:$base'
+		+'\n charSet:$charSet stretchH:$stretchH';
 	}
 }
