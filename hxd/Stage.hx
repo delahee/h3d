@@ -37,6 +37,7 @@ class Stage {
 			stage.addEventListener(flash.events.MouseEvent.MOUSE_MOVE, onMouseMove);
 			stage.addEventListener(flash.events.MouseEvent.MOUSE_UP, onMouseUp);
 			stage.addEventListener(flash.events.MouseEvent.MOUSE_WHEEL, onMouseWheel);
+			
 			stage.addEventListener(flash.events.KeyboardEvent.KEY_DOWN, onKeyDown);
 			stage.addEventListener(flash.events.KeyboardEvent.KEY_UP, onKeyUp);
 			

@@ -91,6 +91,7 @@ class Stack<T>  {
 	public inline function reserve(n) {
 		if (arr.length < n )
 			arr[n] = null;
+		return this;
 	}
 	
 	public inline function push(v:T) {

@@ -40,6 +40,9 @@ abstract TVarName(Int) {
 	var VA			= 9;
 	
 	var VScale		= 10;
+	
+	var VWidth		= 11;
+	var VHeight		= 12;
 }
 
 @:publicFields
@@ -47,9 +50,9 @@ class Tween {
 	var man 		: Tweenie;	 
 	var parent		: TSprite;
 	var vname		: TVarName = VNone;
-	var n			: Float;
-	var ln			: Float;
-	var speed		: Float;
+	var n			: Float = 0.0;
+	var ln			: Float = 0.0;
+	var speed		: Float = 0.0;
 	var from		: Float;
 	var to			: Float;
 	var type		: TType;
@@ -89,6 +92,41 @@ class Tween {
 		this.interpolate    = interpolate	;
 	}
 	
+	public inline function reset (
+		parent		 ,
+	    vname		 ,
+	    n			 ,
+	    ln			 ,
+	    speed		 ,
+	    from		 ,
+	    to			 ,
+	    type		 ,
+	    plays		 ,
+	    fl_pixel	 ,
+	    interpolate
+	) {
+		this.parent			= parent		;
+		this.vname		    = vname		 	;
+		this.n			    = n			 	;
+		this.ln			    = ln			;
+		this.speed		    = speed			;
+		this.from		    = from			;
+		this.to			    = to			;
+		this.type		    = type		 	;
+		this.plays		    = plays		 	;
+		this.fl_pixel	    = fl_pixel	 	;
+		this.interpolate    = interpolate	;
+	}
+	
+	public inline function clear (){
+		parent = null;
+		vname = VNone;
+		onEnd = null;
+		onUpdate = null;
+		onUpdateT = null;
+		delayMs = 0;
+	}
+	
 	public inline
 	function apply( val : Float ) {
 		if ( parent == null) return;
@@ -109,7 +147,12 @@ class Tween {
 			case VB			: parentD.color.b 	= val;
 			case VA			: parentD.color.a 	= val;
 			case VScale		: parent.setScale( val );
+			case VWidth		: parent.width		= val;
+			case VHeight	: parent.height		= val;
 		}
+		//#if debug
+		//trace("val:" + val);
+		//#end
 	}
 	
 	public inline function kill( withCbk = true ) {
@@ -133,6 +176,7 @@ class Tweenie {
 
 	var delayList		: hxd.Stack<TTw> = new hxd.Stack<TTw>();
 	var tlist			: hxd.Stack<TTw> = new hxd.Stack<TTw>();
+	public var 	pool 	: hxd.Stack<TTw> = new hxd.Stack();
 
 	public function new() {}
 	
@@ -152,7 +196,11 @@ class Tweenie {
 		tlist.remove(p);
 		delayList.push(p);//finish pair
 		p.delayMs = delay_ms;
+		#if debug
+		trace( p.delayMs);
+		#end
 		//unpop in manager
+		return p;
 	}
 	
 	public function create(parent:TSprite, varName: TVarName, to:Float, ?tp:TType, ?duration_ms:Float) {
@@ -189,20 +237,42 @@ class Tweenie {
 		var z = 0.0;
 		
 		// ajout
-		var t : TTw = new TTw(
-			p,
-			v,
-			z,
-			z,
-			1.0 / ( duration_ms*fps/1000 ), // une seconde
-			retrieve(p,v),
-			to,
-			tp,
-			1,
-			false,
-			getInterpolateFunction(tp)
-		);
-		t.delayMs = z;
+		var t : TTw = null;
+		var from = retrieve(p, v);
+		
+		if (pool.length == 0){
+			t = new TTw(
+				p,
+				v,
+				z,
+				z,
+				1.0 / ( duration_ms*fps/1000 ), // une seconde
+				from,
+				to,
+				tp,
+				1,
+				false,
+				getInterpolateFunction(tp)
+			);
+		}
+		else{
+			t = pool.pop();
+			t.reset(
+				p,
+				v,
+				z,
+				z,
+				1 / ( duration_ms * fps / 1000 ), // une seconde
+				
+				from,
+				to,
+				tp,
+				1,
+				false,
+				getInterpolateFunction(tp)
+			); 
+		}
+		t.delayMs = 0;
 
 		if( t.from==t.to )
 			t.ln = 1; // tweening inutile : mais on s'assure ainsi qu'un update() et un end() seront bien appelés
@@ -233,6 +303,8 @@ class Tweenie {
 				case VG			: parentD.color.g;
 				case VB			: parentD.color.b;
 				case VA			: parentD.color.a;
+				case VWidth		: parent.width;
+				case VHeight	: parent.height;
 			}
 		}
 	}
@@ -251,8 +323,11 @@ class Tweenie {
 
 	public function delete(parent:Dynamic) { // attention : les callbacks end() / update() ne seront pas appelés !
 		for(t in tlist.backWardIterator())
-			if(t.parent==parent)
+			if(t.parent==parent) {
 				tlist.remove(t);
+				t.clear();
+				pool.push(t);
+			}
 	}
 	
 	// suppression du tween sans aucun appel aux callbacks onUpdate, onUpdateT et onEnd (!)
@@ -260,6 +335,8 @@ class Tweenie {
 		for (t in tlist.backWardIterator())
 			if (t.parent==parent && (varName==VNone || varName==t.vname)){
 				tlist.remove(t);
+				t.clear();
+				pool.push(t);
 				return true;
 			}
 		return false;
@@ -267,12 +344,17 @@ class Tweenie {
 	
 	public function terminate(parent:TSprite, ?varName:TVarName=VNone) {
 		for (t in tlist.backWardIterator())
-			if (t.parent==parent && (varName==VNone || varName==t.vname))
+			if (t.parent==parent && (varName==VNone || varName==t.vname)){
 				terminateTween(t);
+				t.clear();
+				pool.push(t);
+			}
 	}
 	
 	public function forceTerminateTween(t:TTw) {
 		tlist.remove(t);
+		t.clear();
+		pool.push(t);
 	}
 	
 	public function terminateTween(t:TTw, ?fl_allowLoop=false) {
@@ -348,11 +430,11 @@ class Tweenie {
 	
 	public function update(?tmod = 1.0) {
 		
-		var deltaMs = tmod * fps * 1000.0;
+		var deltaMs = tmod / fps * 1000.0;
 		if ( delayList.length > 0 ) {
 			for (t in delayList.backWardIterator() ) {
 				t.delayMs -= deltaMs;
-				if ( t.delayMs < 0.0 ) {
+				if ( t.delayMs <= 0.0 ) {
 					delayList.remove(t);
 					tlist.push(t);
 				}
@@ -383,8 +465,11 @@ class Tweenie {
 					
 					onUpdate(t, t.ln);
 				}
-				else // fini !
+				else { // fini !
 					terminateTween(t, true);
+					t.clear();
+					pool.push( t );
+				}
 			}
 		}
 	}
