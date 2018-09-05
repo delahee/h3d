@@ -61,7 +61,14 @@ class Stack<T>  {
 	public inline function removeOrdered(v:T):Bool {
 		if ( pos == 0 ) return false;
 		var i = arr.indexOf(v);
-		return removeOrderedAt(i);
+		if ( i < 0 ) return false;
+		
+		return 
+		if ( i >= pos ) {
+			arr[i] = null;
+			false;
+		} else 
+			removeOrderedAt(i);
 	}
 	
 	public inline function removeOrderedAt(idx:Int):Bool {

@@ -231,8 +231,8 @@ class Tweenie {
 		}
 
 		for(t in tlist.backWardIterator())
-			if(t.parent==p && t.vname==v) 
-				tlist.remove(t);
+			if (t.parent == p && t.vname == v) 
+				forceTerminateTween(t);
 		
 		var z = 0.0;
 		
@@ -334,9 +334,7 @@ class Tweenie {
 	public function killWithoutCallbacks(parent:TSprite, ?varName:TVarName=VNone) : Bool {
 		for (t in tlist.backWardIterator())
 			if (t.parent==parent && (varName==VNone || varName==t.vname)){
-				tlist.remove(t);
-				t.clear();
-				pool.push(t);
+				forceTerminateTween(t);
 				return true;
 			}
 		return false;
@@ -345,16 +343,15 @@ class Tweenie {
 	public function terminate(parent:TSprite, ?varName:TVarName=VNone) {
 		for (t in tlist.backWardIterator())
 			if (t.parent==parent && (varName==VNone || varName==t.vname)){
-				terminateTween(t);
-				t.clear();
-				pool.push(t);
+				forceTerminateTween(t);
 			}
 	}
 	
 	public function forceTerminateTween(t:TTw) {
-		tlist.remove(t);
-		t.clear();
-		pool.push(t);
+		if( tlist.remove(t) ){
+			t.clear();
+			pool.push(t);
+		}
 	}
 	
 	public function terminateTween(t:TTw, ?fl_allowLoop=false) {
@@ -369,8 +366,9 @@ class Tweenie {
 				t.plays--;
 			t.n = t.ln = 0;
 		}
-		else
-			tlist.remove(t);
+		else{
+			forceTerminateTween(t);
+		}
 	}
 	public function terminateAll() {
 		for(t in tlist)
@@ -467,8 +465,6 @@ class Tweenie {
 				}
 				else { // fini !
 					terminateTween(t, true);
-					t.clear();
-					pool.push( t );
 				}
 			}
 		}
