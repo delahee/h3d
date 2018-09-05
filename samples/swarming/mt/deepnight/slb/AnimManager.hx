@@ -137,7 +137,7 @@ class AnimManager {
 		var g = spr.lib.getGroup(group);
 		if ( g == null ) {
 			#if !prod
-			trace("WARNING: unknown anim " + group);
+			trace("WARNING: unknown anim " + group+" in "+spr.lib.name);
 			#end
 			return this;
 		}

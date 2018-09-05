@@ -1,18 +1,18 @@
 package hxd;
 
-enum EventKind {
-	EPush;
-	ERelease;
-	EMove;
-	EOver;
-	EOut;
-	EWheel;
-	EFocus;
-	EFocusLost;
-	EKeyDown;
-	EKeyUp;
-	
-	ESimulated;
+//enum EventKind {
+@:enum abstract EventKind(Int) {
+	var EPush		= 0;
+	var ERelease	= 1;
+	var EMove		= 2;
+	var EOver		= 3;
+	var EOut		= 4;
+	var EWheel		= 5;
+	var EFocus		= 6;
+	var EFocusLost	= 7;
+	var EKeyDown	= 8;
+	var EKeyUp		= 9;
+	var ESimulated	= 10;
 }
 
 class Event {

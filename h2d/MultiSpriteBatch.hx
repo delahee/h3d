@@ -50,7 +50,8 @@ class MultiBatchElement {
 	public var colorA : hxd.Float32 = 1.0;
 	
 	public var batch(default, null) : MultiSpriteBatch;
-	public var blendMode : h2d.BlendMode = h2d.BlendMode.Normal;
+	public var blendMode : h2d.BlendMode 	= h2d.BlendMode.Normal;
+	public var data			: Dynamic 		= null;
 
 	var prev : MultiBatchElement;
 	var next : MultiBatchElement;
@@ -81,6 +82,7 @@ class MultiBatchElement {
 		tile = e.tile.clone();
 		visible = e.visible;
 		blendMode = e.blendMode;
+		data = e.data;
 	}
 	
 	public function clone<T>(?s:T) : T {
@@ -99,6 +101,7 @@ class MultiBatchElement {
 		nu.tile = tile.clone();
 		nu.visible = visible;
 		nu.blendMode = blendMode;
+		nu.data = data;
 		return cast nu;
 	}
 

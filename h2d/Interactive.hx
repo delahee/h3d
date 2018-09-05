@@ -197,7 +197,7 @@ class Interactive extends Drawable {
 	public function focus() {
 		if( scene == null )
 			return;
-		var ev = new hxd.Event(null);
+		var ev = new hxd.Event(ESimulated);
 		if( scene.currentFocus != null ) {
 			if( scene.currentFocus == this )
 				return;
@@ -213,7 +213,7 @@ class Interactive extends Drawable {
 		if( scene == null )
 			return;
 		if( scene.currentFocus == this ) {
-			var ev = new hxd.Event(null);
+			var ev = new hxd.Event(ESimulated);
 			ev.kind = EFocusLost;
 			scene.currentFocus.handleEvent(ev);
 		}

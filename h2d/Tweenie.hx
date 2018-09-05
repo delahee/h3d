@@ -182,18 +182,9 @@ class Tweenie {
 				if ( p!=null && p.color == null) p.color = new h3d.Vector(1,1,1,1);
 		}
 
-		// on supprime les tweens précédents appliqués à la même variable
-		var tfound : TType = null;
 		for(t in tlist.backWardIterator())
-			if(t.parent==p && t.vname==v) {
-				tfound = t.type;
+			if(t.parent==p && t.vname==v) 
 				tlist.remove(t);
-			}
-			
-		if ( tfound!=null ) {
-			if (tp==TEase && (tfound==TEase || tfound==TEaseOut) )
-				tp = TEaseOut;
-		}
 		
 		var z = 0.0;
 		
@@ -235,7 +226,7 @@ class Tweenie {
 				case VScaleX	: parent.scaleX 	;
 				case VScaleY	: parent.scaleY 	;
 				case VRotation	: parent.rotation 	;
-				case VScale		: parent.scaleX * parent.scaleY	;
+				case VScale		: parent.scaleX * parent.scaleY;
 				
 				case VAlpha		: parentD.alpha;
 				case VR			: parentD.color.r;
