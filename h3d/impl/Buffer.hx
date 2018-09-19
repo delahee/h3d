@@ -90,6 +90,45 @@ class Buffer {
 		}
 	}
 	
+	public inline function reset(b:h3d.impl.MemoryManager.BigBuffer,pos:Int,nvert:Int){
+		id = GUID++;
+		this.b = b;
+		this.pos = pos;
+		this.nvert = nvert;
+		next = null;
+		
+		#if debug
+		allocPos 	= null;
+		allocNext 	= null;
+		allocPrev	= null;
+		#end
+	}
+	
+	static var pool : hxd.Stack<Buffer> = null;
+	
+	public static 
+	//inline 
+	function alloc(ab:h3d.impl.MemoryManager.BigBuffer,pos:Int,nvert:Int):Buffer{
+		if ( pool == null ) pool = new hxd.Stack<Buffer>();
+		
+		var b = pool.pop();
+		if ( b == null ) 	b = new Buffer(ab, pos, nvert);
+		else  				b.reset(ab,pos,nvert);
+		
+		return b;
+	}
+	
+	public static 
+	//inline 
+	function delete(b:Buffer){
+		if ( b == null ) return;
+		b.dispose();
+		b.reset(null,0,0);
+		
+		if ( pool == null ) pool = new hxd.Stack<Buffer>();
+		
+		pool.push(b);
+	}
 }
 
 class BufferOffset {

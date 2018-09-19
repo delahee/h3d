@@ -56,7 +56,8 @@ class Select extends Interactive {
 	public function close() {
 		list.remove();
 		list = null;
-		getScene().stopDrag();
+		if( getScene()!=null)
+			getScene().stopDrag();
 	}
 	
 	public dynamic function onChange( value : String ) {

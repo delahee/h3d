@@ -82,8 +82,7 @@ class Console extends h2d.Sprite {
 	public function addAlias( name, command ) {
 		aliases.set(name, command); 
 		#if debug
-		if ( !commands.exists(command) )
-			trace("invalid alias "+name+" > "+command);
+		if ( !commands.exists(command) ) trace("invalid alias "+name+" > "+command);
 		#end
 	}
 

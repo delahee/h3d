@@ -50,6 +50,7 @@ class BatchElement {
 	public var colorA : hxd.Float32 = 1.0;
 	
 	public var batch(default, null) : SpriteBatch;
+	public var data					: Dynamic;
 
 	var prev : BatchElement;
 	var next : BatchElement;
@@ -71,6 +72,7 @@ class BatchElement {
 		setColor(0xffffff,1.0);
 		tile = t;
 		visible = true;
+		data = null;
 	}
 	
 	public function copy( e : BatchElement) {
@@ -89,8 +91,9 @@ class BatchElement {
 		visible = e.visible;
 	}
 	
-	public function getClone() {
-		var nu = new BatchElement(tile);
+	//returns an unattached clone
+	public function clone<T>(?s:T) : T {
+		var nu : BatchElement = (s==null) ? new BatchElement(tile) : cast s;
 		nu.x 		= x; 
 		nu.y 		= y;
 		nu.alpha 	= alpha;
@@ -104,7 +107,8 @@ class BatchElement {
 		nu.colorA 	= colorA;
 		nu.tile 	= tile;
 		nu.visible 	= visible;
-		return nu;
+		if( data!=null) nu.data		= Reflect.copy(data);
+		return cast nu;
 	}
 
 	@:noDebug
@@ -233,7 +237,7 @@ class SpriteBatch extends Drawable {
 	public override function onDelete() {
 		super.onDelete();
 		if( optBuffer!=null){
-			optBuffer.dispose();
+			Buffer.delete(optBuffer);
 			optBuffer = null;
 		}
 	}
@@ -280,7 +284,7 @@ class SpriteBatch extends Drawable {
 
 	public inline function invalidate() {
 		computed = false;
-		if ( optBuffer != null) optBuffer.dispose();
+		if ( optBuffer != null) Buffer.delete(optBuffer);
 		optBuffer = null;
 	}
 
@@ -684,8 +688,9 @@ class SpriteBatch extends Drawable {
 			setupShader(ctx.engine, tile, Drawable.BASE_TILE_DONT_CARE);
 			ctx.engine.renderQuadBuffer(buffer);
 
-			if( !optimized )
-				buffer.dispose();
+			if( !optimized ){
+				Buffer.delete(buffer);
+			}
 		}
 	}
 

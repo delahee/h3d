@@ -42,7 +42,7 @@ class Primitive {
 	
 	public function dispose() {
 		if( buffer != null ) {
-			buffer.dispose();
+			h3d.impl.Buffer.delete(buffer);
 			buffer = null;
 		}
 		if( indexes != null ) {

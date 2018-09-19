@@ -10,7 +10,7 @@ class FreeCell {
 	var pos : Int;
 	var count : Int;
 	var next : FreeCell;
-	function new(pos,count,next) {
+	inline function new(pos,count,next) {
 		this.pos = pos;
 		this.count = count;
 		this.next = next;
@@ -607,7 +607,7 @@ class MemoryManager {
 		var fpos = free.pos;
 		free.pos += alloc;
 		free.count -= alloc;
-		var b = new Buffer(b, fpos, alloc);
+		var b = Buffer.alloc(b, fpos, alloc);
 		nvect -= alloc;
 		#if false
 		var head = b.b.allocHead;

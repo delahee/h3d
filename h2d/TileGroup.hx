@@ -19,7 +19,7 @@ private class TileLayerContent extends h3d.prim.Primitive {
 	
 	public function reset() {
 		if ( buffer != null ) {
-			buffer.dispose();
+			h3d.impl.Buffer.delete( buffer );
 			buffer = null;
 		}
 		

@@ -631,7 +631,7 @@ class MultiSpriteBatch extends Drawable {
 			if ( drawnVerts < verts ) 
 				draw(lastElem.tile, lastElem.blendMode,start, pos - start);
 		
-			buffer.dispose();
+			h3d.impl.Buffer.delete(buffer);
 		}
 	}
 

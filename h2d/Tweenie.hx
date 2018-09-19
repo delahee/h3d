@@ -196,9 +196,9 @@ class Tweenie {
 		tlist.remove(p);
 		delayList.push(p);//finish pair
 		p.delayMs = delay_ms;
-		#if debug
-		trace( p.delayMs);
-		#end
+		//#if debug
+		//trace( p.delayMs);
+		//#end
 		//unpop in manager
 		return p;
 	}
