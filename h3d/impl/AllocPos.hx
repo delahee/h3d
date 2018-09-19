@@ -1,7 +1,7 @@
 package h3d.impl;
 
 
-#if debug
+#if !debug
 @:structInit
 class DummyPos{
 	public var __alloc : Int;
