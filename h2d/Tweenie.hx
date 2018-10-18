@@ -47,6 +47,8 @@ abstract TVarName(Int) {
 
 @:publicFields
 class Tween {
+	static var GUID = 0;
+	var uid 		= 0;
 	var man 		: Tweenie;	 
 	var parent		: TSprite;
 	var vname		: TVarName = VNone;
@@ -90,6 +92,7 @@ class Tween {
 		this.plays		    = plays		 	;
 		this.fl_pixel	    = fl_pixel	 	;
 		this.interpolate    = interpolate	;
+		uid = GUID++;
 	}
 	
 	public inline function reset (
@@ -105,6 +108,8 @@ class Tween {
 	    fl_pixel	 ,
 	    interpolate
 	) {
+		//if ( Tweenie.DEBUG )trace("reset " + uid);
+		
 		this.parent			= parent		;
 		this.vname		    = vname		 	;
 		this.n			    = n			 	;
@@ -116,15 +121,28 @@ class Tween {
 		this.plays		    = plays		 	;
 		this.fl_pixel	    = fl_pixel	 	;
 		this.interpolate    = interpolate	;
+		uid = GUID++;
+		
+		//if ( Tweenie.DEBUG ) trace("nuid: " + uid);
 	}
 	
-	public inline function clear (){
-		parent = null;
-		vname = VNone;
-		onEnd = null;
-		onUpdate = null;
-		onUpdateT = null;
-		delayMs = 0;
+	public 
+	#if!debug inline #end
+	function clear (){
+		//if ( Tweenie.DEBUG ) trace("clear " + uid);
+		
+		n 			= 0.0;
+		ln			= 0.0;
+		speed 		= 0.0;
+		plays		= 0;
+		from		= 0.0;
+		to			= 0.0;
+		vname 		= VNone;
+		interpolate	= null;
+		parent 		= null;
+		onUpdate 	= null;
+		onUpdateT 	= null;
+		onEnd 		= null;
 	}
 	
 	public inline
@@ -155,12 +173,18 @@ class Tween {
 		//#end
 	}
 	
-	public inline function kill( withCbk = true ) {
-		if ( withCbk )	
-			man.terminateTween( this );
-		else 
-			man.forceTerminateTween( this) ;
-	}
+	//public 
+	//inline
+	//function kill( withCbk = true ) {
+		//if ( Tweenie.DEBUG ){
+			//trace("kill " + uid);
+		//}
+		//
+		//if ( withCbk )	
+			//man.terminateTween( this );
+		//else 
+			//man.forceTerminateTween( this) ;
+	//}
 	
 }
 
@@ -183,6 +207,8 @@ class Tweenie {
 	dynamic function onError(e) trace(e);
 	
 	public inline function count() return tlist.length;
+	
+	//public static inline var DEBUG = true;
 	
 	public function exists(p:TSprite, v:TVarName) {
 		for (t in tlist)
@@ -254,6 +280,9 @@ class Tweenie {
 				false,
 				getInterpolateFunction(tp)
 			);
+			
+			//if ( DEBUG )trace("newed " + t.uid);
+			
 		}
 		else{
 			t = pool.pop();
@@ -271,6 +300,8 @@ class Tweenie {
 				false,
 				getInterpolateFunction(tp)
 			); 
+			
+			//if ( DEBUG )trace("pooled out " + t.uid);
 		}
 		t.delayMs = 0;
 
@@ -279,6 +310,12 @@ class Tweenie {
 
 		t.man = this;
 		tlist.push(t);
+		
+		//if ( DEBUG )trace("created " + t.uid);
+		
+		
+		
+		
 
 		return t;
 	}
@@ -354,23 +391,35 @@ class Tweenie {
 		}
 	}
 	
-	public function terminateTween(t:TTw, ?fl_allowLoop=false) {
+	public function terminateTween(t:TTw, ?fl_allowLoop = false) {
+		//if ( DEBUG )trace("terminateTween " + t.uid);
+		
 		var v = t.from+(t.to-t.from)*t.interpolate(1);
 		if (t.fl_pixel)
 			v = Math.round(v);
 		t.apply(v);
-		onUpdate(t,1);
+		onUpdate(t, 1);
+		
+		var ouid = t.uid;
+		
+		//if ( DEBUG )trace("onEnd " + t.uid);
+		
 		onEnd(t);
-		if( fl_allowLoop && (t.plays==-1 || t.plays>1) ) {
-			if( t.plays!=-1 )
-				t.plays--;
-			t.n = t.ln = 0;
-		}
-		else{
-			forceTerminateTween(t);
+		
+		if( ouid == t.uid ){
+			if( fl_allowLoop && (t.plays==-1 || t.plays>1) ) {
+				if( t.plays!=-1 )
+					t.plays--;
+				t.n = t.ln = 0;
+			}
+			else{
+				forceTerminateTween(t);
+			}
 		}
 	}
 	public function terminateAll() {
+		//if ( DEBUG )trace("term all ");
+		
 		for(t in tlist)
 			t.ln = 1;
 		update();

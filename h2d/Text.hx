@@ -78,6 +78,7 @@ class Text extends Drawable implements IText {
 	public var text(default, set) : String;
 
 	var utf : hxd.IntStack = new hxd.IntStack();
+	var utfTemp : hxd.IntStack = new hxd.IntStack();
 
 	/**
 	 * Does not take highter bits alpha into account
@@ -267,7 +268,12 @@ class Text extends Drawable implements IText {
 		this.text = t;
 
 		utf.reset();
-		haxe.Utf8.iter( text,utf.push );
+		#if flash
+		for( i in 0...t.length )
+			utf.push(StringTools.fastCodeAt(t,i));
+		#else
+			haxe.Utf8.iter( text, utf.push );
+		#end
 
 		//rebuild();
 		if ( !allocated ) 	onAlloc();
@@ -307,9 +313,15 @@ class Text extends Drawable implements IText {
 		}
 	}
 
-	function textToUtf(str:String) {
-		var s = new hxd.IntStack();
-		haxe.Utf8.iter( str,s.push );
+	private function textToUtf(str:String) { //and never touch this
+		var s = utfTemp;
+		s.reset();
+		#if flash
+		for( i in 0...str.length )
+			s.push(StringTools.fastCodeAt(str,i));
+		#else 
+			haxe.Utf8.iter( str, s.push );
+		#end
 		return s;
 	}
 
@@ -325,7 +337,7 @@ class Text extends Drawable implements IText {
 
 	static var 	utf8Text = new hxd.IntStack();
 	
-	//@:noDebug
+	@:noDebug
 	static
 	function _initGlyphs( glyphs :ITextPos, font:h2d.Font,info : TextLayoutInfos, utf : hxd.IntStack, rebuild = true, lines : Array<Int> = null ) : h2d.col.PointInt {
 		if ( rebuild ) glyphs.reset();

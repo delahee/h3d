@@ -261,6 +261,7 @@ class FontBuilder {
 		return pixels;
 	}
 
+	@:noDebug
 	function build() : h2d.Font {
 		var pixels = buildPixels( true );
 

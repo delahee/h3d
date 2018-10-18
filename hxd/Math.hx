@@ -300,4 +300,5 @@ class Math {
 	public static inline function isNear(f0:Float, f1:Float, e:Float) {
 		return Math.abs(f0 - f1) <= e;
 	}
+	
 }

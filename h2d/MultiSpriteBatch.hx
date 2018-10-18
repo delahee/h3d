@@ -212,10 +212,13 @@ class MultiBatchElement {
 		return changePriority(v);
 	}
 	
+	/**
+	 * ! beware as params bounds are not emptied()
+	 */
 	public 
 	inline
-	function getBounds() : h2d.col.Bounds{
-		var bnd = new h2d.col.Bounds();
+	function getBounds( ?cb : h2d.col.Bounds ) : h2d.col.Bounds{
+		var bnd = (cb==null)? new h2d.col.Bounds():cb;
 		var c = tile.getCenterRatio();
 		bnd.addPoint2( x - c.x * width, y - c.y * height);
 		bnd.addPoint2( x + (1.0 - c.x) * width, y + (1.0 - c.y) * height );
