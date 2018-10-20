@@ -306,15 +306,32 @@ class LocalFileSystem implements FileSystem {
 		baseDir = dir;
 		#if air3
 		var froot : flash.filesystem.File;
-		if( ! useAbsolute ){
-			froot = new flash.filesystem.File(flash.filesystem.File.applicationDirectory.nativePath + "/" + baseDir);
+		
+		var useUrl = false;
+		
+		#if mobile
+		useUrl = true;
+		#end
+		
+		if ( ! useAbsolute ){
+			var path = flash.filesystem.File.applicationDirectory.nativePath + "/" + baseDir;
+			if ( useUrl )	{
+				path = flash.filesystem.File.applicationDirectory.url + baseDir;
+				if ( path.startsWith("app://") ) path = "app:/" + path.substring("app://".length,path.length );
+			}
+			froot = new flash.filesystem.File(path);
+			
 			if ( !froot.exists ) {
 				if ( System.debugLevel >= 2) {
 					trace("path:" + flash.filesystem.File.applicationDirectory.nativePath);
+					trace("path:" + flash.filesystem.File.applicationDirectory.url);
 				}
 				throw "air:Could not find dir " + dir;
 			}
 			baseDir = froot.nativePath;
+			if ( useUrl )	{
+				baseDir = froot.url;
+			}
 		}
 		else {
 			froot = new flash.filesystem.File(dir);
