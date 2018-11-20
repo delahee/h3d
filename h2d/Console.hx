@@ -245,7 +245,7 @@ class Console extends h2d.Sprite {
 		}
 	}
 
-	function hide() {
+	override function hide() {
 		bg.visible = false;
 		tf.text = "";
 	}
