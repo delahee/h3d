@@ -385,8 +385,6 @@ class Tweenie {
 	}
 	
 	public function terminateTween(t:TTw, ?fl_allowLoop = false) {
-		//if ( DEBUG )trace("terminateTween " + t.uid);
-		
 		var v = t.from+(t.to-t.from)*t.interpolate(1);
 		if (t.fl_pixel)
 			v = Math.round(v);
