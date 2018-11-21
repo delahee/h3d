@@ -768,4 +768,6 @@ class Sprite {
 		return globalToLocal( new h2d.col.Point( stage.mouseX, stage.mouseY)).y;
 	}
 	
+	public function hide() visible = false;
+	
 }

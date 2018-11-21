@@ -203,9 +203,6 @@ class Tweenie {
 	public var 	pool 	: hxd.Stack<TTw> = new hxd.Stack();
 
 	public function new() {}
-	
-	dynamic function onError(e) trace(e);
-	
 	public inline function count() return tlist.length;
 	
 	//public static inline var DEBUG = true;
@@ -242,9 +239,9 @@ class Tweenie {
 			default:
 			case VR, VG, VB, VA, VAlpha: 
 				if ( !Std.is( p, h2d.Drawable )) {
-					#if debug		
-					onError("tween creation failed : not drawable parent, v=" + varName + " tp=" + tp);
-					#end
+					//#if false		
+					//trace("tween creation failed : not drawable parent, v=" + varName + " tp=" + tp);
+					//#end
 					p = null;
 				}
 		}
@@ -312,10 +309,6 @@ class Tweenie {
 		tlist.push(t);
 		
 		//if ( DEBUG )trace("created " + t.uid);
-		
-		
-		
-		
 
 		return t;
 	}
@@ -451,27 +444,47 @@ class Tweenie {
 	static inline function fElasticEnd	(step) 	return bezier(step, 0,	0.7,	1.5,	1);
 	static inline function fBurn2		(step) 	return bezier(step, 0,	0.7,	 0.4,	1);
 	
-	public static inline function getInterpolateFunction(type:TType) {
+	static var videntityStep=  identityStep ;
+	static var vfEase		=  fEase		;
+	static var vfEaseIn		=  fEaseIn		;
+	static var vfEaseOut	=  fEaseOut		;	
+	static var vfBurn		=  fBurn		;
+	static var vfBurnIn		=  fBurnIn		;
+	static var vfBurnOut	=  fBurnOut		;	
+	static var vfZigZag		=  fZigZag		;
+	static var vfLoop		=  fLoop		;
+	static var vfLoopEaseIn	=  fLoopEaseIn	;
+	static var vfLoopEaseOut=  fLoopEaseOut	;	
+	static var vfShake		=  fShake		;
+	static var vfShakeBoth	=  fShakeBoth	;
+	static var vfJump		=  fJump		;
+	static var vfElasticEnd	=  fElasticEnd	;
+	static var vfBurn2		=  fBurn2		;
+	
+	public static  
+	function getInterpolateFunction(type:TType) {
 		return switch(type) {
-			case TLinear		: identityStep   ;
-			case TRand			: identityStep   ;
-			case TEase			: fEase		     ;
-			case TEaseIn		: fEaseIn		 ;
-			case TEaseOut		: fEaseOut		 ;
-			case TBurn			: fBurn		     ;
-			case TBurnIn		: fBurnIn		 ;
-			case TBurnOut		: fBurnOut		 ;
-			case TZigZag		: fZigZag		 ;
-			case TLoop			: fLoop		     ;
-			case TLoopEaseIn	: fLoopEaseIn	 ;
-			case TLoopEaseOut	: fLoopEaseOut	 ;
-			case TShake			: fShake		 ;
-			case TShakeBoth		: fShakeBoth	 ;
-			case TJump			: fJump		     ;
-			case TElasticEnd	: fElasticEnd	 ;
-			case TBurn2			: fBurn2		 ;
+			case TLinear		: videntityStep   	;
+			case TRand			: videntityStep   	;
+			case TEase			: vfEase		    ;
+			case TEaseIn		: vfEaseIn		 	;
+			case TEaseOut		: vfEaseOut		 	;
+			case TBurn			: vfBurn		 	;
+			case TBurnIn		: vfBurnIn		 	;
+			case TBurnOut		: vfBurnOut		 	;
+			case TZigZag		: vfZigZag		 	;
+			case TLoop			: vfLoop		 	;
+			case TLoopEaseIn	: vfLoopEaseIn	 	;
+			case TLoopEaseOut	: vfLoopEaseOut	 	;
+			case TShake			: vfShake		 	;
+			case TShakeBoth		: vfShakeBoth	 	;
+			case TJump			: vfJump		 	;
+			case TElasticEnd	: vfElasticEnd	 	;
+			case TBurn2			: vfBurn2		 	;
 		}
 	}
+	
+	public static var vgetInterpolateFunction = getInterpolateFunction;
 	
 	inline function randFloat(f:Float):Float return Math.random()*f;
 	

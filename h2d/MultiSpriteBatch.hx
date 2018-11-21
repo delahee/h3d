@@ -201,8 +201,9 @@ class MultiBatchElement {
 		this.priority = v;
 		if ( batch != null)
 		{
-			batch.delete(this);
-			batch.add( this, v );
+			var b = batch;
+			b.delete(this);
+			b.add( this, v );
 		}
 		return v;
 	}
@@ -284,9 +285,8 @@ class MultiSpriteBatch extends Drawable {
 
 	/**
 	 */
-	@:noDebug
+	//@:noDebug
 	public function add(e:MultiBatchElement, ?prio = 0) {
-		
 		e.batch = this;
 		e.priority = prio;
 
