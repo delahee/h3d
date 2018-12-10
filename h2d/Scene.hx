@@ -8,7 +8,10 @@ class Scene extends Layers implements h3d.IDrawable {
 
 	var fixedSize : Bool;
 	var interactive : Array<Interactive>;
-	var pendingEvents : Array<hxd.Event>;
+	
+	var pendingEvents : hxd.Stack<hxd.Event>;
+	var allowEventStorage = false;
+	
 	var ctx : RenderContext;
 
 	@:allow(h2d.Interactive)
@@ -39,6 +42,8 @@ class Scene extends Layers implements h3d.IDrawable {
 		prePasses = [];
 			
 		posChanged = true;
+		
+		pendingEvents = new hxd.Stack();
 	}
 
 	public function setFixedSize( w, h ) {
@@ -62,7 +67,7 @@ class Scene extends Layers implements h3d.IDrawable {
 	}
 
 	function onEvent( e : hxd.Event ) {
-		if( pendingEvents != null ) {
+		if( pendingEvents != null && allowEventStorage) {
 			e.relX = screenXToLocal(e.relX);
 			e.relY = screenYToLocal(e.relY);
 			pendingEvents.push(e);
@@ -240,14 +245,16 @@ class Scene extends Layers implements h3d.IDrawable {
 		if( pendingEvents == null || !isInteractive ) {
 			if( !hasEvents() )
 				return;
-			pendingEvents = new Array();
+			for( e in pendingEvents )
+				hxd.Event.free(e);
+			pendingEvents.hardReset();
+			allowEventStorage = true;
 		}
-		var old = pendingEvents;
-		if( old.length == 0 )
-			return;
-		pendingEvents = null;
+		
+		allowEventStorage = false;
+		
 		var ox = 0., oy = 0.;
-		for( e in old ) {
+		for( e in pendingEvents ) {
 			var hasPos = switch( e.kind ) {
 			case EKeyUp, EKeyDown: false;
 			default: true;
@@ -273,8 +280,13 @@ class Scene extends Layers implements h3d.IDrawable {
 				pushList = new Array();
 			}
 		}
-		if( hasEvents() )
-			pendingEvents = new Array();
+		
+		if ( hasEvents() ){
+			//for( e in pendingEvents )
+				//hxd.Event.free(e);
+			pendingEvents.hardReset();
+			allowEventStorage = true;
+		}
 	}
 
 	public function cleanPushList() {

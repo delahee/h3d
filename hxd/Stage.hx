@@ -6,7 +6,7 @@ class Stage {
 	var stage : flash.display.Stage;
 	var fsDelayed : Bool;
 	#end
-	var resizeEvents : List < Void -> Void > ;
+	var resizeEvents : List<Void -> Void>;
 	var eventTargets : List<Event -> Void>;
 	
 	public var width(get, null) 	: Float;
@@ -134,46 +134,46 @@ class Stage {
 	}
 
 	function onMouseDown(e:Dynamic) {
-		event(new Event(EPush, mouseX, mouseY));
+		event( hxd.Event.alloc(EPush, mouseX, mouseY));
 		clicked=true;
 	}
 	
 	function onRMouseDown(e:Dynamic) {
-		var e = new Event(EPush, mouseX, mouseY);
+		var e = hxd.Event.alloc(EPush, mouseX, mouseY);
 		e.button = 1;
 		event(e);
 	}
 	
 	function onMouseUp(e:Dynamic) {
-		event(new Event(ERelease, mouseX, mouseY));
+		event( hxd.Event.alloc(ERelease, mouseX, mouseY));
 		clicked=false;
 	}
 
 	function onRMouseUp(e:Dynamic) {
-		var e = new Event(ERelease, mouseX, mouseY);
+		var e = hxd.Event.alloc(ERelease, mouseX, mouseY);
 		e.button = 1;
 		event(e);
 	}
 	
 	function onMouseMove(e:Dynamic) {
-		event(new Event(EMove, mouseX, mouseY));
+		event( hxd.Event.alloc(EMove, mouseX, mouseY));
 	}
 	
 	function onMouseWheel(e:flash.events.MouseEvent) {
-		var ev = new Event(EWheel, mouseX, mouseY);
+		var ev = hxd.Event.alloc(EWheel, mouseX, mouseY);
 		ev.wheelDelta = -e.delta / 3.0;
 		event(ev);
 	}
 	
 	function onKeyUp(e:flash.events.KeyboardEvent) {
-		var ev = new Event(EKeyUp);
+		var ev = hxd.Event.alloc(EKeyUp);
 		ev.keyCode = e.keyCode;
 		ev.charCode = getCharCode(e);
 		event(ev);
 	}
 
 	function onKeyDown(e:flash.events.KeyboardEvent) {
-		var ev = new Event(EKeyDown);
+		var ev = hxd.Event.alloc(EKeyDown);
 		ev.keyCode = e.keyCode;
 		ev.charCode = getCharCode(e);
 		event(ev);
@@ -219,21 +219,21 @@ class Stage {
 	}
 	
 	function onTouchDown(e:flash.events.TouchEvent) {
-		var ev = new Event(EPush, e.localX, e.localY);
+		var ev = hxd.Event.alloc(EPush, e.localX, e.localY);
 		ev.touchId = e.touchPointID;
 		event(ev);
 		clicked=true;
 	}
 
 	function onTouchUp(e:flash.events.TouchEvent) {
-		var ev = new Event(ERelease, e.localX, e.localY);
+		var ev = hxd.Event.alloc(ERelease, e.localX, e.localY);
 		ev.touchId = e.touchPointID;
 		event(ev);
 		clicked=false;
 	}
 	
 	function onTouchMove(e:flash.events.TouchEvent) {
-		var ev = new Event(EMove, e.localX, e.localY);
+		var ev = hxd.Event.alloc(EMove, e.localX, e.localY);
 		ev.touchId = e.touchPointID;
 		event(ev);
 	}
@@ -260,36 +260,36 @@ class Stage {
 	}
 
 	function onMouseDown(e:js.html.MouseEvent) {
-		event(new Event(EPush, mouseX, mouseY));
+		event( hxd.Event.alloc(EPush, mouseX, mouseY));
 		clicked=true;
 	}
 
 	function onMouseUp(e:js.html.MouseEvent) {
-		event(new Event(ERelease, mouseX, mouseY));
+		event( hxd.Event.alloc(ERelease, mouseX, mouseY));
 		clicked=false;
 	}
 	
 	function onMouseMove(e:js.html.MouseEvent) {
 		curMouseX = e.clientX;
 		curMouseY = e.clientY;
-		event(new Event(EMove, mouseX, mouseY));
+		event( hxd.Event.alloc(EMove, mouseX, mouseY));
 	}
 	
 	function onMouseWheel(e:js.html.MouseEvent) {
-		var ev = new Event(EWheel, mouseX, mouseY);
+		var ev = hxd.Event.alloc(EWheel, mouseX, mouseY);
 		ev.wheelDelta = untyped -e.wheelDelta / 30.0;
 		event(ev);
 	}
 	
 	function onKeyUp(e:js.html.KeyboardEvent) {
-		var ev = new Event(EKeyUp);
+		var ev = hxd.Event.alloc(EKeyUp);
 		ev.keyCode = e.keyCode;
 		ev.charCode = e.charCode;
 		event(ev);
 	}
 
 	function onKeyDown(e:js.html.KeyboardEvent) {
-		var ev = new Event(EKeyDown);
+		var ev = hxd.Event.alloc(EKeyDown);
 		ev.keyCode = e.keyCode;
 		ev.charCode = e.charCode;
 		event(ev);

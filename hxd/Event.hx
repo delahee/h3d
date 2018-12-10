@@ -55,4 +55,33 @@ class Event {
 		
 		return e;
 	}
+	
+	public function reset(k, x = 0., y = 0.) {
+		kind = k;
+		this.relX = x;
+		this.relY = y;
+		propagate = false;
+		cancel = false;
+		button = 0;
+		touchId = 0;
+		keyCode = 0;
+		charCode = 0;
+		wheelDelta = 0;
+		duration = 0;
+	}
+	
+	public static var pool : hxd.Stack<Event> = new hxd.Stack();
+	
+	public static function alloc(k : EventKind,x=0.0,y=0.0){
+		var e : hxd.Event = null;
+		e = pool.pop();
+		if ( e == null ) e = new hxd.Event( k, x, y);
+		e.reset(k,x,y);
+		return e;
+	}
+	
+	public static function free(e:hxd.Event){
+		e.reset(ESimulated,-1,-1);
+		pool.push(e);
+	}
 }
