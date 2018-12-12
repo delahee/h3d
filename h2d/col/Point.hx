@@ -57,6 +57,11 @@ class Point {
 		y += p.y;
 	}
 	
+	public inline function decr( p : Point ) {
+		x -= p.x;
+		y -= p.y;
+	}
+	
 	public inline function incr2( px : hxd.Float32,py : hxd.Float32 ) {
 		x += px;
 		y += py;
