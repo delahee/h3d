@@ -336,6 +336,15 @@ class Tile {
 		v2 = v;
 		v = tv;
 	}
+	
+	public function clear() {
+		dx = dy = 0;
+		x = y = 0;
+		width = height = 0;
+		u = v = 0;
+		u2 = v2 = 0;
+		innerTex = null;
+	}
 
 	public function dispose() {
 		if( innerTex != null ) innerTex.dispose();
