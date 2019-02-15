@@ -425,22 +425,22 @@ class Tweenie {
 		if ( t.onEnd!=null )		t.onEnd(t.parent);
 	}
 	
-	static inline function identityStep(step) 	return step;
-	static inline function fEase		(step) 	return bezier(step, 0,	0,		1,		1);
-	static inline function fEaseIn		(step) 	return bezier(step, 0,	0,		0.5,	1);
-	static inline function fEaseOut		(step) 	return bezier(step, 0,	0.5,	1,		1);
-	static inline function fBurn		(step) 	return bezier(step, 0,	1,	 	0,		1);
-	static inline function fBurnIn		(step) 	return bezier(step, 0,	1,	 	1,		1);
-	static inline function fBurnOut		(step) 	return bezier(step, 0,	0,		0,		1);
-	static inline function fZigZag		(step) 	return bezier(step, 0,	2.5,	-1.5,	1);
-	static inline function fLoop		(step) 	return bezier(step, 0,	1.33,	1.33,	0);
-	static inline function fLoopEaseIn	(step) 	return bezier(step, 0,	0,		2.25,	0);
-	static inline function fLoopEaseOut	(step) 	return bezier(step, 0,	2.25,	0,		0);
-	static inline function fShake		(step) 	return bezier(step, 0.5,	1.22,	1.25,	0);
-	static inline function fShakeBoth	(step) 	return bezier(step, 0.5,	1.22,	1.25,	0);
-	static inline function fJump		(step) 	return bezier(step, 0,	2,		2.79,	1);
-	static inline function fElasticEnd	(step) 	return bezier(step, 0,	0.7,	1.5,	1);
-	static inline function fBurn2		(step) 	return bezier(step, 0,	0.7,	 0.4,	1);
+	static inline function identityStep (step) 	return step;
+	static inline function fEase		(step) 	return bezier(step, 0,	0,		1,		1	);
+	static inline function fEaseIn		(step) 	return bezier(step, 0,	0,		0.5,	1	);
+	static inline function fEaseOut		(step) 	return bezier(step, 0,	0.5,	1,		1	);
+	static inline function fBurn		(step) 	return bezier(step, 0,	1,	 	0,		1	);
+	static inline function fBurnIn		(step) 	return bezier(step, 0,	1,	 	1,		1	);
+	static inline function fBurnOut		(step) 	return bezier(step, 0,	0,		0,		1	);
+	static inline function fZigZag		(step) 	return bezier(step, 0,	2.5,	-1.5,	1	);
+	static inline function fLoop		(step) 	return bezier(step, 0,	1.33,	1.33,	0	);
+	static inline function fLoopEaseIn	(step) 	return bezier(step, 0,	0,		2.25,	0	);
+	static inline function fLoopEaseOut	(step) 	return bezier(step, 0,	2.25,	0,		0	);
+	static inline function fShake		(step) 	return bezier(step, 0.5,	1.22,	1.25,0	);
+	static inline function fShakeBoth	(step) 	return bezier(step, 0.5,	1.22,	1.25,0	);
+	static inline function fJump		(step) 	return bezier(step, 0,	2,		2.79,	1	);
+	static inline function fElasticEnd	(step) 	return bezier(step, 0,	0.7,	1.5,	1	);
+	static inline function fBurn2		(step) 	return bezier(step, 0,	0.7,	 0.4,	1	);
 	
 	static var videntityStep=  identityStep ;
 	static var vfEase		=  fEase		;
