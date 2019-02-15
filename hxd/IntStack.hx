@@ -60,6 +60,14 @@ class IntStack {
 		return new IntStackIterator(arr,get_length());
 	}
 	
+	public function reverse<T>() {
+		for ( i in 0...length>>1) {
+			var t = arr[i];
+			arr[i] = arr[length - 1 - i];
+			arr[length - 1 - i] = t;
+		}
+	}
+	
 	public inline function toString() {
 		var s = "";
 		for ( i in 0...pos) {

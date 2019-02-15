@@ -393,8 +393,6 @@ class Tweenie {
 		
 		var ouid = t.uid;
 		
-		//if ( DEBUG )trace("onEnd " + t.uid);
-		
 		onEnd(t);
 		
 		if( ouid == t.uid ){
@@ -409,8 +407,6 @@ class Tweenie {
 		}
 	}
 	public function terminateAll() {
-		//if ( DEBUG )trace("term all ");
-		
 		for(t in tlist)
 			t.ln = 1;
 		update();

@@ -94,6 +94,14 @@ class Stack<T>  {
 		return true;
 	}
 	
+	public function reverse<T>() {
+		for ( i in 0...length>>1) {
+			var t = arr[i];
+			arr[i] = arr[length - 1 - i];
+			arr[length - 1 - i] = t;
+		}
+	}
+	
 	@:noDebug
 	public inline function reserve(n) {
 		if (arr.length < n )
