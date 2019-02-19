@@ -16,7 +16,34 @@ class Demo extends flash.display.Sprite{
 	}
 	var sb :h2d.SpriteBatch;
 	
+	static function getNumDecomp(v:Int){
+		var v:Float = v;
+		var vals = new hxd.IntStack();
+		
+		vals.reset();
+		
+		if ( v == 0 ){
+			vals.push(0);
+		}
+		else {
+			while ( Std.int(v) != 0 ){
+				var idx = Std.int(v) % 10;
+				vals.push(idx);
+				v = v / 10;
+			}
+		}
+		
+		vals.reverse();
+		trace(vals);
+	}
+	
 	function init() {
+		
+		getNumDecomp( 150 );
+		getNumDecomp( 149 );
+		getNumDecomp( 20000 );
+		getNumDecomp( 21000 );
+		getNumDecomp( 666666666 );
 		
 		hxd.System.setLoop(update);
 		scene = new h2d.Scene();
