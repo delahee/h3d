@@ -53,8 +53,6 @@ class Engine {
 	public function new( hardware = true, aa = 0 ) {
 		Profiler.init();
 		
-		
-		
 		this.hardware = hardware;
 		this.antiAlias = aa;
 		this.autoResize = true;
@@ -84,16 +82,25 @@ class Engine {
 	#end
 	
 	function start() {
+		#if debug 
+		trace("engine started");
+		#end
+		
 		fullScreen = !hxd.System.isWindowed;
+		
 		var stage = hxd.Stage.getInstance();
 		realFps = stage.getFrameRate();
 		lastTime = haxe.Timer.stamp();
 		stage.addResizeEvent(onStageResize);
+		
 		#if ((flash) && (!js) && (!cpp))
 		var s = new h3d.impl.Stage3dDriver();
 		driver = s;
 		s.antiAlias = antiAlias;
 		#elseif (js || cpp)
+		#if debug
+		trace("creating gl driver !");
+		#end
 		System.trace1("creating gl driver !");
 		driver = new h3d.impl.GlDriver();
 		System.trace1("created gl driver !");
@@ -125,7 +132,12 @@ class Engine {
 		CURRENT = this;
 	}
 
-	public inline function init() {
+	public function init() {
+		#if debug
+		trace("engine init");
+		trace("driver:" + (driver != null));
+		#end
+		
 		driver.init(onCreate, !hardware);
 	}
 
@@ -253,6 +265,9 @@ class Engine {
 	}
 
 	function onCreate( disposed : Bool ) {
+		#if debug 
+		trace("onCreate");
+		#end
 		if ( System.debugLevel >= 1) trace('onCreate lost:'+Std.string(disposed));
 		
 		if( autoResize ) {

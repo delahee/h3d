@@ -328,7 +328,16 @@ class Stage {
 		// init done with OpenFL ApplicationMain
 		if ( flash.Lib.current.stage != null ) {
 			callb();
+			#if debug
+			trace("sytem start cbk ok");
+			#end
 			return;
+		}
+		else {
+			callb();
+			#if debug
+			trace("sytem start cbk failed...trying nonetheless ");
+			#end
 		}
 	}
 

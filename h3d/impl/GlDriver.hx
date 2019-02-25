@@ -244,22 +244,30 @@ class GlDriver extends Driver {
 	public static #if prod inline #end var debugSendZeroes : Bool = false;
 		
 	public function new() {
+		
+		#if debug
+		trace("newing gl driver");
+		#end
+		hxd.System.trace3("newing gl driver");
+		
 		#if js
 			#if !openfl
 			canvas = cast js.Browser.document.getElementById("webgl");
 			#else
 			canvas = cast js.Browser.document.getElementById("Root_MovieClip");
 			#end 
-		if( canvas == null ) throw "Canvas #webgl not found";
-		gl = canvas.getContextWebGL();
-		if( gl == null ) throw "Could not acquire GL context";
-		// debug if webgl_debug.js is included
-		untyped if( __js__('typeof')(WebGLDebugUtils) != "undefined" ) gl = untyped WebGLDebugUtils.makeDebugContext(gl);
+			
+			if( canvas == null ) throw "Canvas #webgl not found";
+			gl = canvas.getContextWebGL();
+			if( gl == null ) throw "Could not acquire GL context";
+			// debug if webgl_debug.js is included
+			untyped if ( __js__('typeof')(WebGLDebugUtils) != "undefined" ) gl = untyped WebGLDebugUtils.makeDebugContext(gl);
+			
 		#elseif cpp
-		// check for a bug in HxCPP handling of sub buffers
-		var tmp = new Float32Array(8);
-		var sub = new Float32Array(tmp.buffer, 0, 4);
-		fixMult = sub.length == 1; // should be 4
+			// check for a bug in HxCPP handling of sub buffers
+			var tmp = new Float32Array(8);
+			var sub = new Float32Array(tmp.buffer, 0, 4);
+			fixMult = sub.length == 1; // should be 4
 		#end
 
 		curMatBits = null;
@@ -269,9 +277,13 @@ class GlDriver extends Driver {
 		fboList = new hxd.Stack<FBO>();
 		shaderCache = new IntMap();
 		
-		#if (openfl && lime < "7.1.1" )
+		#if (openfl  )
+		#if(lime < "7.1.1")
 		flash.Lib.current.stage.addEventListener( openfl.display.OpenGLView.CONTEXT_LOST , onContextLost );
 		flash.Lib.current.stage.addEventListener( openfl.display.OpenGLView.CONTEXT_RESTORED , onContextRestored );
+		#else 
+		
+		#end
 		
 		vendor = gl.getParameter(GL.VENDOR);
 		renderer = gl.getParameter(GL.RENDERER);
@@ -798,7 +810,7 @@ class GlDriver extends Driver {
 			#else
 				var tmp = new Uint32Array(count);
 				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, b);
-				gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp, GL.STATIC_DRAW);
+				gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp.length, tmp, GL.STATIC_DRAW);
 				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 			#end
 		#end
@@ -1088,11 +1100,11 @@ class GlDriver extends Driver {
 		if( texMode == GL.TEXTURE_2D)
 			gl.compressedTexImage2D(	texMode, mipLevel, 
 										internalFormat, t.width >> mipLevel, t.height >> mipLevel, 0, 
-										pixelBytes );
+										pixelBytes.length,pixelBytes );
 		else if( texMode == GL.TEXTURE_CUBE_MAP){
 			gl.compressedTexImage2D(	GL.TEXTURE_CUBE_MAP_POSITIVE_X + side, mipLevel, 
 										internalFormat, t.width >> mipLevel, t.height >> mipLevel, 0, 
-										pixelBytes );
+										pixelBytes.length,pixelBytes );
 		}
 		else 
 			throw "Unsupported";
@@ -1261,10 +1273,52 @@ class GlDriver extends Driver {
 				sub[i] = 0.0;
 		
 		gl.bindBuffer(GL.ARRAY_BUFFER, v.b);
-		gl.bufferSubData(GL.ARRAY_BUFFER, startVertex * stride * 4, sub);
+		bufferSubData(GL.ARRAY_BUFFER, startVertex * stride * 4, sub);
 		gl.bindBuffer(GL.ARRAY_BUFFER, null);
 		curBuffer = null; curMultiBuffer = null;
 		checkError();
+	}
+	
+	
+	
+	function bufferSubData(id, pos, vec : lime.utils.ArrayBufferView ){
+		#if (lime < "7.1.1" )
+			gl.bufferSubData(id, pos, vec);
+		#else
+			gl.bufferSubData(id, pos, vec.byteLength,vec);
+		#end
+	}
+	
+	function uniform1iv(loc,v : Int32Array){
+		#if (lime >= "7.1.1")
+		gl.uniform1iv(loc, v.length,v);
+		#else
+		gl.uniform1iv(loc, v);
+		#end
+	}
+	
+	function uniform3fv(loc,v : Float32Array){
+		#if (lime >= "7.1.1")
+		gl.uniform3fv(loc, v.length,v);
+		#else
+		gl.uniform3fv(loc, v);
+		#end
+	}
+	
+	function uniform4fv(loc,v : Float32Array){
+		#if (lime >= "7.1.1")
+		gl.uniform4fv(loc, v.length,v);
+		#else
+		gl.uniform4fv(loc, v);
+		#end
+	}
+	
+	function uniformMatrix4fv(loc, v : Float32Array){
+		#if (lime >= "7.1.1")
+		gl.uniformMatrix4fv(loc, v.length >> 4, false, v);
+		#else
+		gl.uniformMatrix4fv(loc, false, v);
+		#end
 	}
 
 	override function uploadVertexBytes( v : VertexBuffer, startVertex : Int, vertexCount : Int, buf : haxe.io.Bytes, bufPos : Int ) {
@@ -1273,7 +1327,7 @@ class GlDriver extends Driver {
 		var buf = getUints(buf);
 		var sub = getUints(buf.buffer, bufPos, vertexCount * stride * 4);
 		gl.bindBuffer(GL.ARRAY_BUFFER, v.b);
-		gl.bufferSubData(GL.ARRAY_BUFFER, startVertex * stride * 4, sub);
+		bufferSubData(GL.ARRAY_BUFFER, startVertex * stride * 4, sub);
 		gl.bindBuffer(GL.ARRAY_BUFFER, null);
 		curBuffer = null; curMultiBuffer = null;
 		checkError();
@@ -1286,14 +1340,14 @@ class GlDriver extends Driver {
 			var buf = new Uint16Array(buf.getNative());
 			var sub = new Uint16Array(buf, bufPos, indiceCount #if cpp * (fixMult?2:1) #end);
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
-			gl.bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub);
+			bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub);
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		#else 
 			hxd.System.trace2("uploading index 32");
 			var buf = new Int32Array(buf.getNative());
 			var sub = new Int32Array(buf, bufPos, indiceCount #if cpp * (fixMult?4:1) #end);
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
-			gl.bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 4, sub);
+			bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 4, sub);
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		#end
 	}
@@ -1303,7 +1357,7 @@ class GlDriver extends Driver {
 		var buf = new Uint8Array(buf.getData());
 		var sub = new Uint8Array(buf, bufPos, indiceCount * 2);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
-		gl.bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub);
+		bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 	}
 	
@@ -1974,11 +2028,9 @@ class GlDriver extends Driver {
 			#end
 			
 			var m : h3d.Matrix = val;
-			#if (lime >= "7.1.1")
-			gl.uniformMatrix4fv(u.loc, 1, false, buff = blitMatrix(m, true) );
-			#else 
-			gl.uniformMatrix4fv(u.loc, false, buff = blitMatrix(m, true) );
-			#end
+			
+			uniformMatrix4fv(u.loc, buff = blitMatrix(m, true) );
+			
 			deleteF32(buff);
 			
 			//System.trace3("one matrix batch " + m + " of val " + val);
@@ -2016,18 +2068,18 @@ class GlDriver extends Driver {
 				case Vec3: 
 					var arr : Array<Vector> = Reflect.field(val, field);
 					if (arr.length > nb) arr = arr.slice(0, nb);
-					gl.uniform3fv( u.loc, buff = packArray3(arr));
+					uniform3fv( u.loc, buff = packArray3(arr));
 					
 				case Vec4: 
 					var arr : Array<Vector> = Reflect.field(val, field);
 					if (arr.length > nb) arr = arr.slice(0, nb);
-					gl.uniform4fv( u.loc, buff = packArray4(arr));
+					uniform4fv( u.loc, buff = packArray4(arr));
 					
 				case Mat4: 
 					var ms : Array<h3d.Matrix> = val;
 					//if ( nb != null && ms.length != nb)  System.trace3('Array uniform type mismatch $nb requested, ${ms.length} found');
 						
-					gl.uniformMatrix4fv(u.loc, false, buff = blitMatrices(ms, true) );
+					uniformMatrix4fv(u.loc, buff = blitMatrices(ms, true) );
 					
 				case Tex2d,TexCube:
 				{
@@ -2063,9 +2115,9 @@ class GlDriver extends Driver {
 						vid[i] = u.index + i;
 					}
 					#if (legacy||haxe_ver>="3.3")
-					gl.uniform1iv(u.loc, new lime.utils.Int32Array(vid));
+					uniform1iv(u.loc, new lime.utils.Int32Array(vid));
 					#else 
-					gl.uniform1iv(u.loc, vid);
+					uniform1iv(u.loc, vid);
 					#end
 					vid = null;
 				}
@@ -2200,6 +2252,7 @@ class GlDriver extends Driver {
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, ibuf);
 		checkError();
 		
+		//trace("draw tri");
 		#if (mobile && cpp)
 		gl.drawElements(GL.TRIANGLES, ntriangles * 3, GL.UNSIGNED_SHORT, startIndex * 2);
 		#else 
@@ -2225,6 +2278,9 @@ class GlDriver extends Driver {
 	}
 
 	override function init( onCreate : Bool -> Void, forceSoftware = false ) {
+		#if debug 
+		trace("adding delay to create");
+		#end
 		haxe.Timer.delay(onCreate.bind(false), 1);
 	}
 	

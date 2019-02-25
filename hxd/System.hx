@@ -34,8 +34,9 @@ opengl
 	 */
 	public static var debugLevel = #if debug 0 #else 0 #end;
 
+	
 	public static function ensureViewBelow() {
-		#if !flash
+		#if (!flash && (lime < "7.1.1"))
 		if( VIEW == null ) {
 			VIEW = new openfl.display.OpenGLView();
 			VIEW.name = "glView";
@@ -217,10 +218,10 @@ opengl
 	static function get_isMac() 	{ return #if mac true 		#else false #end;	}
 	static function get_isLinux() 	{ return #if linux true 	#else false #end;	}
 	
+	
+	#if (lime < "7.1.1")
 	static var VIEW = null;
-	
 	public static function hasLoop() return VIEW != null && VIEW.render != null;
-	
 	public static function setLoop( f : Void -> Void ) {
 		ensureViewBelow();
 		VIEW.render = function(_) {
@@ -228,6 +229,17 @@ opengl
 				f();
 		}
 	}
+	#else
+	//public static function setApp( app : hxd.impl.LimeApp )  	hxd.impl.LimeApp.me = app;
+	//public static function hasLoop() 							return hxd.impl.LimeApp.me != null; 
+	//public static function setLoop( f : Void -> Void ) {
+		//trace("setting loop?");
+		//
+		//var app = lime.app.Application.current;
+		//app.addRenderer( new hxd.impl.LimeRenderer( app.window ));
+		//
+	//}
+	#end
 
 	public static var setCursor = setNativeCursor;
 	public static function setNativeCursor( c : Cursor ) {
