@@ -31,10 +31,15 @@ using StringTools;
 	typedef _GLActiveInfo = js.html.webgl.ActiveInfo;
 	
 	#elseif cpp
-	import openfl.gl.GLObject;
-	import openfl.gl.GL;
-	
-	typedef _GLActiveInfo = openfl.gl.GLActiveInfo;
+		#if (lime >= "7.1.1")
+		import lime.graphics.opengl.GL;
+		import lime.graphics.opengl.GL.GLObject;
+		typedef _GLActiveInfo = lime.graphics.opengl.GLActiveInfo;
+		#else
+		import openfl.gl.GLObject;
+		import openfl.gl.GL;
+		typedef _GLActiveInfo = openfl.gl.GLActiveInfo;
+		#end
 	#end
 
 	//to allow writin
@@ -60,19 +65,34 @@ using StringTools;
 	#if js
 	private typedef GL = js.html.webgl.GL;
 	#elseif cpp
-	private typedef Uint16Array = openfl.utils.Int16Array;
-	private typedef Uint8Array = openfl.utils.UInt8Array;
-	private typedef Float32Array = openfl.utils.Float32Array;
-	private typedef Int32Array = openfl.utils.Int32Array;
-	private typedef Uint32Array = openfl.utils.Int32Array;
+		
+		#if (lime < "7.1.1")
+		private typedef Uint16Array = openfl.utils.Int16Array;
+		private typedef Uint8Array = openfl.utils.UInt8Array;
+		private typedef Float32Array = openfl.utils.Float32Array;
+		private typedef Int32Array = openfl.utils.Int32Array;
+		private typedef Uint32Array = openfl.utils.Int32Array;
+		#else 
+		private typedef GL 				= lime.graphics.opengl.GL;
+		private typedef Uint16Array 	= lime.utils.Int16Array;
+		private typedef Uint8Array 		= lime.utils.UInt8Array;
+		private typedef Float32Array 	= lime.utils.Float32Array;
+		private typedef Int32Array 		= lime.utils.Int32Array;
+		private typedef Uint32Array 	= lime.utils.Int32Array;
+		#end
 	#end
 
 	#if js
 	typedef NativeFBO = js.html.webgl.Framebuffer;//todo test
 	typedef NativeRBO = js.html.webgl.Renderbuffer;//todo test
 	#elseif cpp
-	typedef NativeFBO = openfl.gl.GLFramebuffer;//todo test
-	typedef NativeRBO = openfl.gl.GLRenderbuffer;//todo test
+		#if (lime < "7.1.1")
+		typedef NativeFBO = openfl.gl.GLFramebuffer;
+		typedef NativeRBO = openfl.gl.GLRenderbuffer;
+		#else 
+		typedef NativeFBO = lime.graphics.opengl.GLFramebuffer;
+		typedef NativeRBO = lime.graphics.opengl.GLRenderbuffer;
+		#end
 	#end
 
 @:publicFields
@@ -107,6 +127,9 @@ enum BGRAMode{
 	BGRAExt;
 }
 
+//#if openfl
+//typedef OpenGLView = openfl.display.OpenGLView;
+//#end
 
 @:access(h3d.impl.Shader)
 class GlDriver extends Driver {
@@ -211,7 +234,7 @@ class GlDriver extends Driver {
 	
 	var vpWidth = 0;
 	var vpHeight = 0;
-	var screenBuffer : openfl.gl.GLFramebuffer = null;  
+	var screenBuffer : NativeFBO = null;  
 	var curTarget : Null<FBO>;
 	var engine(get, never) : h3d.Engine; 
 
@@ -246,7 +269,7 @@ class GlDriver extends Driver {
 		fboList = new hxd.Stack<FBO>();
 		shaderCache = new IntMap();
 		
-		#if openfl 
+		#if (openfl && lime < "7.1.1" )
 		flash.Lib.current.stage.addEventListener( openfl.display.OpenGLView.CONTEXT_LOST , onContextLost );
 		flash.Lib.current.stage.addEventListener( openfl.display.OpenGLView.CONTEXT_RESTORED , onContextRestored );
 		
@@ -256,13 +279,12 @@ class GlDriver extends Driver {
 		for ( e in gl.getSupportedExtensions() )
 			extensions.set(e, e);
 		
-		#if debug
-		System.trace1('running on $renderer by $vendor');
-		System.trace1("supported extensions:" + Lambda.array(extensions).join("\n"));
-		System.trace1("max combined tex units : " + gl.getParameter(GL.MAX_COMBINED_TEXTURE_IMAGE_UNITS));
-		System.trace1("max tex img units : " + gl.getParameter(GL.MAX_TEXTURE_IMAGE_UNITS));
-		#end
-		
+			#if debug
+			System.trace1('running on $renderer by $vendor');
+			System.trace1("supported extensions:" + Lambda.array(extensions).join("\n"));
+			System.trace1("max combined tex units : " + gl.getParameter(GL.MAX_COMBINED_TEXTURE_IMAGE_UNITS));
+			System.trace1("max tex img units : " + gl.getParameter(GL.MAX_TEXTURE_IMAGE_UNITS));
+			#end
 		#end
 		
 		detectCaps();
@@ -632,8 +654,14 @@ class GlDriver extends Driver {
 		
 		gl.clearColor(r, g, b, a);
 		gl.depthMask(true);
+		
+		#if (lime < "7.1.1")
 		gl.clearDepth(engine.depthClear);
 		gl.depthRange(0, 1 );
+		#else 
+		gl.clearDepthf(engine.depthClear);
+		gl.depthRangef(0, 1 );
+		#end
 		
 		gl.disable(GL.DEPTH_TEST);
 		gl.disable(GL.SCISSOR_TEST);
@@ -709,7 +737,12 @@ class GlDriver extends Driver {
 				externalFormat =  GL.RGB;
 			}
 			
+			#if (lime < "7.1.1")
 			gl.texImage2D(texMode, 0, internalFormat, t.width, t.height, 0, externalFormat, byteType, null); 	
+			#else 
+			gl.texImage2D(texMode, 0, internalFormat, t.width, t.height, 0, externalFormat, byteType, cast null); 	
+			#end
+			
 			
 			checkError();
 			
@@ -735,7 +768,14 @@ class GlDriver extends Driver {
 		#else
 		var tmp = new Uint8Array(count * stride * 4);
 		gl.bindBuffer(GL.ARRAY_BUFFER, b);
+		
+		
+		#if (lime < "7.1.1")
 		gl.bufferData(GL.ARRAY_BUFFER, tmp,  isDynamic? GL.DYNAMIC_DRAW : GL.STATIC_DRAW);
+		#else 
+		gl.bufferData(GL.ARRAY_BUFFER, tmp.length, tmp,  isDynamic? GL.DYNAMIC_DRAW : GL.STATIC_DRAW);
+		#end 
+
 		gl.bindBuffer(GL.ARRAY_BUFFER, null); curBuffer = null; curMultiBuffer = null;
 		#end
 		
@@ -1934,7 +1974,11 @@ class GlDriver extends Driver {
 			#end
 			
 			var m : h3d.Matrix = val;
+			#if (lime >= "7.1.1")
+			gl.uniformMatrix4fv(u.loc, 1, false, buff = blitMatrix(m, true) );
+			#else 
 			gl.uniformMatrix4fv(u.loc, false, buff = blitMatrix(m, true) );
+			#end
 			deleteF32(buff);
 			
 			//System.trace3("one matrix batch " + m + " of val " + val);
@@ -2019,7 +2063,7 @@ class GlDriver extends Driver {
 						vid[i] = u.index + i;
 					}
 					#if (legacy||haxe_ver>="3.3")
-					gl.uniform1iv(u.loc, new openfl.utils.Int32Array(vid));
+					gl.uniform1iv(u.loc, new lime.utils.Int32Array(vid));
 					#else 
 					gl.uniform1iv(u.loc, vid);
 					#end
@@ -2310,8 +2354,13 @@ class GlDriver extends Driver {
 		//cost is 0
 		//hxd.Profiler.begin("restoreOpenfl");
 		
+		#if (lime >= "7.1.1")
+		gl.depthRangef(0, 1);
+		gl.clearDepthf(1);
+		#else 
 		gl.depthRange(0, 1);
 		gl.clearDepth(1);
+		#end
 		gl.depthMask(true);
 		gl.colorMask(true,true,true,true);
 		gl.disable(GL.DEPTH_TEST);

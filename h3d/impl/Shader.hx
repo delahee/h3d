@@ -10,7 +10,15 @@ import haxe.macro.Type.Ref;
 typedef Shader = hxsl.Shader;
 #elseif (js || cpp)
 
-typedef ShaderLocation = #if js js.html.webgl.UniformLocation #else openfl.gl.GLUniformLocation #end;
+#if js 
+typedef ShaderLocation = js.html.webgl.UniformLocation 
+#elseif ( lime >= "7.1.1" )
+typedef ShaderLocation = lime.graphics.opengl.GLUniformLocation
+#else 
+typedef ShaderLocation = openfl.gl.GLUniformLocation 
+#end;
+
+
 enum ShaderType {
 	Float;
 	Vec2;
@@ -67,9 +75,19 @@ class Attribute {
 	}
 }
 
+#if js
+typedef NativeGLProgram =   js.html.webgl.Program;
+#else
+	#if (lime >= "7.1.1")
+	typedef NativeGLProgram =   lime.graphics.opengl.GLProgram;
+	#else 
+	typedef NativeGLProgram =   openfl.gl.GLProgram;
+	#end
+#end
+
 class ShaderInstance {
 
-	public var program : #if js js.html.webgl.Program #else openfl.gl.GLProgram #end;
+	public var program : NativeGLProgram;
 	public var attribs : Array<Attribute>;
 	public var attribsNames : Array<String>;
 	public var uniforms : Array<Uniform>;

@@ -17,15 +17,27 @@ import hxd.System;
 	typedef VertexBuffer = GLVB;
 	typedef Texture = js.html.webgl.Texture;
 #elseif cpp
-	typedef IndexBuffer = openfl.gl.GLBuffer;
-	@:publicFields
-	class GLVB {
-		var b : openfl.gl.GLBuffer;
-		var stride : Int;
-		public function new(b = null, s = 0) { this.b = b; this.stride = s; };
-	}
-	typedef VertexBuffer = GLVB;
-	typedef Texture = openfl.gl.GLTexture;
+	#if (lime < "7.1.1")
+		typedef IndexBuffer = openfl.gl.GLBuffer;
+		@:publicFields
+		class GLVB {
+			var b : openfl.gl.GLBuffer;
+			var stride : Int;
+			public function new(b = null, s = 0) { this.b = b; this.stride = s; };
+		}
+		typedef VertexBuffer = GLVB;
+		typedef Texture = openfl.gl.GLTexture;
+	#else 
+		typedef IndexBuffer = lime.graphics.opengl.GLBuffer;
+		@:publicFields
+		class GLVB {
+			var b : lime.graphics.opengl.GLBuffer;
+			var stride : Int;
+			public function new(b = null, s = 0) { this.b = b; this.stride = s; };
+		}
+		typedef VertexBuffer = GLVB;
+		typedef Texture = lime.graphics.opengl.GLTexture;
+	#end
 #else
 	typedef IndexBuffer = Int;
 	typedef VertexBuffer = Int;
