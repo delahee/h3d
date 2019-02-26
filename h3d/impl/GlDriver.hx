@@ -139,7 +139,6 @@ class GlDriver extends Driver {
 	public var gl : js.html.webgl.RenderingContext;
 	#elseif cpp
 	static var gl = GL;
-	var fixMult : Bool;
 	#end
 	
 	public static inline var BGR_EXT = 0x80E0;
@@ -264,10 +263,7 @@ class GlDriver extends Driver {
 			untyped if ( __js__('typeof')(WebGLDebugUtils) != "undefined" ) gl = untyped WebGLDebugUtils.makeDebugContext(gl);
 			
 		#elseif cpp
-			// check for a bug in HxCPP handling of sub buffers
-			var tmp = new Float32Array(8);
-			var sub = new Float32Array(tmp.buffer, 0, 4);
-			fixMult = sub.length == 1; // should be 4
+
 		#end
 
 		curMatBits = null;
@@ -678,11 +674,13 @@ class GlDriver extends Driver {
 		gl.disable(GL.DEPTH_TEST);
 		gl.disable(GL.SCISSOR_TEST);
 		
+		
 		checkError();
+		
+		
 		//always clear depth & stencyl to enable op
 		gl.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT | GL.STENCIL_BUFFER_BIT);
-
-		gl.enable(GL.SCISSOR_TEST);
+		
 		setRenderZone( scissorX, scissorY, scissorW, scissorH );
 		
 		checkError();
@@ -725,7 +723,8 @@ class GlDriver extends Driver {
 	function glAllocTexture( t : h3d.mat.Texture , pix : hxd.Pixels ) : h3d.impl.Texture {
 		var tt = gl.createTexture();
 		#if debug
-		hxd.System.trace2("Creating texture pointer\n" + tt + haxe.CallStack.toString(haxe.CallStack.callStack()) );
+		//hxd.System.trace3("Creating texture pointer id:" + t.id);
+		//hxd.System.trace3("Creating texture pointer\n" + tt + haxe.CallStack.toString(haxe.CallStack.callStack()) );
 		#end
 		checkError();
 		
@@ -773,19 +772,20 @@ class GlDriver extends Driver {
 	override function allocVertex( count : Int, stride : Int , isDynamic = false) : VertexBuffer {
 		
 		var b = gl.createBuffer();
+		var usage = isDynamic? GL.DYNAMIC_DRAW : GL.STATIC_DRAW;
+		
 		#if js
-		gl.bufferData(GL.ARRAY_BUFFER, count * stride * 4, isDynamic? GL.DYNAMIC_DRAW : GL.STATIC_DRAW);
 		gl.bindBuffer(GL.ARRAY_BUFFER, b);
+		gl.bufferData(GL.ARRAY_BUFFER, count * stride * 4, usage);
 		gl.bindBuffer(GL.ARRAY_BUFFER, null); curBuffer = null; curMultiBuffer = null;
 		#else
 		var tmp = new Uint8Array(count * stride * 4);
 		gl.bindBuffer(GL.ARRAY_BUFFER, b);
 		
-		
 		#if (lime < "7.1.1")
-		gl.bufferData(GL.ARRAY_BUFFER, tmp,  isDynamic? GL.DYNAMIC_DRAW : GL.STATIC_DRAW);
+		bufferData(GL.ARRAY_BUFFER, tmp,  usage);
 		#else 
-		gl.bufferData(GL.ARRAY_BUFFER, tmp.length, tmp,  isDynamic? GL.DYNAMIC_DRAW : GL.STATIC_DRAW);
+		bufferData(GL.ARRAY_BUFFER, tmp,  usage);
 		#end 
 
 		gl.bindBuffer(GL.ARRAY_BUFFER, null); curBuffer = null; curMultiBuffer = null;
@@ -795,7 +795,6 @@ class GlDriver extends Driver {
 	}
 	
 	override function allocIndexes( count : Int ) : IndexBuffer {
-		//System.trace4("allocIndex");
 		var b = gl.createBuffer();
 		#if js
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, b);
@@ -803,14 +802,14 @@ class GlDriver extends Driver {
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		#else
 			#if (mobile&&cpp)
-				var tmp = new Uint16Array(count);
+				var tmp = new Uint16Array(count * 2);
 				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, b);
-				gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp, GL.STATIC_DRAW);
+				bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp, GL.STATIC_DRAW);
 				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 			#else
-				var tmp = new Uint32Array(count);
+				var tmp = new Uint32Array(count * 4);
 				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, b);
-				gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp.length, tmp, GL.STATIC_DRAW);
+				bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp, GL.STATIC_DRAW);
 				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 			#end
 		#end
@@ -876,7 +875,7 @@ class GlDriver extends Driver {
 			case GL.FRAMEBUFFER_UNSUPPORTED:                    "FRAMEBUFFER_UNSUPPORTED";
 		}
 		
-		hxd.System.trace3("whoops "+msg);
+		//hxd.System.trace3("whoops "+msg);
 		throw msg;
 		#end
 		
@@ -1266,7 +1265,7 @@ class GlDriver extends Driver {
 		hxd.System.trace2("uploading bytes float "+vertexCount);
 		var stride : Int = v.stride;
 		var buf = buf.getNative();
-		var sub = new Float32Array(buf, bufPos, vertexCount * stride #if cpp * (fixMult?4:1) #end);
+		var sub = new Float32Array(buf, bufPos, vertexCount * stride * 4);
 		
 		if ( debugSendZeroes ) 
 			for ( i in 0...sub.length )
@@ -1279,13 +1278,47 @@ class GlDriver extends Driver {
 		checkError();
 	}
 	
-	
+	function bufferData( target:Int, vec : lime.utils.ArrayBufferView, usage:Int ){
+		#if (lime < "7.1.1" )
+		gl.bufferData( target, vec, usage );
+		#else 
+		#if debug 
+			checkError();
+			#end
+			
+			//target is 
+			//ARRAY_BUFFER
+			//ELEMENT_ARRAY_BUFFER
+			//ARRAY_BUFFER_BINDING
+			
+			// len is bytes
+			
+			//usage is 
+			//STREAM_DRAW
+			//STATIC_DRAW
+			//DYNAMIC_DRAW
+			
+			gl.bufferData(target, vec.byteLength, vec, usage);
+			
+			#if debug 
+			checkError();
+			#end
+		#end
+	}
 	
 	function bufferSubData(id, pos, vec : lime.utils.ArrayBufferView ){
 		#if (lime < "7.1.1" )
 			gl.bufferSubData(id, pos, vec);
 		#else
-			gl.bufferSubData(id, pos, vec.byteLength,vec);
+			#if debug 
+			checkError();
+			#end
+			
+			gl.bufferSubData(id, pos, vec.byteLength, vec);
+			
+			#if debug 
+			checkError();
+			#end
 		#end
 	}
 	
@@ -1322,13 +1355,17 @@ class GlDriver extends Driver {
 	}
 
 	override function uploadVertexBytes( v : VertexBuffer, startVertex : Int, vertexCount : Int, buf : haxe.io.Bytes, bufPos : Int ) {
-		hxd.System.trace2("uploading bytes 32");
+		hxd.System.trace2("uploading bytes 32 " +startVertex+" : "+vertexCount);
+		
 		var stride : Int = v.stride;
 		var buf = getUints(buf);
 		var sub = getUints(buf.buffer, bufPos, vertexCount * stride * 4);
+		
+		checkError();
 		gl.bindBuffer(GL.ARRAY_BUFFER, v.b);
 		bufferSubData(GL.ARRAY_BUFFER, startVertex * stride * 4, sub);
 		gl.bindBuffer(GL.ARRAY_BUFFER, null);
+		checkError();
 		curBuffer = null; curMultiBuffer = null;
 		checkError();
 	}
@@ -1338,14 +1375,16 @@ class GlDriver extends Driver {
 			hxd.System.trace2("uploading index 16");
 
 			var buf = new Uint16Array(buf.getNative());
-			var sub = new Uint16Array(buf, bufPos, indiceCount #if cpp * (fixMult?2:1) #end);
+			var sub = new Uint16Array(buf, bufPos, indiceCount * 2 );
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
 			bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub);
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		#else 
+		
 			hxd.System.trace2("uploading index 32");
+			
 			var buf = new Int32Array(buf.getNative());
-			var sub = new Int32Array(buf, bufPos, indiceCount #if cpp * (fixMult?4:1) #end);
+			var sub = new Int32Array(buf, bufPos, indiceCount * 4);
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
 			bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 4, sub);
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
@@ -2252,7 +2291,9 @@ class GlDriver extends Driver {
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, ibuf);
 		checkError();
 		
-		//trace("draw tri");
+		#if debug
+		hxd.System.trace2("draw tri");
+		#end
 		#if (mobile && cpp)
 		gl.drawElements(GL.TRIANGLES, ntriangles * 3, GL.UNSIGNED_SHORT, startIndex * 2);
 		#else 
@@ -2352,9 +2393,10 @@ class GlDriver extends Driver {
 
 	public inline function checkError() {
 		#if debug
-		if (gl.getError() != GL.NO_ERROR)
+		var err = gl.getError();
+		if (err != GL.NO_ERROR)
 		{
-			var s = getError();
+			var s = getError(err);
 			if ( s != null) {
 				var str = "GL_ERROR:" + s;
 				trace(str);
@@ -2364,15 +2406,15 @@ class GlDriver extends Driver {
 		#end
 	}
 	
-	public inline function getError() {
+	public inline function getError(err) {
 		return 
-		switch(gl.getError()) {
+		switch(err) {
 			case GL.NO_ERROR                      	: null;
 			case GL.INVALID_ENUM                  	:"INVALID_ENUM";
 			case GL.INVALID_VALUE                 	:"INVALID_VALUE";
 			case GL.INVALID_OPERATION           	:"INVALID_OPERATION";
 			case GL.OUT_OF_MEMORY               	:"OUT_OF_MEMORY";
-			default 								:null;
+			default 								: "UNKNOWN ERR :"+err;
 		}
 	}
 	

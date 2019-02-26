@@ -71,6 +71,7 @@ private class GraphicsContent extends h3d.prim.Primitive {
 	}
 	
 	override function render( engine : h3d.Engine ) {
+		
 		if ( buffer == null || buffer.isDisposed() ) 
 			alloc(engine); 
 		if (index.length <= 0) return;

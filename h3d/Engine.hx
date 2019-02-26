@@ -213,6 +213,10 @@ class Engine {
 			}
 			if ( ntri > 0 && selectBuffer(b.b) ) {
 				// *3 because it's the position in indexes which are always by 3
+				
+				#if debug
+				hxd.System.trace2("driver.draw");
+				#end
 				driver.draw(indexes.ibuf, pos * 3, ntri);
 				drawTriangles += ntri;
 				drawCalls++;
@@ -233,11 +237,20 @@ class Engine {
 			
 		var maxTri = Std.int(indexes.count / 3);
 		if( drawTri < 0 ) drawTri = maxTri - startTri;
-		if( drawTri > 0 && selectBuffer(b.b) ) {
+		if ( drawTri > 0 && selectBuffer(b.b) ) {
+			#if debug
+			hxd.System.trace2("renderIndexed");
+			#end
+			
 			// *3 because it's the position in indexes which are always by 3
 			driver.draw(indexes.ibuf, startTri * 3, drawTri);
 			drawTriangles += drawTri;
 			drawCalls++;
+		}
+		else {
+			#if debug
+			hxd.System.trace2("smt hpnd");
+			#end
 		}
 	}
 	
@@ -351,10 +364,21 @@ class Engine {
 	}
 
 	public function begin() {
-		if( driver.isDisposed() )
+		if ( driver.isDisposed() ){
+			
+			#if debug
+			hxd.System.trace2("can't begin, no driver"); 
+			#end
+			
 			return false;
+		}
 			
 		if ( triggerClear ) {
+			
+			#if debug
+			hxd.System.trace2("calling for clear"); 
+			#end
+			
 			#if (profileGpu&&flash)		
 			var m = flash.profiler.Telemetry.spanMarker;
 			#end
@@ -366,6 +390,11 @@ class Engine {
 							
 			#if (profileGpu&&flash)					
 			flash.profiler.Telemetry.sendSpanMetric( "driver.clear" , m );
+			#end
+		}
+		else {
+			#if debug
+			hxd.System.trace2("no clear requested"); 
 			#end
 		}
 							
@@ -457,7 +486,12 @@ class Engine {
 	}
 
 	public function render( obj : { function render( engine : Engine ) : Void; } ) {
-		if ( !begin() ) return false;
+		if ( !begin() ) {
+			#if debug
+			hxd.System.trace2("can't begin");
+			#end
+			return false;
+		}
 		
 		#if (profileGpu&&flash)
 		var m = flash.profiler.Telemetry.spanMarker;
@@ -465,7 +499,7 @@ class Engine {
 		
 		obj.render(this);
 		end();
-				
+		
 		var delta = haxe.Timer.stamp() - lastTime;
 		lastTime += delta;
 		if( delta > 0 ) {
