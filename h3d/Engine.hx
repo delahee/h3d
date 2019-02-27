@@ -581,7 +581,8 @@ class Engine {
 	#if (openfl||lime)
 	public function restoreOpenfl() {
 		#if sys
-		triggerClear = false;
+			//lime will issue a clear by itself
+			triggerClear = false;
 		#end
 		driver.restoreOpenfl();
 	}

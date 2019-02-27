@@ -75,16 +75,17 @@ opengl
 	
 	static function get_screenDPI() return flash.system.Capabilities.screenDPI;
 	
-	
 	static var loop = null;
-	
-	public static function setLoop( f : Void -> Void ) {
-		if( loop != null )
-			flash.Lib.current.removeEventListener(flash.events.Event.ENTER_FRAME, loop);
-		if( f == null )
+	public static function setLoop( update : Void -> Void, render: Void->Void ) {
+		if( loop != null ) flash.Lib.current.removeEventListener(flash.events.Event.ENTER_FRAME, loop);
+			
+		if( update == null )
 			loop = null;
 		else {
-			loop = function(_) f();
+			loop = function(_) {
+				update();
+				render();
+			}
 			flash.Lib.current.addEventListener(flash.events.Event.ENTER_FRAME, loop);
 		}
 	}
@@ -149,7 +150,7 @@ opengl
 		return flash.system.Capabilities.language;
 	}
 	
-	#elseif js
+	#elseif js//useless target ?
 
 	static var LOOP = null;
 	static var LOOP_INIT = false;
@@ -218,29 +219,31 @@ opengl
 	static function get_isMac() 	{ return #if mac true 		#else false #end;	}
 	static function get_isLinux() 	{ return #if linux true 	#else false #end;	}
 	
+	static var updateLoop = null;
+	static var renderLoop = null;
 	
-	#if (lime < "7.1.1")
-	static var VIEW = null;
-	public static function hasLoop() return VIEW != null && VIEW.render != null;
-	public static function setLoop( f : Void -> Void ) {
-		ensureViewBelow();
-		VIEW.render = function(_) {
-			if ( f != null ) 
-				f();
+	public static function setLoop( update : Void -> Void, render: Void->Void) {
+		if ( updateLoop != null ) 	flash.Lib.current.removeEventListener(flash.events.Event.ENTER_FRAME, updateLoop);
+		if ( renderLoop != null ) 	flash.Lib.current.removeEventListener(openfl.events.RenderEvent.RENDER_OPENGL, renderLoop);
+		
+		if ( updateLoop == null ) updateLoop = null;
+		if ( renderLoop == null ) renderLoop = null;
+		
+		if( update != null){
+			updateLoop = function(_) {
+				update();
+			}
+			flash.Lib.current.addEventListener(flash.events.Event.ENTER_FRAME, updateLoop);
+		}
+		
+		if( render != null){
+			renderLoop = function(_) {
+				render();
+			}
+			flash.Lib.current.addEventListener(openfl.events.RenderEvent.RENDER_OPENGL, renderLoop);
 		}
 	}
-	#else
-	//public static function setApp( app : hxd.impl.LimeApp )  	hxd.impl.LimeApp.me = app;
-	//public static function hasLoop() 							return hxd.impl.LimeApp.me != null; 
-	//public static function setLoop( f : Void -> Void ) {
-		//trace("setting loop?");
-		//
-		//var app = lime.app.Application.current;
-		//app.addRenderer( new hxd.impl.LimeRenderer( app.window ));
-		//
-	//}
-	#end
-
+	
 	public static var setCursor = setNativeCursor;
 	public static function setNativeCursor( c : Cursor ) {
 		/* not supported by openFL
