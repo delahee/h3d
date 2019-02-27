@@ -72,11 +72,12 @@ opengl
 	static function get_isIOS() 	{ return flash.system.Capabilities.manufacturer.indexOf('iPhone') 	!= -1;	}
 	static function get_isMac() 	{ return flash.system.Capabilities.manufacturer.indexOf('Mac') 		!= -1;	}
 	static function get_isLinux() 	{ return flash.system.Capabilities.manufacturer.indexOf('Linux') 	!= -1;	}
+	static function get_isSwitch() 	{ return false;	}
 	
 	static function get_screenDPI() return flash.system.Capabilities.screenDPI;
 	
 	static var loop = null;
-	public static function setLoop( update : Void -> Void, render: Void->Void ) {
+	public static function setLoop( update : Void -> Void, ?render: Void->Void ) {
 		if( loop != null ) flash.Lib.current.removeEventListener(flash.events.Event.ENTER_FRAME, loop);
 			
 		if( update == null )
@@ -84,7 +85,7 @@ opengl
 		else {
 			loop = function(_) {
 				update();
-				render();
+				if( render !=null ) render();
 			}
 			flash.Lib.current.addEventListener(flash.events.Event.ENTER_FRAME, loop);
 		}
@@ -202,6 +203,7 @@ opengl
 	static function get_isLinux() 		return false;
 	static function get_isWindowed() 	return true;
 	static function get_isTouch() 		return false;
+	static function get_isSwitch() 		return false;
 	
 	static function get_width() {
 		return js.Browser.document.width;
@@ -213,16 +215,17 @@ opengl
 	
 	#elseif openfl
 
-	static function get_isAndroid() { return #if android true 	#else false #end;	}
-	static function get_isWindows() { return #if windows true 	#else false #end;	}
-	static function get_isIOS() 	{ return #if ios true 		#else false #end;	}
-	static function get_isMac() 	{ return #if mac true 		#else false #end;	}
-	static function get_isLinux() 	{ return #if linux true 	#else false #end;	}
+	static function get_isAndroid() { return #if android true 			#else false #end;	}
+	static function get_isWindows() { return #if windows true 			#else false #end;	}
+	static function get_isIOS() 	{ return #if ios true 				#else false #end;	}
+	static function get_isMac() 	{ return #if mac true 				#else false #end;	}
+	static function get_isLinux() 	{ return #if linux true 			#else false #end;	}
+	static function get_isSwitch() 	{ return #if (lime_switch) true 	#else false #end;	}
 	
 	static var updateLoop = null;
 	static var renderLoop = null;
 	
-	public static function setLoop( update : Void -> Void, render: Void->Void) {
+	public static function setLoop( update : Void -> Void, ?render: Void->Void) {
 		if ( updateLoop != null ) 	flash.Lib.current.removeEventListener(flash.events.Event.ENTER_FRAME, updateLoop);
 		if ( renderLoop != null ) 	flash.Lib.current.removeEventListener(openfl.events.RenderEvent.RENDER_OPENGL, renderLoop);
 		

@@ -1,22 +1,19 @@
--main ApplicationMain 
 -lib openfl
 -lib format
 -lib h3d
 -cp src
--D tools=1.2.8
+-cp bin/android/haxe
+-D tools=1.4.0
 -D lime_native
 -D no-compilation
 -D resourcesPath=assets
 -D display
 -D android
 -D mobile
---no-output
--dce no
--cp bin/android/haxe
--cpp bin/android/obj
---macro allowPackage("flash")
---macro keep("Demo")
 -D android
 -D android-9
--D no-compilation
-
+-main ApplicationMain
+--no-output
+--macro allowPackage('flash')
+-dce no
+--macro keep("Demo")
