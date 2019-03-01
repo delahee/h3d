@@ -2,6 +2,7 @@ package hxd;
 import haxe.Log;
 import haxe.PosInfos;
 
+
 enum Cursor {
 	Default;
 	Button;
@@ -233,7 +234,7 @@ opengl
 		if ( renderLoop == null ) renderLoop = null;
 		
 		if( update != null){
-			updateLoop = function(_) {
+			updateLoop = function(e) {
 				update();
 			}
 			flash.Lib.current.addEventListener(flash.events.Event.ENTER_FRAME, updateLoop);

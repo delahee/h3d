@@ -8,11 +8,10 @@
 	<!-- output -->
 	<app main="Demo" file="showcase" path="bin" swf-version="14" />
 	
-	<window background="#CaCaCa" fps="120" />
+	<window background="#CaCaCa" fps="60" />
 	<window width="1280" height="720" unless="mobile" />
-	<window vsync="false" antialiasing="0"/>
 	
-	<window vsync="false" antialiasing="0" if="cpp" orientation="auto" resizable="true" />
+	<window vsync="true" antialiasing="0" if="cpp" orientation="auto" resizable="true" />
 	
 	<!-- classpath, haxe libs -->
 	<source path="src" />
@@ -21,7 +20,10 @@
 	<haxelib name="h3d" />
 	<haxelib name="hxsl" if="flash"/>
 	
-	<assets path="assets" rename="assets" />
+	
+	<assets path="assets" rename="assets" if="flash" />
+	<assets path="assets" rename="assets" unless="flash" embed="false" />
+	
 	<haxedef name="resourcesPath" value="assets" />
 	<haxeflag name="-dce" value="no" />
 	<haxedef name="dumpShader"/>

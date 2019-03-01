@@ -28,6 +28,8 @@ import hxd.Key;
 import hxd.Pixels;
 import hxd.Profiler;
 import hxd.res.FontBuilder;
+import h2d.NumberOpt;
+import h2d.FPSMeter;
 
 typedef Col = {
 	r	: Int, // 0-255
@@ -49,6 +51,7 @@ class Demo extends flash.display.Sprite
 	function new() {
 		super();
 		engine = new h3d.Engine();
+		hxd.System.debugLevel = 1;
 		engine.onReady = init;
 		engine.backgroundColor = 0xFFCCCCCC;
 		engine.init();
@@ -66,10 +69,15 @@ class Demo extends flash.display.Sprite
 	}
 	
 	function init() {
-		hxd.System.setLoop(update);
+		hxd.System.setLoop(update,render);
 		
 		hxd.Key.initialize();
 		scene = new h2d.Scene();
+		
+		#if (lime>="7.1.1")
+		trace(openfl.Assets.list(openfl.utils.AssetType.IMAGE));
+		#end
+		//trace(openfl.Assets.defaultRootPath);
 		
 		var driver = h3d.Engine.getCurrent().driver;
 		var font = hxd.res.FontBuilder.getFont("arial", 10);
@@ -94,6 +102,7 @@ class Demo extends flash.display.Sprite
 		var bmp;
 		var incr = 24;
 		var txtBaseLine = 48;
+		
 		
 		{
 			//single bitmap no emit
@@ -173,6 +182,7 @@ class Demo extends flash.display.Sprite
 			t.x -= t.textWidth * 0.5;
 		}
 		
+		//if( false )
 		{
 			cellX += bmp.width + incr;
 			
@@ -410,14 +420,14 @@ class Demo extends flash.display.Sprite
 			bmp.x -= tile.width*0.5;
 			bmp.y -= tile.height*0.5;
 			
-			var bu = @:privateAcces tile.u;
-			var bu2 = @:privateAcces tile.u2;
+			var bu = @:privateAccess tile.u;
+			var bu2 = @:privateAccess tile.u2;
 			
 			actions.push( function() {
 				var r = hxd.Math.fumod(hxd.Timer.oldTime, 1.0);
 				
-				@:privateAcces tile.u = bu + r;
-				@:privateAcces tile.u2 = bu2 + r;
+				@:privateAccess tile.u = bu + r;
+				@:privateAccess tile.u2 = bu2 + r;
 			});
 		}
 		
@@ -1010,7 +1020,7 @@ class Demo extends flash.display.Sprite
 			
 		}
 		
-		if(false)
+		//if(false)
 		{
 			cellX += bmp.width + incr;
 			
@@ -1067,7 +1077,15 @@ class Demo extends flash.display.Sprite
 			t.x -= t.textWidth * 0.5;
 		}
 		
+		{
+			fps = new h2d.FPSMeter( scene );
+			fps.x = scene.width - 200;
+			fps.y = 0;
+		}
+		
 	}
+	
+	var fps :h2d.FPSMeter;
 	var atb:TextBatchElement;
 	var actions = [];
 	
@@ -1077,53 +1095,67 @@ class Demo extends flash.display.Sprite
 	var old : h2d.Sprite  = null;
 	
 	function update() 	{
+		#if ( lime && cpp )
+		invalidate();
+		#end
+		
 		var mem = h3d.Engine.getCurrent().mem;  
 		hxd.Timer.update();
 		scene.checkEvents();
+		
 		for ( a in actions ) 
 			a();
-		
-		if ( hxd.Key.isPressed(hxd.Key.K) ) {
-			h3d.Engine.getCurrent().mem.startTextureGC();
-		}
-		
-		if ( hxd.Key.isPressed(hxd.Key.P) ) {
-			if ( old != null)
-				old.remove();
+			
+		if( false ){
+			if ( hxd.Key.isReleased(hxd.Key.K) ) {
+				h3d.Engine.getCurrent().mem.startTextureGC();
+			}
+			
+			if ( hxd.Key.isReleased(hxd.Key.P) ) {
+				if ( old != null)
+					old.remove();
+					
+				var t = hxd.DrawProfiler.analyse(scene);
+				t = t.slice( start );
 				
-			var t = hxd.DrawProfiler.analyse(scene);
-			t = t.slice( start );
+				old = hxd.DrawProfiler.makeGfx( t );
+				scene.addChild( old );
+				start += 10;
+			}
 			
-			old = hxd.DrawProfiler.makeGfx( t );
-			scene.addChild( old );
-			start += 10;
+			if ( hxd.Key.isReleased(hxd.Key.L) ) {
+				var oldScene = scene;
+				var tile = h2d.Tile.fromColor( 0xffFF0000 );
+				var scene = new h2d.Scene();
+				var bmp = new h2d.Bitmap(tile, scene); 
+				var bmp = new h2d.Bitmap(tile, scene); 
+				var bmp = new h2d.Bitmap(tile, scene); 
+				var bmp = new h2d.Bitmap(tile, scene); 
+				
+				var g = new h2d.Graphics( scene); 
+				g.beginFill();
+				g.drawRect(0, 0, 10, 10);
+				g.endFill();
+				g.beginFill();
+				g.drawRect(20,20,10,10);
+				g.endFill();
+				
+				var t = hxd.DrawProfiler.analyse(scene);
+				var g = hxd.DrawProfiler.makeGfx( t );
+				oldScene.addChild( g );
+			}
+			
+			if ( hxd.Key.isReleased(hxd.Key.C) ) {
+				trace(hxd.Profiler.dump(true));
+			}
 		}
 		
-		if ( hxd.Key.isPressed(hxd.Key.L) ) {
-			var oldScene = scene;
-			var tile = h2d.Tile.fromColor( 0xffFF0000 );
-			var scene = new h2d.Scene();
-			var bmp = new h2d.Bitmap(tile, scene); 
-			var bmp = new h2d.Bitmap(tile, scene); 
-			var bmp = new h2d.Bitmap(tile, scene); 
-			var bmp = new h2d.Bitmap(tile, scene); 
-			
-			var g = new h2d.Graphics( scene); 
-			g.beginFill();
-			g.drawRect(0, 0, 10, 10);
-			g.endFill();
-			g.beginFill();
-			g.drawRect(20,20,10,10);
-			g.endFill();
-			
-			var t = hxd.DrawProfiler.analyse(scene);
-			var g = hxd.DrawProfiler.makeGfx( t );
-			oldScene.addChild( g );
-		}
-		
+		fr++;
+	}
+	
+	function render(){
 		engine.render(scene);
 		engine.restoreOpenfl();
-		fr++;
 	}
 	
 	static function main() {

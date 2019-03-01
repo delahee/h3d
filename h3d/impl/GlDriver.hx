@@ -131,6 +131,19 @@ enum BGRAMode{
 //typedef OpenGLView = openfl.display.OpenGLView;
 //#end
 
+#if windows
+@:cppFileCode(
+	""+
+	'extern "C" {'+
+	'_declspec(dllexport) DWORD NvOptimusEnablement = 0x00000001;'+
+	'}'+
+	''+
+	'extern "C"'+
+	'{'+
+	'	__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 1;'+
+	'}'+
+	"")
+#end
 @:access(h3d.impl.Shader)
 class GlDriver extends Driver {
 
@@ -273,26 +286,26 @@ class GlDriver extends Driver {
 		fboList = new hxd.Stack<FBO>();
 		shaderCache = new IntMap();
 		
-		#if (openfl  )
-		#if(lime < "7.1.1")
-		flash.Lib.current.stage.addEventListener( openfl.display.OpenGLView.CONTEXT_LOST , onContextLost );
-		flash.Lib.current.stage.addEventListener( openfl.display.OpenGLView.CONTEXT_RESTORED , onContextRestored );
-		#else 
-		
-		#end
-		
-		vendor = gl.getParameter(GL.VENDOR);
-		renderer = gl.getParameter(GL.RENDERER);
-		extensions = new Map();
-		for ( e in gl.getSupportedExtensions() )
-			extensions.set(e, e);
-		
-			#if debug
-			System.trace1('running on $renderer by $vendor');
-			System.trace1("supported extensions:" + Lambda.array(extensions).join("\n"));
-			System.trace1("max combined tex units : " + gl.getParameter(GL.MAX_COMBINED_TEXTURE_IMAGE_UNITS));
-			System.trace1("max tex img units : " + gl.getParameter(GL.MAX_TEXTURE_IMAGE_UNITS));
+		#if ( openfl||lime  )
+			#if(lime < "7.1.1")
+			flash.Lib.current.stage.addEventListener( openfl.display.OpenGLView.CONTEXT_LOST , onContextLost );
+			flash.Lib.current.stage.addEventListener( openfl.display.OpenGLView.CONTEXT_RESTORED , onContextRestored );
+			#else 
+			
 			#end
+			
+			vendor = gl.getParameter(GL.VENDOR);
+			renderer = gl.getParameter(GL.RENDERER);
+			extensions = new Map();
+			for ( e in gl.getSupportedExtensions() )
+				extensions.set(e, e);
+			
+				#if debug
+				System.trace1('running on $renderer by $vendor');
+				System.trace1("supported extensions:" + Lambda.array(extensions).join("\n"));
+				System.trace1("max combined tex units : " + gl.getParameter(GL.MAX_COMBINED_TEXTURE_IMAGE_UNITS));
+				System.trace1("max tex img units : " + gl.getParameter(GL.MAX_TEXTURE_IMAGE_UNITS));
+				#end
 		#end
 		
 		detectCaps();
@@ -1016,13 +1029,26 @@ class GlDriver extends Driver {
 			
 			checkError();
 			#if debug
-			if ( tex.width > gl.getParameter(GL.MAX_VIEWPORT_DIMS) )
-				throw "invalid texture size, must be within gpu range";
-			if ( tex.height > gl.getParameter(GL.MAX_VIEWPORT_DIMS) )
-				throw "invalid texture size, must be within gpu range";
+			
+			#if (lime < "7.1.1")
+				var vp : Int = gl.getParameter(GL.MAX_VIEWPORT_DIMS);
+			#else 
+				var vpa : lime.utils.Int32Array  = gl.getParameter(GL.MAX_VIEWPORT_DIMS);
+				var vp :Int = vpa[0];
+				trace(vp + " " + vpa[0] + " " + vpa[1]);
+				
+				var p : lime.utils.Int32Array = gl.getParameter(GL.VIEWPORT);
+				for( v in p )
+					trace( "vp val: "+p);
+			#end
+			
+			if ( tex.width > vp )
+				throw "h3d:invalid texture width, must be within gpu range "+tex.width+" <> "+vp;
+			if ( tex.height > vp )
+				throw "h3d:invalid texture height, must be within gpu range "+tex.height+" <> "+vp;
 				
 			if ( fboList.length > 256 ) 
-				throw "it is unsafe to have more than 256 active fbo";
+				throw "h3d:it is unsafe to have more than 256 active fbo";
 			#end
 				
 			curTarget = fbo;
@@ -2317,10 +2343,20 @@ class GlDriver extends Driver {
 	override function isDisposed() {
 		return false;
 	}
+	
+	#if windows 
+	function initWindows(){
+		
+	}
+	#end
 
 	override function init( onCreate : Bool -> Void, forceSoftware = false ) {
 		#if debug 
 		trace("adding delay to create");
+		#end
+		
+		#if windows 
+		initWindows();
 		#end
 		haxe.Timer.delay(onCreate.bind(false), 1);
 	}
