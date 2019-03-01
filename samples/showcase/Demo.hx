@@ -30,6 +30,7 @@ import hxd.Profiler;
 import hxd.res.FontBuilder;
 import h2d.NumberOpt;
 import h2d.FPSMeter;
+import Keys;
 
 typedef Col = {
 	r	: Int, // 0-255
@@ -55,7 +56,7 @@ class Demo extends flash.display.Sprite
 		engine.onReady = init;
 		engine.backgroundColor = 0xFFCCCCCC;
 		engine.init();
-		
+		k = new Keys();
 	}
 	
 	function getBmp(path:String) {
@@ -68,10 +69,11 @@ class Demo extends flash.display.Sprite
 		return h2d.Tile.fromAssets(path);
 	}
 	
+	var enableTest : hxd.BitArray = new hxd.BitArray().fillRange(true,0,64);
+	
 	function init() {
 		hxd.System.setLoop(update,render);
 		
-		hxd.Key.initialize();
 		scene = new h2d.Scene();
 		
 		#if (lime>="7.1.1")
@@ -103,7 +105,8 @@ class Demo extends flash.display.Sprite
 		var incr = 24;
 		var txtBaseLine = 48;
 		
-		
+		var n = 0;
+		if ( enableTest.get( n ))
 		{
 			//single bitmap no emit
 			bmp = new h2d.Bitmap(tile,scene);
@@ -119,12 +122,13 @@ class Demo extends flash.display.Sprite
 			bmp.blendMode = Normal;
 			var bmp = bmp;
 			actions.push( function() bmp.alpha = Math.abs(Math.sin(hxd.Timer.oldTime) ) );
-		}
-		
-		
-		{
-			cellX += bmp.width + incr;
 			
+			cellX += bmp.width + incr;
+		}
+		n++;
+		
+		if ( enableTest.get( n ))
+		{
 			//single bitmap emit
 			bmp = new h2d.Bitmap(tile,scene);
 			bmp.x = cellX;
@@ -139,11 +143,12 @@ class Demo extends flash.display.Sprite
 			t.y = txtBaseLine;
 			t.x -= t.textWidth * 0.5;
 			
-		}
-		
-		{
 			cellX += bmp.width + incr + 16;
-			
+		}
+		n++;
+		
+		if ( enableTest.get( n ))
+		{
 			var root = new h2d.Sprite(scene);
 			root.x = cellX;
 			root.y = baseline;
@@ -164,11 +169,12 @@ class Demo extends flash.display.Sprite
 			t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
 			t.y = txtBaseLine;
 			t.x -= t.textWidth * 0.5;
-		}
-		
-		{
 			cellX += 32 + incr;
-			
+		}
+		n++;
+		
+		if ( enableTest.get( n ))
+		{
 			//single bitmap add no emit
 			bmp = new h2d.Bitmap(tile,scene);
 			bmp.x = cellX;
@@ -180,12 +186,14 @@ class Demo extends flash.display.Sprite
 			t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
 			t.y = txtBaseLine;
 			t.x -= t.textWidth * 0.5;
+			
+			cellX += bmp.width + incr;
 		}
+		n++;
 		
 		//if( false )
+		if ( enableTest.get( n ))
 		{
-			cellX += bmp.width + incr;
-			
 			//sprite match
 			var sb = new h2d.SpriteBatch(tile, scene);
 			var spread = 32;
@@ -216,11 +224,12 @@ class Demo extends flash.display.Sprite
 			t.maxWidth = 32;
 			t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
 			t.x -= t.textWidth * 0.5;
+			cellX += sb.width + incr;
 		}
+		n++;
 		
+		if ( enableTest.get( n ))
 		{
-			cellX += bmp.width + incr;
-			
 			//sprite match
 			var sb = new h2d.SpriteBatch(tile, scene);
 			var spread = 32;
@@ -249,12 +258,14 @@ class Demo extends flash.display.Sprite
 			t.x -= t.textWidth * 0.5;
 			
 			sb.optimizeForStatic(true);
-		}
-		
-		
-		{
+			
 			cellX += 48 + incr;
-
+		}
+		n++;
+		
+		
+		if ( enableTest.get( n ))
+		{
 			//single bitmap no emit
 			var root = new h2d.CachedBitmap(scene,1024,1024);
 			bmp = new h2d.Bitmap(tile, root);
@@ -277,12 +288,14 @@ class Demo extends flash.display.Sprite
 			function() {
 				mbmp.rotation += 0.1;
 			});
-		}
-		
-		
-		{
+			
 			cellX += 48 + incr;
-
+		}
+		n++;
+		
+		
+		if ( enableTest.get( n ))
+		{
 			//single bitmap no emit
 			var root = new h2d.CachedBitmap(scene, 1024, 1024);
 			root.name = "cached";
@@ -326,10 +339,13 @@ class Demo extends flash.display.Sprite
 				
 				bmp.rotation += 0.1;
 			});
-		}
-		
-		{
+			
 			cellX += 48 + incr;
+		}
+		n++;
+		
+		if ( enableTest.get( n ))
+		{
 			//vector
 			var gfx = new h2d.Graphics(scene);
 			gfx.x = cellX;
@@ -347,13 +363,13 @@ class Demo extends flash.display.Sprite
 			t.x -= t.textWidth * 0.5;
 			
 			t.x = Std.int( t.x );
-		}
-		
-		
-		
-		{
-			cellX += 96 + incr;
 			
+			cellX += 96 + incr;
+		}
+		n++;
+		
+		if ( enableTest.get( n ))
+		{
 			var rt = new h2d.Mask(0,0,scene);
 			
 			//single bitmap no emit masked
@@ -378,11 +394,13 @@ class Demo extends flash.display.Sprite
 				rt.width = Math.abs(Math.sin(hxd.Timer.oldTime) * bmp.width * 2);
 				rt.height = Math.abs(Math.sin(hxd.Timer.oldTime) * bmp.height * 2);
 			});
-		}
-		
-		{
-			cellX += 96 + incr;
 			
+			cellX += 96 + incr;
+		}
+		n++;
+		
+		if ( enableTest.get( n ))
+		{
 			var t = new h2d.Text( font, scene );
 			t.text = "Lorem ipsum dolor sit amet,\n consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.\n";
 			t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
@@ -393,12 +411,13 @@ class Demo extends flash.display.Sprite
 			t.x = Std.int( t.x );
 			
 			actions.push( function() t.alpha = Math.abs(Math.sin(hxd.Timer.oldTime) ) );
-		}
-		
-		
-		{
-			cellX += 96 + incr;
 			
+			cellX += 96 + incr;
+		}
+		n++;
+		
+		if ( enableTest.get( n ))
+		{
 			var tile = h2d.Tile.fromAssets("assets/haxe.png");
 			tile.getTexture().wrap = Repeat;
 			//single bitmap no emit
@@ -430,10 +449,12 @@ class Demo extends flash.display.Sprite
 				@:privateAccess tile.u2 = bu2 + r;
 			});
 		}
+		n++;
 		
 		baseline = 250;
 		cellX = 100;
 		
+		if ( enableTest.get( n ))
 		{	//single bitmap aliased
 			bmp = new h2d.Bitmap(h2d.Tile.fromAssets("assets/aliased.png").centerRatio(),scene);
 			bmp.x = cellX;
@@ -449,7 +470,9 @@ class Demo extends flash.display.Sprite
 			bmp.filter = true;
 			cellX += bmp.width + incr;
 		}
+		n++;
 		
+		if ( enableTest.get( n ))
 		{	//single bitmap aliased
 			bmp = new h2d.Bitmap(h2d.Tile.fromAssets("assets/aliased.png").centerRatio(),scene);
 			bmp.x = cellX;
@@ -466,7 +489,9 @@ class Demo extends flash.display.Sprite
 			bmp.hasFXAA = true;
 			cellX += bmp.width + incr;
 		}
+		n++;
 		
+		if ( enableTest.get( n ))
 		{	//shared shader texts
 			bmp = new h2d.Bitmap(tile,scene);
 			bmp.x = cellX;
@@ -525,7 +550,9 @@ class Demo extends flash.display.Sprite
 			cellX += bmp.width + incr;
 			cellX += bmp.width + incr;
 		}
-		
+		n++;
+
+		if ( enableTest.get( n ))
 		{	//single bitmap anisotropic filtered (useless i know)
 			var tile = h2d.Tile.fromAssets("assets/aliased.png");
 			if ( driver.hasFeature( AnisotropicFiltering )  ) {
@@ -548,7 +575,9 @@ class Demo extends flash.display.Sprite
 			t.x = Std.int(t.x);
 			cellX += bmp.width + incr;
 		}
+		n++;
 		
+		if ( enableTest.get( n ))
 		{	//single bitmap anisotropic filtered (useless i know)
 			var tile = h2d.Tile.fromColor(0xFF00FF00);
 			bmp = new h2d.Bitmap(tile.centerRatio(),scene);
@@ -588,10 +617,10 @@ class Demo extends flash.display.Sprite
 			t.x = Std.int(t.x);
 			cellX += bmp.width + incr;
 		}
+		n++;
 		
+		if ( enableTest.get( n ))
 		{
-			cellX += bmp.width + incr;
-			
 			bmp = new h2d.Bitmap(tile,scene);
 			bmp.x = cellX;
 			bmp.y = baseline;
@@ -610,12 +639,13 @@ class Demo extends flash.display.Sprite
 			t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
 			t.y = txtBaseLine;
 			t.x -= t.textWidth * 0.5;
+			cellX += bmp.width + incr;
 		}
+		n++;
 		
 		var txt:Text;
+		if ( enableTest.get( n ))
 		{
-			cellX += bmp.width + incr;
-			
 			txt = new h2d.Text(font, scene);
 			txt.text = "FOO";
 			txt.x = cellX;
@@ -639,12 +669,13 @@ class Demo extends flash.display.Sprite
 			t.y = txtBaseLine;
 			t.x -= t.textWidth * 0.5;
 		}
+		n++;
 		
 		baseline = 400;
 		cellX = 10;
 		
+		if ( enableTest.get( n ))
 		{
-			
 			var root : Component = new h2d.comp.Component("document", scene);
 			root.id = "document";
 			root.x = cellX;
@@ -733,7 +764,9 @@ class Demo extends flash.display.Sprite
 			t.y = txtBaseLine;
 			t.x = t.textWidth * 0.5;
 		}
+		n++;
 		
+		if ( enableTest.get( n ))
 		{
 			cellX += 500;
 			
@@ -802,10 +835,10 @@ class Demo extends flash.display.Sprite
 			t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
 			t.y = txtBaseLine + bmp.y;
 			t.x = bmp.x;
-			
-			
 		}
+		n++;
 		
+		if ( enableTest.get( n ))
 		{
 			cellX += 120;
 			
@@ -902,6 +935,7 @@ class Demo extends flash.display.Sprite
 			t.y = txtBaseLine + sb.y;
 			t.x = sb.x;
 		}
+		n++;
 		
 		cellX = 80;
 		baseline = 600;
@@ -909,6 +943,7 @@ class Demo extends flash.display.Sprite
 		//
 		// Typical usage : lightsabers, rays, overbrighting surfaces , fog 
 		//
+		if ( enableTest.get( n ))
 		{
 			var o = bmp = new h2d.Bitmap(dcBg,scene);
 			bmp.x = cellX;
@@ -928,11 +963,12 @@ class Demo extends flash.display.Sprite
 			t.y = txtBaseLine;
 			t.x -= t.textWidth * 0.5;
 			t.x = Std.int( t.x );
-		}
-		
-		{
 			cellX += 120 + incr;
-			
+		}
+		n++;
+		
+		if ( enableTest.get( n ))
+		{
 			bmp = new h2d.Bitmap(dcBg,scene);
 			bmp.x = cellX;
 			bmp.y = baseline;
@@ -954,10 +990,13 @@ class Demo extends flash.display.Sprite
 			actions.push(function (){
 				bmp.alpha = Math.abs(Math.sin( hxd.Timer.oldTime * 2.0 ));
 			});
-		}
-		
-		{
 			cellX += 120 + incr ;
+		}
+		n++;
+		
+		if ( enableTest.get( n ))
+		{
+			
 			
 			bmp = new h2d.Bitmap(dcBg,scene);
 			bmp.x = cellX;
@@ -972,10 +1011,13 @@ class Demo extends flash.display.Sprite
 			t.y = txtBaseLine;
 			t.x -= t.textWidth * 0.5;
 			t.x = Std.int( t.x );
-		}
-		
-		{
 			cellX += 120 + incr;
+		}
+		n++;
+		
+		if ( enableTest.get( n ))
+		{
+			
 			
 			var nscene = new h2d.Scene(); 
 			var g = new h2d.Graphics(nscene);
@@ -999,12 +1041,16 @@ class Demo extends flash.display.Sprite
 			t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
 			t.y = baseline + txtBaseLine;
 			t.x -= t.textWidth * 0.5;
-			t.x = cellX+ Std.int( t.x );
+			t.x = cellX + Std.int( t.x );
+			
+			cellX += 120 + incr;
 			
 		}
+		n++;
 		
+		if ( enableTest.get( n ))
 		{
-			cellX += 120 + incr;
+			
 			
 			bmp = new h2d.Bitmap(car,scene);
 			bmp.x = cellX;
@@ -1018,15 +1064,14 @@ class Demo extends flash.display.Sprite
 			t.y = txtBaseLine;
 			t.x = Std.int( t.x );
 			
-		}
-		
-		//if(false)
-		{
 			cellX += bmp.width + incr;
-			
+		}
+		n++;
+		
+		if ( enableTest.get( n ))
+		{
 			//sprite match
 			var sb = new h2d.MultiSpriteBatch( scene);
-			
 			
 			var e = sb.alloc(car);
 			var ex = cellX - 50; 
@@ -1076,6 +1121,7 @@ class Demo extends flash.display.Sprite
 			t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
 			t.x -= t.textWidth * 0.5;
 		}
+		n++;
 		
 		{
 			fps = new h2d.FPSMeter( scene );
@@ -1094,24 +1140,47 @@ class Demo extends flash.display.Sprite
 	var start = 0;
 	var old : h2d.Sprite  = null;
 	
+	var k : Keys;
 	function update() 	{
-		#if ( lime && cpp )
+		#if ( cpp )
+		//trace("invalidate request");
 		invalidate();
 		#end
 		
-		var mem = h3d.Engine.getCurrent().mem;  
+		k.update();
+		
 		hxd.Timer.update();
 		scene.checkEvents();
 		
 		for ( a in actions ) 
 			a();
 			
-		if( false ){
-			if ( hxd.Key.isReleased(hxd.Key.K) ) {
+		//if ( false )
+		{
+			
+			if ( k.isDown(hxd.Key.D) ) {
+				trace("Key is Down");
+			}
+			
+			if ( k.isHold(hxd.Key.H) ) {
+				trace("Key is Hold");
+			}
+			
+			if ( k.isReleased(hxd.Key.R) ) {
+				trace("Key is Released");
+			}
+			
+			if ( k.onRelease(hxd.Key.R) ) {
+				trace("Key is just released");
+			}
+			
+			if ( k.onPress(hxd.Key.K) ) {
+				trace("startTextureGC");
 				h3d.Engine.getCurrent().mem.startTextureGC();
 			}
 			
-			if ( hxd.Key.isReleased(hxd.Key.P) ) {
+			if ( k.onPress(hxd.Key.P) ) {
+				trace("DrawProfiler full");
 				if ( old != null)
 					old.remove();
 					
@@ -1123,7 +1192,8 @@ class Demo extends flash.display.Sprite
 				start += 10;
 			}
 			
-			if ( hxd.Key.isReleased(hxd.Key.L) ) {
+			if ( k.onPress(hxd.Key.L) ) {
+				trace("DrawProfiler slice");
 				var oldScene = scene;
 				var tile = h2d.Tile.fromColor( 0xffFF0000 );
 				var scene = new h2d.Scene();
@@ -1145,7 +1215,8 @@ class Demo extends flash.display.Sprite
 				oldScene.addChild( g );
 			}
 			
-			if ( hxd.Key.isReleased(hxd.Key.C) ) {
+			if ( k.onPress(hxd.Key.C) ) {
+				trace("hxd.Profiler slice");
 				trace(hxd.Profiler.dump(true));
 			}
 		}
@@ -1154,11 +1225,11 @@ class Demo extends flash.display.Sprite
 	}
 	
 	function render(){
+		trace("render request");
+			
+		//engine.triggerClear = true;
+		//engine.triggerClear = true;
 		engine.render(scene);
 		engine.restoreOpenfl();
-	}
-	
-	static function main() {
-		new Demo();
 	}
 }

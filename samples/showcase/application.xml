@@ -8,7 +8,8 @@
 	<!-- output -->
 	<app main="Demo" file="showcase" path="bin" swf-version="14" />
 	
-	<window background="#CaCaCa" fps="60" />
+	<window background="#CaCaCa" fps="61" if="windows" />
+	<window background="#CaCaCa" fps="60" if="flash" />
 	<window width="1280" height="720" unless="mobile" />
 	
 	<window vsync="true" antialiasing="0" if="cpp" orientation="auto" resizable="true" />
@@ -26,7 +27,9 @@
 	
 	<haxedef name="resourcesPath" value="assets" />
 	<haxeflag name="-dce" value="no" />
+	<!--
 	<haxedef name="dumpShader"/>
+	-->
 	
 	<!--
 	<haxedef name="advanced-telemetry"/>

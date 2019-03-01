@@ -227,25 +227,30 @@ opengl
 	static var renderLoop = null;
 	
 	public static function setLoop( update : Void -> Void, ?render: Void->Void) {
-		if ( updateLoop != null ) 	flash.Lib.current.removeEventListener(flash.events.Event.ENTER_FRAME, updateLoop);
 		if ( renderLoop != null ) 	flash.Lib.current.removeEventListener(openfl.events.RenderEvent.RENDER_OPENGL, renderLoop);
+		if ( updateLoop != null ) 	flash.Lib.current.removeEventListener(flash.events.Event.ENTER_FRAME, updateLoop);
+		
 		
 		if ( updateLoop == null ) updateLoop = null;
 		if ( renderLoop == null ) renderLoop = null;
 		
-		if( update != null){
+		if ( render != null){
+			hxd.System.trace1("render loop added");
+			renderLoop = function(_) {
+				render();
+			}
+			flash.Lib.current.addEventListener(openfl.events.RenderEvent.RENDER_OPENGL, renderLoop);
+		}
+		
+		if ( update != null){
+			hxd.System.trace1("update loop added");
 			updateLoop = function(e) {
 				update();
 			}
 			flash.Lib.current.addEventListener(flash.events.Event.ENTER_FRAME, updateLoop);
 		}
 		
-		if( render != null){
-			renderLoop = function(_) {
-				render();
-			}
-			flash.Lib.current.addEventListener(openfl.events.RenderEvent.RENDER_OPENGL, renderLoop);
-		}
+		
 	}
 	
 	public static var setCursor = setNativeCursor;
