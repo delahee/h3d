@@ -21,6 +21,7 @@ class FreeCell {
 enum BigBufferFlag {
 	BBF_DYNAMIC;
 	BBF_DIRTY;
+	BBF_AUTO_RELEASE;
 }
 
 @:allow(h3d)
@@ -54,6 +55,17 @@ class BigBuffer {
 		if ( isDynamic ) flags.set(BBF_DYNAMIC);
 		id = GUID++;
 		//trace("BB: newed " + id);
+	}
+	
+	function reset(mem, v, stride, size, isDynamic = false) {
+		this.mem = mem;
+		this.size = size;
+		this.stride = stride;
+		this.vbuf = v;
+		this.free = new FreeCell(0, size, null);
+		flags = EnumFlags.ofInt(0);
+		if ( isDynamic ) flags.set(BBF_DYNAMIC);
+		id = GUID++;
 	}
 
 	public inline function isDynamic() return flags.has(BBF_DYNAMIC);
@@ -101,6 +113,28 @@ class BigBuffer {
 		return vbuf == null;
 	}
 
+	static var pool : hxd.Stack<BigBuffer> = null;
+	public static 
+	inline 
+	function alloc(mem, v, stride, size,isDynamic=false):BigBuffer{
+		if ( pool == null ) pool = new hxd.Stack<BigBuffer>();
+		
+		var b = pool.pop();
+		if ( b == null ) 	b = new BigBuffer(mem, v, stride, size,isDynamic=false);
+		else  				b.reset(mem, v, stride, size,isDynamic=false);
+		
+		return b;
+	}
+	
+	public static 
+	inline 
+	function delete(b:BigBuffer){
+		if ( b == null ) return;
+		b.dispose();
+		b.reset(null, null,0,0,false);
+		if ( pool == null ) pool = new hxd.Stack<BigBuffer>();
+		pool.push(b);
+	}
 }
 
 /**
@@ -414,9 +448,11 @@ class MemoryManager {
 		return b;
 	}
 
-	public function allocStack( v : hxd.FloatStack, stride, align, ?isDynamic=false /*,?allocPos : AllocPos*/ ) : Buffer {
+	public function allocStack( v : hxd.FloatStack, stride, align, ?isDynamic = false, ?isDirect = false ) : Buffer {
 		var nvert = Std.int(v.length / stride);
-		var b = alloc(nvert, stride, align, isDynamic /*, allocPos*/);
+		var b : Buffer = null;
+		if ( isDirect ) b = allocDirect(nvert, stride, align, isDynamic);
+		else 			b = alloc(nvert, stride, align, isDynamic);
 		b.uploadVector(v.toData(), 0, nvert);
 		return b;
 	}
@@ -447,6 +483,19 @@ class MemoryManager {
 		}
 		return size;
 	}
+	
+	public function allocDirect( nvect : Int, stride : Int, align : Int, ?isDynamic = false ) : Buffer {
+		var nalloc = 16384;//no idea why... probably because base index is 32k and index buffer must be perfectly aligned for validation ?
+		var buf = driver.allocVertex( nalloc, stride , isDynamic );
+		var b : BigBuffer = BigBuffer.alloc( this, buf , stride, nvect, isDynamic);
+		b.flags.set( BBF_AUTO_RELEASE );
+		#if flash 
+		@:privateAccess buf.b = b;
+		#end
+		b.free.pos = nvect;
+		b.free.count = nalloc-nvect;
+		return Buffer.alloc( b,0, nvect );
+	}
 
 	/**
 		Allocate a vertex buffer.
@@ -461,6 +510,7 @@ class MemoryManager {
 	public function alloc( nvect : Int, stride, align, ?isDynamic = false /*, ?allocPos : AllocPos*/ ) : Buffer {
 		#if debug
 		//trace( "gpu alloc:"+allocPos.fileName+" " + allocPos.lineNumber+" size:"+(nvect*stride*4));
+		//trace( nvect );
 		#end
 		
 		var b : BigBuffer = buffers[stride];
@@ -578,6 +628,7 @@ class MemoryManager {
 				}
 			}
 			var mem = size * stride * 4, v = null;
+			//trace("alloc size "+size);
 			if( usedMemory + mem > MAX_MEMORY || bufferCount >= MAX_BUFFERS || (v = driver.allocVertex(size,stride,isDynamic)) == null ) {
 				var size = usedMemory - freeMemory();
 				garbage();
@@ -725,6 +776,7 @@ class MemoryManager {
 	function allocTexture( t : h3d.mat.Texture, ?andClean = false) {
 		#if debug
 		if ( textures.indexOf(t) >= 0) throw "texture already there";
+		if ( t.t  != null ) throw "there is already a texture here?";
 		#end
 		
 		if( andClean )

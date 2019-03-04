@@ -49,14 +49,14 @@
     <hidden path="..\..\..\..\openfl\git" />
   </hiddenPaths>
   <!-- Executed before build -->
-  <preBuildCommand>BUILD_WIN_REL.bat</preBuildCommand>
+  <preBuildCommand>"$(CompilerPath)/haxelib" run lime build "$(OutputFile)" $(TargetBuild) -$(BuildConfig) -Dfdb</preBuildCommand>
   <!-- Executed after build -->
   <postBuildCommand alwaysRun="False" />
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Custom" />
-    <option testMovieCommand="RUN_WIN_REL.bat" />
+    <option testMovieCommand="" />
   </options>
   <!-- Plugin storage -->
   <storage />

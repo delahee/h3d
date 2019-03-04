@@ -70,6 +70,7 @@ class Demo extends flash.display.Sprite
 	}
 	
 	var enableTest : hxd.BitArray = new hxd.BitArray().fillRange(true,0,64);
+	var arial : openfl.text.Font;
 	
 	function init() {
 		hxd.System.setLoop(update,render);
@@ -78,11 +79,16 @@ class Demo extends flash.display.Sprite
 		
 		#if (lime>="7.1.1")
 		trace(openfl.Assets.list(openfl.utils.AssetType.IMAGE));
+		trace(openfl.Assets.list(openfl.utils.AssetType.FONT));
 		#end
 		//trace(openfl.Assets.defaultRootPath);
 		
 		var driver = h3d.Engine.getCurrent().driver;
-		var font = hxd.res.FontBuilder.getFont("arial", 10);
+		
+		arial = openfl.Assets.getFont("assets/arial.ttf");
+		trace("arial: " + arial);
+		
+		var font = hxd.res.FontBuilder.getFont( arial.fontName, 10);
 		var tile = getTile("assets/haxe.png");
 		tile.setCenterRatio(0.5, 0.5);
 		
@@ -106,6 +112,13 @@ class Demo extends flash.display.Sprite
 		var txtBaseLine = 48;
 		
 		var n = 0;
+		
+		var fbmp;
+		var ftext;
+		
+		//var b = new h2d.Bitmap( h2d.Tools.getWhiteTile().clone(), scene );
+		//b.setSize( 256, 256);
+		
 		if ( enableTest.get( n ))
 		{
 			//single bitmap no emit
@@ -118,6 +131,8 @@ class Demo extends flash.display.Sprite
 			t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
 			t.y = txtBaseLine;
 			t.x -= t.textWidth * 0.5;
+			
+			ftext = t;
 			
 			bmp.blendMode = Normal;
 			var bmp = bmp;
@@ -294,7 +309,7 @@ class Demo extends flash.display.Sprite
 		n++;
 		
 		
-		if ( enableTest.get( n ))
+		if ( enableTest.get( n ) )
 		{
 			//single bitmap no emit
 			var root = new h2d.CachedBitmap(scene, 1024, 1024);
@@ -314,31 +329,40 @@ class Demo extends flash.display.Sprite
 			t.maxWidth = 32;
 			t.dropShadow = { dx : 1.0, dy : 1.0, color : 0xFF000000, alpha : 0.8 };
 			t.y = txtBaseLine + 32;
+			t.textColor = 0xffff00ff;
+			t.emit = true;
 			
-			var spin = 0;
-			var period  = 240;
-			actions.push(
-			function() {
-				if ( spin >= (period >> 1) ) { 
-					if( !root.freezed ){
-						root.freezed = true; 
-						t.text = str + " [FROZEN]";
+			var obmp = new h2d.Bitmap(tile, root);
+			obmp.x = bmp.width + 30;
+			obmp.y = txtBaseLine + 32;
+		
+			{
+				var spin = 0;
+				var period  = 500;
+				actions.push(
+				function() {
+					if ( spin >= (period >> 1) ) { 
+						if( !root.freezed ){
+							root.freezed = true; 
+							t.text = str + " FROZEN";
+							root.invalidate();
+						}
+					}
+					
+					if ( spin < (period>>1) ) { 
+						root.freezed = false; 
+						t.text = str; 
 						root.invalidate();
 					}
-				}
-				
-				if ( spin < (period>>1) ) { 
-					root.freezed = false; 
-					t.text = str; 
-				}
-				
-				if ( spin == period)
-					spin = 0;
-				else 
-					spin++;
-				
-				bmp.rotation += 0.1;
-			});
+					
+					if ( spin == period)
+						spin = 0;
+					else 
+						spin++;
+					
+					bmp.rotation += 0.1;
+				});
+			}
 			
 			cellX += 48 + incr;
 		}
@@ -1143,7 +1167,6 @@ class Demo extends flash.display.Sprite
 	var k : Keys;
 	function update() 	{
 		#if ( cpp )
-		//trace("invalidate request");
 		invalidate();
 		#end
 		
@@ -1225,7 +1248,7 @@ class Demo extends flash.display.Sprite
 	}
 	
 	function render(){
-		trace("render request");
+		//trace("render request");
 			
 		//engine.triggerClear = true;
 		//engine.triggerClear = true;

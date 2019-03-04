@@ -13,6 +13,7 @@ class FloatStack {
 	
 	public inline function reset() {
 		pos = 0;
+		//buf.zero();
 	}
 	
 	public inline function iterator(){

@@ -22,7 +22,8 @@ class Buffer {
 	public var allocPrev : Buffer;
 	#end
 	
-	public function new(b, pos, nvert) {
+	public inline
+	function new(b : MemoryManager.BigBuffer, pos, nvert) {
 		this.b = b;
 		this.pos = pos;
 		this.nvert = nvert;
@@ -49,19 +50,24 @@ class Buffer {
 	
 	public function dispose() {
 		if ( b != null ) {
-			//trace("B:disposing#" + id);
-			b.flags.set(BBF_DIRTY);//don't reuse this frame
-			b.freeCursor(pos, nvert);
-			#if debug
-			if( allocNext != null )
-				allocNext.allocPrev = allocPrev;
-			if( allocPrev != null )
-				allocPrev.allocNext = allocNext;
-			if( b.allocHead == this )
-				b.allocHead = allocNext;
-			#end
-			b = null;
-			if( next != null ) next.dispose();
+			if ( b.flags.has(BBF_AUTO_RELEASE)){
+				MemoryManager.BigBuffer.delete(b);
+				b = null;
+			}
+			else {
+				b.flags.set(BBF_DIRTY);//don't reuse this frame
+				b.freeCursor(pos, nvert);
+				#if debug
+				if( allocNext != null )
+					allocNext.allocPrev = allocPrev;
+				if( allocPrev != null )
+					allocPrev.allocNext = allocNext;
+				if( b.allocHead == this )
+					b.allocHead = allocNext;
+				#end
+				b = null;
+				if ( next != null ) next.dispose();
+			}
 		}
 	}
 	
@@ -107,7 +113,7 @@ class Buffer {
 	static var pool : hxd.Stack<Buffer> = null;
 	
 	public static 
-	//inline 
+	inline 
 	function alloc(ab:h3d.impl.MemoryManager.BigBuffer,pos:Int,nvert:Int):Buffer{
 		if ( pool == null ) pool = new hxd.Stack<Buffer>();
 		
@@ -119,14 +125,13 @@ class Buffer {
 	}
 	
 	public static 
-	//inline 
+	inline 
 	function delete(b:Buffer){
 		if ( b == null ) return;
 		b.dispose();
 		b.reset(null,0,0);
 		
 		if ( pool == null ) pool = new hxd.Stack<Buffer>();
-		
 		pool.push(b);
 	}
 }

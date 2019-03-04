@@ -276,8 +276,10 @@ class Stage3dDriver extends Driver {
 			apiCall();
 		} catch( e : flash.errors.Error ) {
 			// too many resources / out of memory
-			if( e.errorID == 3691 )
+			//trace("err:"+e.errorID);
+			if ( e.errorID == 3691 ){
 				return null;
+			}
 			throw e;
 		}
 		return new VertexWrapper(v, stride, count*stride*4);

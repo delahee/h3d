@@ -5,33 +5,35 @@
     <movie outputType="CustomBuild" />
     <movie input="" />
     <movie path="application.xml" />
-    <movie fps="30" />
+    <movie fps="60" />
     <movie width="1280" />
     <movie height="720" />
     <movie version="0" />
     <movie minorVersion="0" />
     <movie platform="Lime" />
-    <movie background="FFFFFF" />
+    <movie background="000000" />
     <movie preferredSDK="Haxe 3.2.1;3.2.1;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
-    <class path="C:\HaxeToolkit\haxelib\openfl\3,5,3" />
-    <class path="C:\HaxeToolkit\haxelib\lime\2,8,3" />
-    <class path="C:\HaxeToolkit\haxelib\h3d\git" />
-    <class path="C:\HaxeToolkit\haxelib\hxsl\git" />
-    <class path="C:\HaxeToolkit\haxelib\format\3,2,1" />
+    <class path="C:\HaxeToolkit\haxe\lib\openfl\4,9,2" />
+    <class path="C:\HaxeToolkit\haxe\lib\lime\4,0,3" />
+    <class path="C:\HaxeToolkit\haxe\lib\h3d\git" />
+    <class path="C:\HaxeToolkit\haxe\lib\hxsl\git" />
+    <class path="C:\HaxeToolkit\haxe\lib\format\3,3,0" />
     <class path="" />
-    <class path="bin\flash\haxe" />
+    <class path="C:\HaxeToolkit\haxe\lib\openfl\4,9,2\externs\core\openfl" />
+    <class path="C:\HaxeToolkit\haxe\lib\openfl\4,9,2\externs\extras" />
+    <class path="bin\flash\debug\haxe" />
   </classpaths>
   <!-- Build options -->
   <build>
-    <option directives="openfl=3.5.3&#xA;lime=2.8.3&#xA;h3d=0.0.1&#xA;hxsl=2.0.0&#xA;format=3.2.1&#xA;swf-directblit&#xA;openfl-next&#xA;tools=2.8.3&#xA;no-compilation&#xA;advanced-telemetry&#xA;openfl-flash&#xA;web&#xA;display" />
+    <option directives="openfl=4.9.2&#xA;lime=4.0.3&#xA;h3d=0.0.1&#xA;hxsl=2.0.0&#xA;format=3.3.0&#xA;swf-directblit&#xA;tools=4.0.3&#xA;no-compilation&#xA;advanced-telemetry&#xA;openfl-flash&#xA;web&#xA;display" />
     <option flashStrict="False" />
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="-swf-version 11.6&#xA;--macro openfl.Lib.includeExterns()&#xA;-dce no&#xA;-swf-version 12&#xA;-debug " />
+    <option additional="--macro openfl._internal.utils.ExtraParams.include()&#xA;--macro lime.Lib.extraParams()&#xA;-swf-version 11.6&#xA;-dce no&#xA;-swf-version 12&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>
@@ -50,14 +52,14 @@
     <hidden path="bin" />
   </hiddenPaths>
   <!-- Executed before build -->
-  <preBuildCommand>"$(CompilerPath)/haxelib" run lime build "$(OutputFile)" $(TargetBuild) -$(BuildConfig) -Dfdb</preBuildCommand>
+  <preBuildCommand>BUILD_WIN.bat</preBuildCommand>
   <!-- Executed after build -->
   <postBuildCommand alwaysRun="False" />
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="True" />
     <option testMovie="Custom" />
-    <option testMovieCommand="" />
+    <option testMovieCommand="RUN_WIN.bat" />
   </options>
   <!-- Plugin storage -->
   <storage />

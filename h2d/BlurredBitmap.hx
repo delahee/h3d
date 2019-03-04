@@ -505,7 +505,7 @@ class BlurredBitmap extends CachedBitmap {
 			while ( th < realHeight ) th <<= 1;
 			
 			if ( finalTex != null) 
-				throw "assert";
+				throw "assert blur";
 				
 			finalTex = new h3d.mat.Texture(tw, th, h3d.mat.Texture.TargetFlag() );
 			finalTex.realloc = function() {

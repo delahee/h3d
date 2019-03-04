@@ -153,7 +153,7 @@ class Driver {
 	}
 	
 	public function allocTexture( t : h3d.mat.Texture ) : Texture {
-		throw "assert";
+		throw "assert d tex";
 	}
 
 	public function allocIndexes( count : Int ) : IndexBuffer {

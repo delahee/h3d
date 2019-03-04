@@ -192,7 +192,6 @@ class Engine {
 		do {
 			var ntri = Std.int(b.nvert / vertPerTri);
 			var pos = Std.int(b.pos / vertPerTri);
-			var pos = Std.int(b.pos / vertPerTri);
 			if( startTri > 0 ) {
 				if( startTri >= ntri ) {
 					startTri -= ntri;

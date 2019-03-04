@@ -12,11 +12,12 @@ class Demo extends flash.display.Sprite{
 		engine.onReady = init;
 		engine.backgroundColor = 0xFFCCCCCC;
 		engine.init();
-		
+		//engine.driver.setDebug(true);
 	}
 	
 	function init() {
-		hxd.System.setLoop(update);
+		
+		hxd.System.setLoop(update,render);
 		scene = new h2d.Scene();
 		var g = new h2d.Graphics(scene);
 		g.beginFill(0x00FFFF,0.5);
@@ -58,10 +59,17 @@ class Demo extends flash.display.Sprite{
 			}
 		}
 		
+		var t = new h2d.Text( hxd.res.FontBuilder.getFont("arial",12),scene );
+		t.text = "SAPINO";
+		t.x = t.y = 10;
 	}
 	
 	var sd = new hxd.Stack<Null<Int>>();
 	function update() 	{
+		#if ( cpp )
+		invalidate();
+		#end
+		
 		for( i in 0...4)
 			sd.push( i );
 			
@@ -72,12 +80,13 @@ class Demo extends flash.display.Sprite{
 		}
 		
 		sd.reset();
-		
+	}
+	
+	function render() 	{
+		//engine.triggerClear = true;
 		engine.render(scene);
 		engine.restoreOpenfl();
 	}
 	
-	static function main() {
-		new Demo();
-	}
+	
 }

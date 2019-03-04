@@ -121,7 +121,7 @@ class FontBuilder {
 			#end
 			
 			var w = (Math.ceil(tf.textWidth)+1);
-			if( w == 1 ) continue;
+			if ( w == 1 ) continue;
 			var h = (Math.ceil(tf.textHeight)+1);//incorrect on font with big descent ( Arial maj 64px on windows... )
 			
 			surf += (w+4) * (h+4);
@@ -179,8 +179,13 @@ class FontBuilder {
 				#end
 				
 				bmp.draw(tf, m,true);
-				if( firstBuild ){
-					var t = new h2d.Tile(null, x, y, w - 1, h - 1);
+				if ( firstBuild ){
+					var tw = w -1;
+					var th = h -1;
+					#if lime 
+					tw+=2;
+					#end
+					var t = new h2d.Tile(null, x, y, tw, th);
 					tiles.push(t);
 					font.glyphs.set(allCC[i], new h2d.Font.FontChar(t,w-1));
 				}

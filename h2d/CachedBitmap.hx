@@ -63,6 +63,7 @@ class CachedBitmap extends Bitmap {
 	}
 
 	function clean() {
+		//trace("cached bitmap REBUILT");
 		if( tex != null ) {
 			tex.dispose();
 			tex = null;
@@ -119,7 +120,7 @@ class CachedBitmap extends Bitmap {
 		if ( tex != null) throw "assert";
 		
 		#if debug
-		//trace("tex:" + tw + "x" + th+" "+name);
+		//trace("alloc tex:" + tw + "x" + th+" "+name);
 		#end
 		
 		tex = new h3d.mat.Texture(tw, th, h3d.mat.Texture.TargetFlag() );
@@ -165,7 +166,9 @@ class CachedBitmap extends Bitmap {
 		if ( hasSizeChanged && !freezed)
 			clean();
 		
-		if( (!freezed || !renderDone) && !skipRender ) {
+		if ( (!freezed || !renderDone) && !skipRender ) {
+			
+			//trace("updating frozen");
 			ctx.flush();
 
 			var tile = getTile();

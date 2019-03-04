@@ -156,11 +156,12 @@ private class TileLayerContent extends h3d.prim.Primitive {
 	}
 
 	override public function alloc(engine:h3d.Engine) {
-		if( tmp == null ) reset();
-		buffer = engine.mem.allocStack(tmp, 8, 4, true);
+		if ( tmp == null ) reset();
 		
+		if ( buffer != null ) throw "buffer overwrite";
+		buffer = engine.mem.allocStack(tmp, 8, 4, true);
 		if ( buffer.b.flags.has(BBF_DIRTY))
-			throw "assert";
+			throw "assert dirty";
 	}
 
 	public function doRender(engine, min, len) {

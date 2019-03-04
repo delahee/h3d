@@ -901,7 +901,7 @@ class GlDriver extends Driver {
 			if( f == curTarget )
 				curTarget = null;
 		}
-		for ( f in fboList) {
+		for ( f in fboList.backWardIterator()) {
 			if ( f.color == null ){
 				rm( f );
 				break;//only remove one per frame stack is not iterable removal safe, and it is sufficient
@@ -910,14 +910,19 @@ class GlDriver extends Driver {
 			if ( f.color.isDisposed() ) {
 				rm( f );
 				
-				//hxd.System.trace2('color disposed #' +f.color.id+', disposing fbo');
+				#if debug
+				hxd.System.trace1('color disposed #' +f.color.id + ', disposing fbo');
+				#end
 				
 				gl.deleteFramebuffer( f.fbo );
-				if ( f.rbo != null ) gl.deleteRenderbuffer( f.rbo);
+				f.fbo = null;
+				
+				if ( f.rbo != null ) {
+					gl.deleteRenderbuffer( f.rbo);
+					f.rbo = null;
+				}
 				
 				f.color = null;
-				f.fbo = null;
-				f.rbo = null;
 				break;
 			}
 		}
@@ -1028,19 +1033,18 @@ class GlDriver extends Driver {
 			gl.viewport( 0, 0, tex.width, tex.height);
 			
 			checkError();
-			#if debug
 			
-			#if (lime < "7.1.1")
-				var vp : Int = gl.getParameter(GL.MAX_VIEWPORT_DIMS);
-			#else 
-				var vpa : lime.utils.Int32Array  = gl.getParameter(GL.MAX_VIEWPORT_DIMS);
-				var vp :Int = vpa[0];
-				trace(vp + " " + vpa[0] + " " + vpa[1]);
-				
-				var p : lime.utils.Int32Array = gl.getParameter(GL.VIEWPORT);
-				for( v in p )
-					trace( "vp val: "+p);
-			#end
+			#if debug
+				#if (lime < "7.1.1")
+					var vp : Int = gl.getParameter(GL.MAX_VIEWPORT_DIMS);
+				#else 
+					var vpa : lime.utils.Int32Array  = gl.getParameter(GL.MAX_VIEWPORT_DIMS);
+					var vp :Int = vpa[0];
+					//trace(vp + " " + vpa[0] + " " + vpa[1]);
+					
+					//var p : lime.utils.Int32Array = gl.getParameter(GL.VIEWPORT);
+					//for( v in p ) trace( "vp val: "+p);
+				#end
 			
 			if ( tex.width > vp )
 				throw "h3d:invalid texture width, must be within gpu range "+tex.width+" <> "+vp;
@@ -1278,7 +1282,7 @@ class GlDriver extends Driver {
 		}
 		else {
 			trace("assertion");
-			throw "assert";
+			throw "assert tex";
 		}
 		
 		gl.bindTexture(texMode, null);
@@ -2349,10 +2353,30 @@ class GlDriver extends Driver {
 		
 	}
 	#end
+	
+	#if (cpp && lime >= "7.1.1")
+	function initLime(){
+		var windows = lime.app.Application.current;
+		
+		trace("lime detected");
+		
+		#if lime_harfbuzz
+		trace("harfbuzz detected");
+		#end
+		
+		#if lime_cairo
+		trace("cairo detected");
+		#end
+	}
+	#end
 
 	override function init( onCreate : Bool -> Void, forceSoftware = false ) {
 		#if debug 
-		trace("adding delay to create");
+		hxd.System.trace2("adding delay to create");
+		#end
+		
+		#if (cpp && (lime >= "7.1.1"))
+		initLime();
 		#end
 		
 		#if windows 
