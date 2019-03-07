@@ -173,9 +173,6 @@ class Stage {
 	}
 
 	function onKeyDown(e:flash.events.KeyboardEvent) {
-		#if debug
-		trace("onKeyDown "+e.keyCode);
-		#end
 		var ev = hxd.Event.alloc(EKeyDown);
 		ev.keyCode = e.keyCode;
 		ev.charCode = getCharCode(e);
