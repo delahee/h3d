@@ -20,15 +20,15 @@ class Console extends h2d.Sprite {
 	var logTxt : h2d.HtmlText;
 	var cursor : h2d.Bitmap;
 	var cursorPos(default, set) : Int;
-	var lastLogTime : Float;
+	var lastLogTime : Float 				= 0.0;
 	var commands : Map < String, { help : String, args : Array<Args>, callb : Dynamic }> ;
 	var aliases : Map<String,String>;
 	var logDY : Float = 0;
-	var logs : Array<String>;
+	var logs : hxd.Stack<String>;
 	var logIndex:Int;
-	var curCmd:String;
-	var cheight : Float=0;
-	var cwidth : Float=0;
+	var curCmd			: String;
+	var cheight 		: Float=0;
+	var cwidth 			: Float=0;
 	public var shortKeyChars : Array<Int> = ["/".code,"²".code];
 	public var useMouseWheel = true;
 	
@@ -45,7 +45,7 @@ class Console extends h2d.Sprite {
 		logTxt.name = "console.logText";
 		logTxt.x = 2;
 		logTxt.visible = false;
-		logs = [];
+		logs = new Stack();
 		logIndex = -1;
 		bg = new h2d.Bitmap(h2d.Tile.fromColor(0xFF000000), this);
 		bg.name = "console.bg";
@@ -101,6 +101,9 @@ class Console extends h2d.Sprite {
 	}
 
 	function onEvent( e : hxd.Event ) {
+		//#if debug
+		//trace("Console:recv " + e.keyCode);
+		//#end
 		switch( e.kind ) {
 		case EWheel:
 			if( logTxt.visible && useMouseWheel ) {
@@ -119,6 +122,10 @@ class Console extends h2d.Sprite {
 	function setVal(name,val) 		Reflect.setField( data, name, val );
 
 	function showHelp( ?command : String ) {
+		//#if debug
+		//trace("Showing help!");
+		//#end
+		
 		var all;
 		if( command == null ) {
 			all = Lambda.array( { iterator : function() return commands.keys() } );
@@ -175,7 +182,12 @@ class Console extends h2d.Sprite {
 			lastLogTime = haxe.Timer.stamp();
 			bg.visible = true;
 			logIndex = -1;
+			//trace("SHOW");
 		}
+		else {
+			//trace("hmm "+ bg.visible+" "+shortKeyChars+" "+e.charCode);
+		}
+		
 		if( !bg.visible )
 			return;
 		switch( e.keyCode ) {
@@ -207,7 +219,10 @@ class Console extends h2d.Sprite {
 				cursorPos--;
 			}
 			return;
-		case Key.ENTER,Key.CTRL:
+		case Key.ENTER, Key.CTRL:
+			//#if debug
+			//trace("ENTER!");
+			//#end
 			var cmd = tf.text;
 			tf.text = "";
 			cursorPos = 0;
@@ -225,7 +240,7 @@ class Console extends h2d.Sprite {
 				logIndex = logs.length - 1;
 			}
 			else logIndex--;
-			tf.text = logs[logIndex];
+			tf.text = logs.get(logIndex);
 			cursorPos = tf.text.length;
 		case Key.DOWN:
 			if(tf.text == curCmd) return;
@@ -236,7 +251,7 @@ class Console extends h2d.Sprite {
 				return;
 			}
 			logIndex++;
-			tf.text = logs[logIndex];
+			tf.text = logs.get(logIndex);
 			cursorPos = tf.text.length;
 		}
 		if( e.charCode != 0 ) {

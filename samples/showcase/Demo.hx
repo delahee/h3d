@@ -85,6 +85,7 @@ class Demo extends flash.display.Sprite
 		
 		var driver = h3d.Engine.getCurrent().driver;
 		
+		Lib.toto();
 		arial = openfl.Assets.getFont("assets/arial.ttf");
 		trace("arial: " + arial);
 		

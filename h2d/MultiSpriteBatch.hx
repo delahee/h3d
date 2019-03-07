@@ -31,17 +31,17 @@ class MultiBatchElement {
 	 */
 	public var priority(default,null) : Int;
 
-	public var x : hxd.Float32;
-	public var y : hxd.Float32;
+	public var x 		: hxd.Float32 = 0.0;
+	public var y 		: hxd.Float32 = 0.0;
 
-	public var scaleX : hxd.Float32;
-	public var scaleY : hxd.Float32;
+	public var scaleX 	: hxd.Float32 = 1.0;
+	public var scaleY 	: hxd.Float32 = 1.0;
 
 	//setting this will trigger parent property
-	public var rotation : hxd.Float32;
+	public var rotation : hxd.Float32 = 0.0;
 
-	public var visible : Bool;
-	public var alpha : Float = 1.0;
+	public var visible : Bool 	= true;
+	public var alpha : Float	= 1.0;
 	public var tile : Tile;
 	
 	public var colorR : hxd.Float32 = 1.0;

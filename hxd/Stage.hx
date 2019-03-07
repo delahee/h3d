@@ -173,34 +173,67 @@ class Stage {
 	}
 
 	function onKeyDown(e:flash.events.KeyboardEvent) {
+		#if debug
+		trace("onKeyDown "+e.keyCode);
+		#end
 		var ev = hxd.Event.alloc(EKeyDown);
 		ev.keyCode = e.keyCode;
 		ev.charCode = getCharCode(e);
 		event(ev);
 	}
 	
+	static var lang :Null<String> = null;
 	function getCharCode( e : flash.events.KeyboardEvent ) {
 		#if openfl
-		return e.charCode;
+			if ( lang == null) lang = flash.system.Capabilities.language;
+			//var character:String = String.fromCharCode(e.charCode);
+			//trace( "-> key segment: kc:" + e.keyCode+" cc:" + e.charCode+" char:" + character + " " + e.commandKey + " " + e.controlKey + " " + e.keyLocation );
+			var charCode = e.charCode;
+			charCode = switch( lang ) {
+				default:
+					e.charCode;
+				case "fr":
+					//trace("french translation");
+					switch(e.keyCode){
+						default: e.charCode;
+						//TODO finish
+						case 49: if( e.altKey ) 0 				else if( e.shiftKey ) '1'.code else '&'.code;
+						case 50: if( e.altKey ) '~'.code 		else if( e.shiftKey ) '2'.code else 'é'.code;
+						case 51: if( e.altKey ) '#'.code 		else if( e.shiftKey ) '3'.code else '"'.code;
+						case 52: if( e.altKey ) '{'.code 		else if( e.shiftKey ) '4'.code else '\''.code;
+						case 53: if( e.altKey ) '['.code 		else if( e.shiftKey ) '5'.code else '('.code;
+						case 54: if( e.altKey ) '|'.code 		else if( e.shiftKey ) '6'.code else '-'.code;
+						case 55: if( e.altKey ) '`'.code 		else if( e.shiftKey ) '7'.code else 'è'.code;
+						case 56: if( e.altKey ) '\\'.code 		else if( e.shiftKey ) '8'.code else '_'.code;
+						case 57: if( e.altKey ) '^'.code 		else if( e.shiftKey ) '9'.code else 'ç'.code;
+						case 48:	if ( e.altKey ) '@'.code else if ( e.shiftKey ) '0'.code else 'à'.code;//9
+						case 109: 	'-'.code;
+						case 111: 	'/'.code;
+					}
+			}
+			//var character:String = String.fromCharCode(charCode);
+			//trace( "<- key segment: kc:"+e.keyCode+" cc:"+charCode+" char:"+character);
+			return charCode;
 		#else
 		// disable some invalid charcodes
 		if( e.keyCode == 27 ) e.charCode = 0;
 		// Flash charCode are not valid, they assume an english keyboard. Let's do some manual translation here (to complete with command keyboards)
-		switch( flash.system.Capabilities.language ) {
+		if ( lang == null) lang = flash.system.Capabilities.language;
+		switch( lang ) {
 		case "fr":
 			return switch( e.keyCode ) {
-			case 49: if( e.altKey ) 0 else if( e.shiftKey ) '1'.code else e.charCode;
-			case 50: if( e.altKey ) '~'.code else if( e.shiftKey ) '2'.code else e.charCode;
-			case 51: if( e.altKey ) '#'.code else if( e.shiftKey ) '3'.code else e.charCode;
-			case 52: if( e.altKey ) '{'.code else if( e.shiftKey ) '4'.code else e.charCode;
-			case 53: if( e.altKey ) '['.code else if( e.shiftKey ) '5'.code else e.charCode;
-			case 54: if( e.altKey ) '|'.code else if( e.shiftKey ) '6'.code else e.charCode;
-			case 55: if( e.altKey ) '`'.code else if( e.shiftKey ) '7'.code else e.charCode;
-			case 56: if( e.altKey ) '\\'.code else if( e.shiftKey ) '8'.code else e.charCode;
-			case 57: if( e.altKey ) '^'.code else if( e.shiftKey ) '9'.code else e.charCode;
-			case 48: if( e.altKey ) '@'.code else if( e.shiftKey ) '0'.code else e.charCode;
-			case 219: if( e.altKey ) ']'.code else if( e.shiftKey ) '°'.code else e.charCode;
-			case 187: if( e.altKey ) '}'.code else if( e.shiftKey ) '+'.code else e.charCode;
+			case 49: if( e.altKey ) 0 			else if( e.shiftKey ) '1'.code else '&'.code;
+			case 50: if( e.altKey ) '~'.code 	else if( e.shiftKey ) '2'.code else e.charCode;
+			case 51: if( e.altKey ) '#'.code 	else if( e.shiftKey ) '3'.code else e.charCode;
+			case 52: if( e.altKey ) '{'.code 	else if( e.shiftKey ) '4'.code else e.charCode;
+			case 53: if( e.altKey ) '['.code 	else if( e.shiftKey ) '5'.code else e.charCode;
+			case 54: if( e.altKey ) '|'.code 	else if( e.shiftKey ) '6'.code else e.charCode;
+			case 55: if( e.altKey ) '`'.code 	else if( e.shiftKey ) '7'.code else e.charCode;
+			case 56: if( e.altKey ) '\\'.code 	else if( e.shiftKey ) '8'.code else e.charCode;
+			case 57: if( e.altKey ) '^'.code 	else if( e.shiftKey ) '9'.code else e.charCode;
+			case 48: if( e.altKey ) '@'.code 	else if( e.shiftKey ) '0'.code else e.charCode;
+			case 219: if( e.altKey ) ']'.code 	else if( e.shiftKey ) '°'.code else e.charCode;
+			case 187: if( e.altKey ) '}'.code 	else if( e.shiftKey ) '+'.code else e.charCode;
 			case 188: if( e.altKey ) 0 else if( e.shiftKey ) '?'.code else e.charCode;
 			case 190: if( e.altKey ) 0 else if( e.shiftKey ) '.'.code else e.charCode;
 			case 191: if( e.altKey ) 0 else if( e.shiftKey ) '/'.code else e.charCode;

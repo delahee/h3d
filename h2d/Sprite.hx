@@ -24,8 +24,8 @@ class Sprite {
 	/**
 	 * In radians
 	 */
-	public var 	rotation(default, set) : Float;
-	public var 	visible	: Bool;
+	public var 	rotation(default, set) : Float = 0.0;
+	public var 	visible				: Bool	= true;
 	
 	public var 	matA(default,null) 	: hxd.Float32;
 	public var 	matB(default,null)	: hxd.Float32;

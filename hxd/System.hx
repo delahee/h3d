@@ -253,6 +253,9 @@ opengl
 		
 	}
 	
+	public static var cursorHidden = false;
+	public static function isCursorHidden() return cursorHidden;
+	
 	public static var setCursor = setNativeCursor;
 	public static function setNativeCursor( c : Cursor ) {
 		/* not supported by openFL
@@ -264,7 +267,8 @@ opengl
 		case Hide: "auto";
 		}
 		*/
-		if( c == Hide ) flash.ui.Mouse.hide() else flash.ui.Mouse.show();
+		if ( c == Hide ) flash.ui.Mouse.hide() else flash.ui.Mouse.show();
+		cursorHidden = (c == Hide);
 	}
 	
 	static function get_lang() {

@@ -305,49 +305,49 @@ class LocalFileSystem implements FileSystem {
 	public function new( dir : String , ?useAbsolute=false) {
 		baseDir = dir;
 		#if air3
-		var froot : flash.filesystem.File;
-		
-		var useUrl = false;
-		
-		#if mobile
-		useUrl = true;
-		#end
-		
-		if ( ! useAbsolute ){
-			var path = flash.filesystem.File.applicationDirectory.nativePath + "/" + baseDir;
-			if ( useUrl )	{
-				path = flash.filesystem.File.applicationDirectory.url + baseDir;
-				if ( path.startsWith("app://") ) path = "app:/" + path.substring("app://".length,path.length );
-			}
-			froot = new flash.filesystem.File(path);
+			var froot : flash.filesystem.File;
 			
-			if ( !froot.exists ) {
-				if ( System.debugLevel >= 2) {
-					trace("path:" + flash.filesystem.File.applicationDirectory.nativePath);
-					trace("path:" + flash.filesystem.File.applicationDirectory.url);
+			var useUrl = false;
+			
+			#if mobile
+			useUrl = true;
+			#end
+			
+			if ( ! useAbsolute ){
+				var path = flash.filesystem.File.applicationDirectory.nativePath + "/" + baseDir;
+				if ( useUrl )	{
+					path = flash.filesystem.File.applicationDirectory.url + baseDir;
+					if ( path.startsWith("app://") ) path = "app:/" + path.substring("app://".length,path.length );
 				}
-				throw "air:Could not find dir " + dir;
+				froot = new flash.filesystem.File(path);
+				
+				if ( !froot.exists ) {
+					if ( System.debugLevel >= 2) {
+						trace("path:" + flash.filesystem.File.applicationDirectory.nativePath);
+						trace("path:" + flash.filesystem.File.applicationDirectory.url);
+					}
+					throw "air:Could not find dir " + dir;
+				}
+				baseDir = froot.nativePath;
+				if ( useUrl )	{
+					baseDir = froot.url;
+				}
 			}
-			baseDir = froot.nativePath;
-			if ( useUrl )	{
-				baseDir = froot.url;
+			else {
+				froot = new flash.filesystem.File(dir);
 			}
-		}
-		else {
-			froot = new flash.filesystem.File(dir);
-		}
-		
-		baseDir = baseDir.split("\\").join("/");
-		if( !StringTools.endsWith(baseDir, "/") ) baseDir += "/";
-		root = new LocalEntry(this, "root", null, froot);
+			
+			baseDir = baseDir.split("\\").join("/");
+			if( !StringTools.endsWith(baseDir, "/") ) baseDir += "/";
+			root = new LocalEntry(this, "root", null, froot);
 		#else
-			var exePath = Sys.executablePath().split("\\").join("/").split("/");
+			var exePath = Sys.programPath().split("\\").join("/").split("/");
 			exePath.pop();
 			
 			var frootPath = exePath.join("/") + "/" + baseDir;
-			#if debug
-			trace( "looking for :" +frootPath );
-			#end
+			if ( useAbsolute ){
+				frootPath = dir;//let simplify :D
+			}
 			
 			var froot = sys.FileSystem.fullPath(frootPath);
 			if ( !sys.FileSystem.isDirectory(froot) ) {
@@ -367,6 +367,10 @@ class LocalFileSystem implements FileSystem {
 	public function getRoot() : FileEntry {
 		return root;
 	}
+	
+	public function getBaseDir(){
+		return baseDir;
+	}
 
 	function open( path : String ) {
 		#if air3
@@ -376,22 +380,6 @@ class LocalFileSystem implements FileSystem {
 		#elseif sys
 		var f = sys.FileSystem.fullPath(baseDir + path).replace("\\","/");
 		return f;
-		#end
-	}
-	
-	public function listDirForFiles( path:String) {
-		#if air3
-		var f = open(path);
-		
-		if( f.exists )
-			return f.getDirectoryListing().filter(function(e) {
-				return !e.isDirectory;
-			});
-		else 
-			return [];
-			
-		#elseif sys
-		throw "todo";
 		#end
 	}
 	

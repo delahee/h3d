@@ -290,7 +290,7 @@ class Pad {
 	
 	public var nativeIds : Array<String> = [];
 	
-	#if flash
+	#if (flash||openfl)
 	public var nativeControls : Array<flash.ui.GameInputControl> = [];
 	#end
 	
@@ -388,7 +388,7 @@ class Pad {
 		return p;
 	}
 
-	#if flash
+	#if (flash||openfl)
 	public var d : flash.ui.GameInputDevice;
 	static var initDone = false;
 	static var inst : flash.ui.GameInput;
@@ -400,7 +400,7 @@ class Pad {
 		Wait until a gamepad gets connected. On some platforms, this might require the user to press a button until it activates
 	**/
 		
-	#if flash
+	#if (flash||openfl)
 	public static function nbPads() return flash.ui.GameInput.numDevices;
 	#end
 	
@@ -582,6 +582,8 @@ class Pad {
 				p.prevValues[i] = p.values[i];
 				
 				if ( USE_POLLING ) {
+					
+					#if flash
 					var c = p.nativeControls[i];
 					var axisX = 0;
 					var axisY = 1;
@@ -599,6 +601,9 @@ class Pad {
 						p.values[i] = v;
 						p.buttons[i] = v > 0.5;
 					}
+					#else
+						trace("PADS not implemented");
+					#end
 				}
 			}
 		}
