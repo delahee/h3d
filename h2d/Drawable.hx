@@ -178,39 +178,39 @@ class DrawableShader extends h3d.impl.Shader {
 			var uy = res.y * blurRadius;
 			var uy2 = 2 * res.y * blurRadius;
 			
-			col += 0.00078633 * tex.get([uv.x + -ux2	, 	(tuv.y + uy2)  ],nearest);
-			col += 0.00655965 * tex.get([uv.x + -ux		, 	(tuv.y + uy2)  ],nearest);
-			col += 0.01330373 * tex.get([uv.x  			, 	(tuv.y + uy2)  ],nearest);
-			col += 0.00655965 * tex.get([uv.x + ux		, 	(tuv.y + uy2)  ],nearest);
-			col += 0.00078633 * tex.get([uv.x + ux2		, 	(tuv.y + uy2)  ],nearest);
+			col += 0.00078633 * tex.get([uv.x + -ux2	, 	(uv.y + uy2)  ],nearest);
+			col += 0.00655965 * tex.get([uv.x + -ux		, 	(uv.y + uy2)  ],nearest);
+			col += 0.01330373 * tex.get([uv.x  			, 	(uv.y + uy2)  ],nearest);
+			col += 0.00655965 * tex.get([uv.x + ux		, 	(uv.y + uy2)  ],nearest);
+			col += 0.00078633 * tex.get([uv.x + ux2		, 	(uv.y + uy2)  ],nearest);
 			
 			
-			col += 0.00655965 * tex.get([uv.x + -ux2	,  	(tuv.y + uy)  ],nearest);
-			col += 0.05472157 * tex.get([uv.x + -ux		, 	(tuv.y + uy)  ],nearest);
-			col += 0.11098164 * tex.get([uv.x 			, 	(tuv.y + uy)  ],nearest);
-			col += 0.05472157 * tex.get([uv.x + ux		, 	(tuv.y + uy)  ],nearest);
-			col += 0.00655965 * tex.get([uv.x + ux2		, 	(tuv.y + uy)  ],nearest);
+			col += 0.00655965 * tex.get([uv.x + -ux2	,  	(uv.y + uy)  ],nearest);
+			col += 0.05472157 * tex.get([uv.x + -ux		, 	(uv.y + uy)  ],nearest);
+			col += 0.11098164 * tex.get([uv.x 			, 	(uv.y + uy)  ],nearest);
+			col += 0.05472157 * tex.get([uv.x + ux		, 	(uv.y + uy)  ],nearest);
+			col += 0.00655965 * tex.get([uv.x + ux2		, 	(uv.y + uy)  ],nearest);
 			
 			
-			col += 0.01330373 * tex.get([uv.x + -ux2	,  	(tuv.y)   	],nearest);
-			col += 0.11098164 * tex.get([uv.x + -ux		,   (tuv.y)		],nearest);
-			col += 0.22508352 * tex.get([uv.x 			,  	(tuv.y)   	],nearest);
-			col += 0.11098164 * tex.get([uv.x + ux		,   (tuv.y) 	],nearest);
-			col += 0.01330373 * tex.get([uv.x + ux2		, 	(tuv.y)   	],nearest);
+			col += 0.01330373 * tex.get([uv.x + -ux2	,  	(uv.y)   	],nearest);
+			col += 0.11098164 * tex.get([uv.x + -ux		,   (uv.y)		],nearest);
+			col += 0.22508352 * tex.get([uv.x 			,  	(uv.y)   	],nearest);
+			col += 0.11098164 * tex.get([uv.x + ux		,   (uv.y) 	],nearest);
+			col += 0.01330373 * tex.get([uv.x + ux2		, 	(uv.y)   	],nearest);
 			
 			
-			col += 0.00655965 * tex.get([uv.x + -ux2	,  	(tuv.y - uy)  ],nearest);
-			col += 0.05472157 * tex.get([uv.x + -ux		, 	(tuv.y - uy)  ],nearest);
-			col += 0.11098164 * tex.get([uv.x 			,  	(tuv.y - uy)  ],nearest);
-			col += 0.05472157 * tex.get([uv.x + ux		, 	(tuv.y - uy)  ],nearest);
-			col += 0.00655965 * tex.get([uv.x + ux2		, 	(tuv.y - uy)  ],nearest);
+			col += 0.00655965 * tex.get([uv.x + -ux2	,  	(uv.y - uy)  ],nearest);
+			col += 0.05472157 * tex.get([uv.x + -ux		, 	(uv.y - uy)  ],nearest);
+			col += 0.11098164 * tex.get([uv.x 			,  	(uv.y - uy)  ],nearest);
+			col += 0.05472157 * tex.get([uv.x + ux		, 	(uv.y - uy)  ],nearest);
+			col += 0.00655965 * tex.get([uv.x + ux2		, 	(uv.y - uy)  ],nearest);
 			
 			
-			col += 0.00078633  * tex.get([uv.x + -ux2	, 	(tuv.y - uy2)  ],nearest);
-			col += 0.00655965  * tex.get([uv.x + -ux	, 	(tuv.y - uy2)  ],nearest);
-			col += 0.01330373  * tex.get([uv.x 			, 	(tuv.y - uy2)  ],nearest);
-			col += 0.00655965  * tex.get([uv.x + ux		, 	(tuv.y - uy2)  ],nearest);
-			col += 0.00078633  * tex.get([uv.x + ux2	, 	(tuv.y - uy2)  ],nearest);
+			col += 0.00078633  * tex.get([uv.x + -ux2	, 	(uv.y - uy2)  ],nearest);
+			col += 0.00655965  * tex.get([uv.x + -ux	, 	(uv.y - uy2)  ],nearest);
+			col += 0.01330373  * tex.get([uv.x 			, 	(uv.y - uy2)  ],nearest);
+			col += 0.00655965  * tex.get([uv.x + ux		, 	(uv.y - uy2)  ],nearest);
+			col += 0.00078633  * tex.get([uv.x + ux2	, 	(uv.y - uy2)  ],nearest);
 			return col;
 		}
 		
