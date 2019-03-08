@@ -194,7 +194,7 @@ class GlDriver extends Driver {
 	public static inline var GL_SAMPLE_BUFFERS 	= 0x80A8;
 	public static inline var GL_SAMPLES 		= 0x80A9;
 	
-	#if mobile
+	#if opengles
 	public static inline var GL_DEPTH_COMPONENT16 = 0x81A5;
 	public static inline var GL_DEPTH_COMPONENT24 = 0x81A6;
 	public static inline var GL_DEPTH_COMPONENT32 = 0x81A7;
@@ -294,8 +294,8 @@ class GlDriver extends Driver {
 			
 			#end
 			
-			vendor = gl.getParameter(GL.VENDOR);
-			renderer = gl.getParameter(GL.RENDERER);
+			vendor = gl.getParameter(GL.VENDOR); 		checkError();
+			renderer = gl.getParameter(GL.RENDERER);	checkError();
 			extensions = new Map();
 			for ( e in gl.getSupportedExtensions() )
 				extensions.set(e, e);
@@ -308,35 +308,49 @@ class GlDriver extends Driver {
 				#end
 		#end
 		
+		checkError();
 		detectCaps();
+		checkError();
 		setupDevice();
+		checkError();
 	}
 	
 	function setupDevice() {
 		#if ios
+		checkError();
 		screenBuffer = new openfl.gl.GLFramebuffer(GL.version, GL.getParameter(GL.FRAMEBUFFER_BINDING));
+		checkError();
 		#end
 
-		#if !mobile
+		#if !opengles
+		checkError();
 		gl.enable(GL.TEXTURE_CUBE_MAP);
+		checkError();
 		#end
 		
-		if ( supportSeamlessCubemap)
+		if ( supportSeamlessCubemap){
+			checkError();
 			gl.enable( TEXTURE_CUBE_MAP_SEAMLESS );
+			checkError();
+		}
 			
-		//gl.pixelStorei(t, 0);
+		checkError();
 		gl.pixelStorei(GL.UNPACK_ALIGNMENT, 1); 
+		checkError();
 		gl.pixelStorei(GL.PACK_ALIGNMENT, 1);
+		checkError();
 	}
 	
 	function detectCaps() {
+		checkError();
 		
-		#if mobile
+		#if opengles
 		supports565 = true;
 		supports4444 = true;
 		supports5551 = true;
 		#end
 		
+		trace("seamless status :" +supportSeamlessCubemap );
 		if ( extensions != null) 
 			for ( s in extensions) {
 				switch(s) {
@@ -349,15 +363,16 @@ class GlDriver extends Driver {
 							
 					case "GL_ARB_seamless_cube_map":
 						supportSeamlessCubemap = true;
+						trace("seamless is fine");
 					case 
-						#if !mobile
+						#if !opengles
 						"GL_EXT_bgra","EXT_bgra",
 						#end
 						
 						"GL_APPLE_texture_format_BGRA8888":		
 						supportsBGRA = BGRADesktop;
 						
-					#if mobile
+					#if opengles
 					case 	"GL_EXT_texture_format_BGRA8888",
 							"GL_IMG_texture_format_BGRA8888", 
 							"EXT_texture_format_BGRA8888": 
@@ -376,6 +391,7 @@ class GlDriver extends Driver {
 		supportsBGRA = BGRANone;
 		#end
 		
+		checkError();
 	}
 	
 	public function onContextLost(_) {
@@ -739,7 +755,9 @@ class GlDriver extends Driver {
 		//hxd.System.trace3("Creating texture pointer id:" + t.id);
 		//hxd.System.trace3("Creating texture pointer\n" + tt + haxe.CallStack.toString(haxe.CallStack.callStack()) );
 		#end
+		#if debug
 		checkError();
+		#end
 		
 		var isCompressed = t.flags.has( h3d.mat.Data.TextureFlags.Compressed );
 		var isMixed =  (pix != null) && pix.isMixed();
@@ -783,6 +801,9 @@ class GlDriver extends Driver {
 	}
 	
 	override function allocVertex( count : Int, stride : Int , isDynamic = false) : VertexBuffer {
+		#if debug 
+		checkError();
+		#end
 		
 		var b = gl.createBuffer();
 		var usage = isDynamic? GL.DYNAMIC_DRAW : GL.STATIC_DRAW;
@@ -808,13 +829,17 @@ class GlDriver extends Driver {
 	}
 	
 	override function allocIndexes( count : Int ) : IndexBuffer {
+		#if debug 
+		checkError();
+		#end
+		
 		var b = gl.createBuffer();
 		#if js
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, b);
 		gl.bufferData(GL.ELEMENT_ARRAY_BUFFER, count * 2, GL.STATIC_DRAW);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		#else
-			#if (mobile&&cpp)
+			#if (opengles&&cpp)
 				var tmp = new Uint16Array(count * 2);
 				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, b);
 				bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp, GL.STATIC_DRAW);
@@ -987,7 +1012,7 @@ class GlDriver extends Driver {
 				gl.bindRenderbuffer( GL.RENDERBUFFER, fbo.rbo);
 				checkError();
 				
-				#if mobile
+				#if opengles
 					gl.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT16, fbo.width, fbo.height);
 				#else 
 					gl.renderbufferStorage(GL.RENDERBUFFER, GL.DEPTH_COMPONENT, fbo.width, fbo.height);
@@ -1216,7 +1241,7 @@ class GlDriver extends Driver {
 			#if true
 			//experimental
 			if ( as == 0 && rs == 8 && bs == 0 && gs == 0) {
-				#if mobile
+				#if opengles
 				internalFormat = GL.LUMINANCE;
 				externalFormat = GL.LUMINANCE;
 				#else 
@@ -1228,7 +1253,7 @@ class GlDriver extends Driver {
 			#end
 			
 			if ( rs == 5 && gs == 6 && bs == 5) {
-				#if mobile
+				#if opengles
 				internalFormat = GL.RGB;
 				externalFormat = GL.RGB;
 				#else 
@@ -1239,7 +1264,7 @@ class GlDriver extends Driver {
 			} else
 			
 			if ( rs == 4 && gs == 4 && bs == 4 && as == 4) {
-				#if mobile
+				#if opengles
 				internalFormat = GL.RGBA;
 				externalFormat = GL.RGBA;
 				#else 
@@ -1250,7 +1275,7 @@ class GlDriver extends Driver {
 			} else
 			
 			if ( rs == 5 && gs == 5 && bs == 5 && as == 1 ) {
-				#if mobile
+				#if opengles
 				internalFormat = GL.RGBA;
 				externalFormat = GL.RGBA;
 				#else 
@@ -1312,7 +1337,7 @@ class GlDriver extends Driver {
 		#if (lime < "7.1.1" )
 		gl.bufferData( target, vec, usage );
 		#else 
-		#if debug 
+			#if debug 
 			checkError();
 			#end
 			
@@ -1401,7 +1426,7 @@ class GlDriver extends Driver {
 	}
 
 	override function uploadIndexesBuffer( i : IndexBuffer, startIndice : Int, indiceCount : Int, buf : hxd.IndexBuffer, bufPos : Int ) {
-		#if (mobile && cpp)
+		#if (opengles && cpp)
 			hxd.System.trace2("uploading index 16");
 
 			var buf = new Uint16Array(buf.getNative());
@@ -1503,7 +1528,7 @@ class GlDriver extends Driver {
 			code = code.split("#end").join("#endif");
 
 			//version should come first
-			#if !mobile
+			#if !opengles
 				#if mac
 				code = "#version 110 \n" + code;
 				#else 
@@ -2324,7 +2349,7 @@ class GlDriver extends Driver {
 		#if debug
 		hxd.System.trace2("draw tri");
 		#end
-		#if (mobile && cpp)
+		#if (opengles && cpp)
 		gl.drawElements(GL.TRIANGLES, ntriangles * 3, GL.UNSIGNED_SHORT, startIndex * 2);
 		#else 
 		gl.drawElements(GL.TRIANGLES, ntriangles * 3, GL.UNSIGNED_INT, startIndex * 4);
@@ -2451,7 +2476,7 @@ class GlDriver extends Driver {
 	}
 
 
-	public inline function checkError() {
+	public inline function checkError(#if debug ?pos:haxe.PosInfos #end) {
 		#if debug
 		var err = gl.getError();
 		if (err != GL.NO_ERROR)
@@ -2460,6 +2485,7 @@ class GlDriver extends Driver {
 			if ( s != null) {
 				var str = "GL_ERROR:" + s;
 				trace(str);
+				trace(pos.fileName+":"+pos.lineNumber);
 				throw s;
 			}
 		}

@@ -14,4 +14,8 @@
 	<window antialiasing="0" if="windows" />
 	
 	<haxedef name="swf-directblit" if="flash"/>
+	
+	<haxedef name="opengles" if="lime-opengles" />
+	<haxedef name="opengles" if="lime-switch" />
+	<haxedef name="opengles" if="mobile" />
 </extension>
