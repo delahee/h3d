@@ -8,8 +8,12 @@
 	<!-- output -->
 	<app main="Demo" file="showcase" path="bin" swf-version="14" />
 	
-	<window background="#CaCaCa" fps="61" if="windows" />
-	<window background="#CaCaCa" fps="60" if="flash" />
+	<window fps="61" if="windows" />
+	<window fps="60" if="flash" />
+	
+	<window background="#CaCaCa"  />
+	
+	
 	<window width="1280" height="720" unless="mobile" />
 	
 	<window vsync="true" antialiasing="0" if="cpp" orientation="auto" resizable="true" />
@@ -27,6 +31,10 @@
 	
 	<haxedef name="resourcesPath" value="assets" />
 	<haxeflag name="-dce" value="no" />
+	
+<!--
+	<template path="tpl/switch/Application.nmeta" 			rename="../_meta/Application.nmeta" />
+-->
 	<!--
 	<haxedef name="dumpShader"/>
 	-->

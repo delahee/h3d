@@ -85,7 +85,6 @@ class Demo extends flash.display.Sprite
 		
 		var driver = h3d.Engine.getCurrent().driver;
 		
-		Lib.toto();
 		arial = openfl.Assets.getFont("assets/arial.ttf");
 		trace("arial: " + arial);
 		
@@ -94,6 +93,7 @@ class Demo extends flash.display.Sprite
 		tile.setCenterRatio(0.5, 0.5);
 		
 		var dcBg = getTile("assets/demoNight.png"); dcBg.setCenterRatio(0.5, 0.5);
+		var dkhBg = getTile("assets/h3dA_128x128.png"); dkhBg.setCenterRatio(0.5, 0.5);
 		var dcOverlay = getTile("assets/rampedLight.png"); dcOverlay.setCenterRatio(0.5, 0.5);
 		var overlay = getTile("assets/overlay.png"); overlay.setCenterRatio(0.5, 0.5);
 		var car = getTile("assets/carPlay1.png"); car.setCenterRatio(0.5, 0.5);
@@ -712,6 +712,8 @@ class Demo extends flash.display.Sprite
 			style.backgroundColor = FillStyle.Color(0xFFFFFF00);
 			style.width = 100;
 			style.height = 100;
+			style.fontName = arial.fontName;
+			style.fontSize = font.size;
 			root.setStyle( style );
 			
 			var style = new h2d.css.Style();
@@ -719,6 +721,8 @@ class Demo extends flash.display.Sprite
 			style.color = 0xFF000000;
 			style.borderColor = FillStyle.Color(0xFFff0000 );
 			style.borderSize = 2.0; 
+			style.fontName = arial.fontName;
+			style.fontSize = font.size;
 			
 			var b = new Box( root );
 			b.id = "container";
@@ -867,7 +871,6 @@ class Demo extends flash.display.Sprite
 		{
 			cellX += 120;
 			
-			var font = hxd.res.FontBuilder.getFont("arial",18);
 			var sb = new h2d.SpriteBatch( font.tile, scene);
 			sb.x = cellX;
 			sb.y = baseline;
@@ -970,7 +973,7 @@ class Demo extends flash.display.Sprite
 		//
 		if ( enableTest.get( n ))
 		{
-			var o = bmp = new h2d.Bitmap(dcBg,scene);
+			var o = bmp = new h2d.Bitmap(dkhBg,scene);
 			bmp.x = cellX;
 			bmp.y = baseline;
 			
@@ -994,7 +997,7 @@ class Demo extends flash.display.Sprite
 		
 		if ( enableTest.get( n ))
 		{
-			bmp = new h2d.Bitmap(dcBg,scene);
+			bmp = new h2d.Bitmap(dkhBg,scene);
 			bmp.x = cellX;
 			bmp.y = baseline;
 			
@@ -1023,9 +1026,10 @@ class Demo extends flash.display.Sprite
 		{
 			
 			
-			bmp = new h2d.Bitmap(dcBg,scene);
+			bmp = new h2d.Bitmap(dkhBg,scene);
 			bmp.x = cellX;
 			bmp.y = baseline;
+			
 			bmp.alphaMap = overlay;
 			bmp.alphaMapAsOverlay = true;
 			
@@ -1107,7 +1111,7 @@ class Demo extends flash.display.Sprite
 			//e.blend = Add;
 
 			
-			var e = sb.alloc(dcBg);
+			var e = sb.alloc(dkhBg);
 			var ex = cellX - 20; 
 			var ey = baseline;
 			e.x = ex; e.scaleX = 0.3;
@@ -1115,7 +1119,7 @@ class Demo extends flash.display.Sprite
 			//e.visible = false;
 			
 			
-			var e = sb.alloc(dcBg);
+			var e = sb.alloc(dkhBg);
 			var ex = cellX + 20; 
 			var ey = baseline;
 			e.x = ex; e.scaleX = 0.2;
@@ -1252,7 +1256,9 @@ class Demo extends flash.display.Sprite
 		//trace("render request");
 			
 		//engine.triggerClear = true;
-		//engine.triggerClear = true;
+		#if (lime >= "7.1.1")
+		engine.triggerClear = true;
+		#end
 		engine.render(scene);
 		engine.restoreOpenfl();
 	}
