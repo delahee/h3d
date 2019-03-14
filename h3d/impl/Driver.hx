@@ -189,6 +189,14 @@ class Driver {
 		throw "not implemented";
 	}
 	
+	public function flush(){
+		
+	}
+	
+	public function finish(){
+		
+	}
+	
 	public function uploadTexturePixels( t : h3d.mat.Texture, pixels : hxd.Pixels, mipLevel : Int, side : Int ) {
 	}
 

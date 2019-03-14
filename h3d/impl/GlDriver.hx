@@ -1552,10 +1552,11 @@ class GlDriver extends Driver {
 		
 		function compileShader(type,code) {
 			var s = gl.createShader(type);
-			
+			checkError();
 			gl.shaderSource(s, code);
-			
+			checkError();
 			gl.compileShader(s);
+			checkError();
 			
 			#if (windows && debug && dumpShader)
 			//System.trace2("source:"+code);
@@ -2360,6 +2361,14 @@ class GlDriver extends Driver {
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		checkError();
 		Profiler.end("drawElements");
+	}
+	
+	public override function flush(){
+		
+	}
+	
+	public override function finish(){
+		
 	}
 	
 	override function present() {

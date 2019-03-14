@@ -565,7 +565,9 @@ class Pad {
 		var p = new Pad();
 		p.d = e.device;
 		
-		if ( DEBUG_MODE ) trace("PAD RECVD polling:"+USE_POLLING);
+		#if debug
+		if ( DEBUG_MODE ) trace("PAD RECVD polling:" + USE_POLLING);
+		#end
 		
 		for( i in 0...flash.ui.GameInput.numDevices )
 			if( p.d == flash.ui.GameInput.getDeviceAt(i) )
@@ -614,7 +616,10 @@ class Pad {
 			p.nativeControls.push(c);
 			p.buttons.push(false);
 			
+			
+			#if debug
 			if ( DEBUG_MODE ) trace("add ctrl : " + c.id);
+			#end
 				
 			if( StringTools.startsWith(c.id, "AXIS_") ) {
 				var axisID = axisCount++;

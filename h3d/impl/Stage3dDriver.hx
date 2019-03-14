@@ -243,6 +243,10 @@ class Stage3dDriver extends Driver {
 		return ctx == null || ctx.driverInfo == disposed;
 	}
 	
+	override function finish() {
+		ctx.present();
+	}
+	
 	override function present() {
 		if ( onCapture != null ) {
 			var w = engine.width;
