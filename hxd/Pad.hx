@@ -5,6 +5,7 @@ enum ConsoleButtonStyle{
 	CBS_PC;
 	CBS_SONY;
 	CBS_MS;
+	CBS_NINTENDO;
 }
 
 typedef BaseConf = {
@@ -218,7 +219,57 @@ class Pad {
 		eraseUnconfed:false,
 		style:CBS_SONY,
 	}
-
+	
+	public static var CONFIG_SWITCH_DUAL  : BaseConf = null;
+	public static var CONFIG_SWITCH_PRO  : BaseConf = null;
+	
+	public static var CONFIG_SWITCH_ATTACHED_TO_CONSOLE : BaseConf = cast {
+		ids:["6e7061645f68616e6468656c64307801"],
+		name:"Joy-Cons connected to console",
+		matchString:"Joy-Cons",
+		metaName:"Joy-Cons",
+		analogX : 0,
+		analogY : 1,
+		
+		X:9,
+		Y:8,
+		LB:15,
+		
+		A:7,
+		B:6,
+		RB:16,
+		
+		L2:4,
+		R2:5,
+		
+		start : 0,
+		dpadUp : 17,
+		dpadDown : 18,
+		dpadLeft : 19,
+		dpadRight : 20,
+		
+		share:10,
+		options:12,
+		
+		dash:10,
+		plus:12,
+		
+		ranalogX : 2,
+		ranalogY : 3,
+		
+		names : [
+		"leftAnalogX", 		"leftAnalogY", 	"rightAnalogX", 	"rightAnalogY", 		"ZL",//0-4
+		"ZR",				"B", 			"A", 				"Y", 					"X", //5-9
+		"DASH", 			"", 			"PLUS", 			"", 					"",//10-14
+		"L", 				"R", 			"dpadUp", 			"dpadDown", 			"dpadLeft", //15-19
+		"dpadRight",		"",				"",//20-24	
+		],
+		
+		eraseUnconfed: #if debug false #else true #end,
+		defaultYInverted:false,
+		style:CBS_NINTENDO,
+	}
+	
 	public static var CONFIG_DUMMY : BaseConf = cast {
 		ids:["dummy"],
 		name:"dummy",
@@ -260,7 +311,7 @@ class Pad {
 		style:CBS_PC,
 	}
 	
-	public static var CONFS :Array<Dynamic> = [CONFIG_DUMMY,CONFIG_XARCADE, CONFIG_XBOX,CONFIG_RAP4 , CONFIG_HORI_MINI_PS4, CONFIG_HORI_MINI_PS3 ];
+	public static var CONFS :Array<Dynamic> = [CONFIG_DUMMY,CONFIG_XARCADE, CONFIG_XBOX,CONFIG_RAP4 , CONFIG_HORI_MINI_PS4, CONFIG_HORI_MINI_PS3, CONFIG_SWITCH_ATTACHED_TO_CONSOLE ];
 
 	public var connected(default, null) = true;
 	public var name(get, never) : String;
@@ -294,6 +345,8 @@ class Pad {
 	public var nativeControls : Array<flash.ui.GameInputControl> = [];
 	#end
 	
+	public static var DEBUG_MODE = true;
+	
 	public var conf:BaseConf;
 	public var destroyed = false;
 
@@ -304,7 +357,7 @@ class Pad {
 	var _name : String = null;
 	function get_name() {
 		if( index < 0 ) return "Dummy GamePad";
-		#if flash
+		#if (flash||openfl)
 		if( _name == null)
 			return _name = d.name;
 		else 
@@ -319,7 +372,7 @@ class Pad {
 	}
 
 	public function isDown(idx:Int) : Bool {
-		if ( idx >= values.length ) {
+		if ( idx >= values.length || idx < 0 ) {
 			//button/axis cannot be bound
 			return false;
 		}
@@ -331,7 +384,7 @@ class Pad {
 	}
 	
 	public function wasDown(idx:Int) : Bool {
-		if ( idx >= values.length ) {
+		if ( idx >= values.length || idx < 0 ) {
 			return false;
 		}
 		return prevValues[idx] <= -0.25 || prevValues[idx] >= 0.25;
@@ -362,6 +415,19 @@ class Pad {
 	public function clearOnPress(idx:Int) {
 		values[idx] = 0.0;
 		prevValues[idx] = 0.0;
+	}
+	
+	/**
+	 * maps to 0if button is not found
+	 */
+	public function getButtonIdxByName( name:String){
+		var idx = 0;
+		for ( c in conf.names){
+			if ( c == name )
+				return idx;
+			idx++;
+		}
+		return 0;
 	}
 	
 	public function getButtonName(idx:Int) {
@@ -422,7 +488,7 @@ class Pad {
 		return dummy;
 	}
 	
-	#if flash
+	#if (flash||openfl)
 	public static function getPadById(id:String) {
 		for ( p in padList)
 			if ( p.d.id == id )
@@ -432,25 +498,56 @@ class Pad {
 	#end
 	
 	public static function wait( onPad : Pad -> Void ) {
-		#if flash
+		#if (flash||openfl)
 		if( !initDone ) {
 			initDone = true;
 			inst = new flash.ui.GameInput();
 			dummy = createDummy();
+			
+			systemInit();
+			
 			scanForPad(onPad);
 		}
 		#else
+		trace("pad are not supported");
 		#end
 	}
+	
+	#if (flash||openfl)
+	static function systemInit(){
+		#if switch
+		generateDual();
+		#end
+	}
+	
+	#if switch
+	static function generateDual(){
+		CONFIG_SWITCH_DUAL = Reflect.copy( CONFIG_SWITCH_ATTACHED_TO_CONSOLE );
+		CONFIG_SWITCH_DUAL.name = "Joy-Con (Dual)";
+		CONFIG_SWITCH_DUAL.matchString = CONFIG_SWITCH_DUAL.name;
+		
+		CONFS.push(CONFIG_SWITCH_DUAL );
+		
+		CONFIG_SWITCH_PRO = Reflect.copy( CONFIG_SWITCH_ATTACHED_TO_CONSOLE );
+		CONFIG_SWITCH_PRO.name = "Switch Pro Controller compatible";
+		CONFIG_SWITCH_PRO.matchString = CONFIG_SWITCH_PRO.name;
+		
+		CONFS.push(CONFIG_SWITCH_PRO );
+	}
+	#end
+	
+	#end
 
-	#if flash
+	#if (flash||openfl)
 	static function onDeviceUnusable(e:flash.events.GameInputEvent) {
-		//trace(e.device.name+" is unusable");
+		#if debug
+		trace(e.device.name+" is unusable");
+		#end
 	}
 	
 	static function onDeviceRemoved(e:flash.events.GameInputEvent) {
 		#if debug
-		//trace(e.device.name+" is removed");
+		trace(e.device.name+" is removed");
 		#end
 		for (p in padList.copy()) {
 			if (p.d == e.device ) {
@@ -463,10 +560,12 @@ class Pad {
 	
 	static function onDeviceAdded(onPad:Pad->Void, e:flash.events.GameInputEvent) {
 		#if debug
-		//trace(e.device.name+" is added " + e.device.id);
+		trace(e.device.name+" is added " + e.device.id);
 		#end
 		var p = new Pad();
 		p.d = e.device;
+		
+		if ( DEBUG_MODE ) trace("PAD RECVD polling:"+USE_POLLING);
 		
 		for( i in 0...flash.ui.GameInput.numDevices )
 			if( p.d == flash.ui.GameInput.getDeviceAt(i) )
@@ -515,9 +614,8 @@ class Pad {
 			p.nativeControls.push(c);
 			p.buttons.push(false);
 			
-			#if debug
-			//trace("add ctrl : " + c.id);
-			#end
+			if ( DEBUG_MODE ) trace("add ctrl : " + c.id);
+				
 			if( StringTools.startsWith(c.id, "AXIS_") ) {
 				var axisID = axisCount++;
 				p.axis[valID] = true;
@@ -583,7 +681,7 @@ class Pad {
 				
 				if ( USE_POLLING ) {
 					
-					#if flash
+					#if (flash||openfl)
 					var c = p.nativeControls[i];
 					var axisX = 0;
 					var axisY = 1;
@@ -607,6 +705,5 @@ class Pad {
 				}
 			}
 		}
-		var toto = 0;
 	}
 } 

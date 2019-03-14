@@ -86,7 +86,7 @@ private class LocalEntry extends FileEntry {
 		fs = null;
 		return bytes;
 		#else
-		return sys.io.File.getBytes(file);
+		return sys.io.File.getBytes(LocalFileSystem.getOSPath(file));
 		#end
 	}
 	
@@ -148,8 +148,7 @@ private class LocalEntry extends FileEntry {
 		#if air3
 		return file.isDirectory;
 		#else
-		throw "TODO";
-		return false;
+		return sys.FileSystem.isDirectory( LocalFileSystem.getOSPath( file ));
 		#end
 	}
 
@@ -226,7 +225,7 @@ private class LocalEntry extends FileEntry {
 		return new hxd.impl.ArrayIterator(arr);
 		#else
 		var arr = new Array<FileEntry>();
-		for( f in sys.FileSystem.readDirectory(file) ) {
+		for( f in sys.FileSystem.readDirectory( LocalFileSystem.getOSPath(file) ) ) {
 			switch( f ) {
 			case ".svn", ".git" if( sys.FileSystem.isDirectory(file+"/"+f) ):
 				continue;
@@ -350,14 +349,26 @@ class LocalFileSystem implements FileSystem {
 			}
 			
 			var froot = sys.FileSystem.fullPath(frootPath);
-			if ( !sys.FileSystem.isDirectory(froot) ) {
+			trace("frootPath:"+frootPath);
+			if ( !sys.FileSystem.isDirectory( getOSPath(froot)) ) 
 				throw "sys:Could not find dir " + dir;
-			}
+			
 			baseDir = froot.split("\\").join("/");
 			if( !StringTools.endsWith(baseDir, "/") ) baseDir += "/";
 			root = new LocalEntry(this, "root", null, baseDir);
 		#end
 		tmpDir = baseDir + ".tmp/";
+	}
+	
+	static function getOSPath( __path : String ){
+		#if switch
+		if ( __path.startsWith("rom:/"))
+			return __path;
+		else 
+			return "rom:/" + __path;
+		#else 
+			return __path;
+		#end
 	}
 	
 	public dynamic function xbxFilter( entry : FileEntry, fbx : h3d.fbx.Data.FbxNode ) : h3d.fbx.Data.FbxNode {
@@ -378,7 +389,8 @@ class LocalFileSystem implements FileSystem {
 		f.canonicalize();
 		return f;
 		#elseif sys
-		var f = sys.FileSystem.fullPath(baseDir + path).replace("\\","/");
+		var p = baseDir + path;
+		var f = sys.FileSystem.fullPath( LocalFileSystem.getOSPath(p)).replace("\\","/");
 		return f;
 		#end
 	}
@@ -401,8 +413,10 @@ class LocalFileSystem implements FileSystem {
 		return new LocalEntry(this, path.split("/").pop(), path, f);
 		#elseif sys
 		var f = open(path);
-		if( f == null ||!sys.FileSystem.exists(f) )
+		if ( f == null )
 			throw "File not found " + path;
+		//if ( !sys.FileSystem.exists(f) )
+		//	throw "File not found 2" + path;
 		return new LocalEntry(this, path.split("/").pop(), path, f);
 		#end
 	}
