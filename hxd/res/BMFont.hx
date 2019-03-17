@@ -40,15 +40,10 @@ class BMFont{
 			@:privateAccess nativeFont.charset.map.set( c.id, c.id);
 		
 		@:privateAccess nativeFont.tile = pageTextures[0];
-		//@:privateAccess nativeFont.lineHeight = Math.round(font.lineHeight);
 		
 		var nnc : CharacterDef = null;
 		for ( nc in font.charMap){
 			nnc = nc;
-			//if ( nc.id == 12427){
-				//var a = 0;
-				//trace(nc);
-			//}
 			
 			var xOffsetDelta = 0;
 			var yOffsetDelta = 0;

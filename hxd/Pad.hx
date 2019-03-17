@@ -38,7 +38,10 @@ typedef BaseConf = {
 	var style: ConsoleButtonStyle;
 }
 
+
 class Pad {
+	
+	public static inline var BT_DASH = "DASH";
 	
 	public static var USE_POLLING = true; //requires .update call at frame end
 	public static var CONFIG_XBOX : BaseConf = cast {
@@ -260,7 +263,7 @@ class Pad {
 		names : [
 		"leftAnalogX", 		"leftAnalogY", 	"rightAnalogX", 	"rightAnalogY", 		"ZL",//0-4
 		"ZR",				"B", 			"A", 				"Y", 					"X", //5-9
-		"DASH", 			"", 			"PLUS", 			"", 					"",//10-14
+		BT_DASH, 			"", 			"PLUS", 			"", 					"",//10-14
 		"L", 				"R", 			"dpadUp", 			"dpadDown", 			"dpadLeft", //15-19
 		"dpadRight",		"",				"",//20-24	
 		],
@@ -345,7 +348,7 @@ class Pad {
 	public var nativeControls : Array<flash.ui.GameInputControl> = [];
 	#end
 	
-	public static var DEBUG_MODE = true;
+	public static var DEBUG_MODE = false;
 	
 	public var conf:BaseConf;
 	public var destroyed = false;

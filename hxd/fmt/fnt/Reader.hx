@@ -5,13 +5,27 @@ import haxe.io.BytesInput;
 
 /**
  * ...
- * @author Andreas Rønning
+ * @author ANDREAS RØNNING
  */
 enum ReadStatus {
 	COMPLETE;
 	PROGRESS;
 	ERROR;
 }
+
+@:structInit
+class KerningPair{
+	public var first:Int	= 0;
+	public var second:Int	= 0;
+	public var amount:Int	= 0;
+	
+	public inline function new(first,second,amount){
+		this.first = first;
+		this.second = second;
+		this.amount = amount;
+	}
+}
+
 class Reader
 {
 	static var bytes:Bytes;
@@ -34,7 +48,7 @@ class Reader
 	}
 	
 	public static function read(bytesOrString:Dynamic):FontDef {
-		
+		if ( bytesOrString == null ) throw "BMF : no content to decode";
 		currentFont = new FontDef();
 		if (Std.is(bytesOrString, String)) {
 			var lines = bytesOrString.split("\n");
@@ -52,6 +66,7 @@ class Reader
 			
 			Reader.bytes = null;
 		}
+		catchUpKerningPairs();
 		var out = currentFont;
 		currentFont = null;
 		return out;
@@ -251,10 +266,34 @@ class Reader
 		var amount = reader.readInt8();
 		var firstChar = currentFont.charMap[first];
 		var secondChar = currentFont.charMap[second];
-		//The idea here is that during rendering, the second character of a pair to be drawn will offset its position backwards by the kerning value
 		
+		if ( secondChar == null){
+			//trace("suspicious kerning val");
+			queuePair( first, second, amount);
+			return;
+		}
+		
+		//The idea here is that during rendering, the second character of a pair to be drawn will offset its position backwards by the kerning value
 		if ( secondChar.kerningPairs == null ) secondChar.kerningPairs = new Map();
-		if (firstChar != null && secondChar != null) secondChar.kerningPairs[first] = amount;
+		if ( firstChar != null && secondChar != null) secondChar.kerningPairs[first] = amount;
+	}
+	
+	static function catchUpKerningPairs(){
+		for ( k in kerningQueue){
+			var firstChar = currentFont.charMap[k.first];
+			var secondChar = currentFont.charMap[k.second];
+			if( secondChar!=null){
+				if ( secondChar.kerningPairs == null ) secondChar.kerningPairs = new Map();
+				if ( firstChar != null && secondChar != null) secondChar.kerningPairs[k.first] = k.amount;
+			}
+			
+		}
+		kerningQueue = [];//lose them to reduce gc bookkeeping pressure;
+	}
+	
+	static var kerningQueue : Array<KerningPair> = [];
+	static function queuePair(firstCode:Int,secondCode:Int,amount:Int){
+		kerningQueue.push( {first:firstCode, second:secondCode, amount:amount} );
 	}
 	
 	static function readChars(input:BytesInput, blockSize:Int) 
