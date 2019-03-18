@@ -22,6 +22,9 @@ import hxd.Pixels;
 import hxd.System;
 
 using StringTools;
+#if cpp 
+using cpp.NativeArray;
+#end
 
 #if (js||cpp)
 	#if js
@@ -800,6 +803,9 @@ class GlDriver extends Driver {
 		return tt;
 	}
 	
+	var zeroBuffer 	: Uint8Array = null;
+	var zeroBufferF : Float32Array = null;
+	
 	override function allocVertex( count : Int, stride : Int , isDynamic = false) : VertexBuffer {
 		#if debug 
 		checkError();
@@ -813,16 +819,40 @@ class GlDriver extends Driver {
 		gl.bufferData(GL.ARRAY_BUFFER, count * stride * 4, usage);
 		gl.bindBuffer(GL.ARRAY_BUFFER, null); curBuffer = null; curMultiBuffer = null;
 		#else
-		var tmp = new Uint8Array(count * stride * 4);
-		gl.bindBuffer(GL.ARRAY_BUFFER, b);
-		
-		#if (lime < "7.1.1")
-		bufferData(GL.ARRAY_BUFFER, tmp,  usage);
-		#else 
-		bufferData(GL.ARRAY_BUFFER, tmp,  usage);
-		#end 
-
-		gl.bindBuffer(GL.ARRAY_BUFFER, null); curBuffer = null; curMultiBuffer = null;
+			#if (lime < "7.1.1")
+				var tmp = new Uint8Array(count * stride * 4);
+				gl.bindBuffer(GL.ARRAY_BUFFER, b);
+				bufferData(GL.ARRAY_BUFFER, tmp,  usage, tmp.byteLength);
+				gl.bindBuffer(GL.ARRAY_BUFFER, null); curBuffer = null; curMultiBuffer = null;
+			#else 
+				var useRegular = false;
+				if ( useRegular ){
+					var tmp = new Uint8Array(count * stride * 4);
+					gl.bindBuffer(GL.ARRAY_BUFFER, b);
+					bufferData(GL.ARRAY_BUFFER, tmp,  usage, tmp.byteLength);
+					gl.bindBuffer(GL.ARRAY_BUFFER, null); curBuffer = null; curMultiBuffer = null;
+				}
+				else {
+					var zeroBufferByteLen = 64 * 1024;
+					if ( zeroBuffer == null ) {
+						zeroBuffer = new Uint8Array( zeroBufferByteLen );
+						//zeroBuffer.buffer.getData().zero();
+					}
+					
+					var requestedLen = count * stride * 4;
+					var buffer = zeroBuffer;
+					if ( zeroBufferByteLen < requestedLen){
+						trace("allocating big vertex:" + requestedLen);
+						var tmp = new Uint8Array(count * stride * 4);
+						//tmp.buffer.getData().zero();
+						buffer = tmp;
+					}
+					
+					gl.bindBuffer(GL.ARRAY_BUFFER, b);
+					bufferData(GL.ARRAY_BUFFER, buffer,  usage, requestedLen);
+					gl.bindBuffer(GL.ARRAY_BUFFER, null); curBuffer = null; curMultiBuffer = null;
+				}
+			#end
 		#end
 		
 		return new VertexBuffer(b, stride );
@@ -842,12 +872,12 @@ class GlDriver extends Driver {
 			#if (opengles&&cpp)
 				var tmp = new Uint16Array(count * 2);
 				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, b);
-				bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp, GL.STATIC_DRAW);
+				bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp, GL.STATIC_DRAW, tmp.byteLength);
 				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 			#else
 				var tmp = new Uint32Array(count * 4);
 				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, b);
-				bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp, GL.STATIC_DRAW);
+				bufferData(GL.ELEMENT_ARRAY_BUFFER, tmp, GL.STATIC_DRAW, tmp.byteLength);
 				gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 			#end
 		#end
@@ -1316,24 +1346,74 @@ class GlDriver extends Driver {
 		Profiler.end("uploadTexturePixelsDirect");
 	}
 	
+	@:noDebug
 	override function uploadVertexBuffer( v : VertexBuffer, startVertex : Int, vertexCount : Int, buf : hxd.FloatBuffer, bufPos : Int ) {
-		hxd.System.trace2("uploading bytes float "+vertexCount);
-		var stride : Int = v.stride;
-		var buf = buf.getNative();
-		var sub = new Float32Array(buf, bufPos, vertexCount * stride * 4);
-		
-		if ( debugSendZeroes ) 
-			for ( i in 0...sub.length )
-				sub[i] = 0.0;
 		
 		gl.bindBuffer(GL.ARRAY_BUFFER, v.b);
-		bufferSubData(GL.ARRAY_BUFFER, startVertex * stride * 4, sub);
-		gl.bindBuffer(GL.ARRAY_BUFFER, null);
-		curBuffer = null; curMultiBuffer = null;
-		checkError();
+		
+		var stride : Int = v.stride;
+		var buf = buf.getNative();
+		
+		#if (lime < "7.1.1")
+			var sub = new Float32Array(buf, bufPos, vertexCount * stride * 4);
+			if ( debugSendZeroes ) 
+				for ( i in 0...sub.length )
+					sub[i] = 0.0;
+			bufferSubData(GL.ARRAY_BUFFER, startVertex * stride * 4, sub);
+			gl.bindBuffer(GL.ARRAY_BUFFER, null);
+			curBuffer = null; curMultiBuffer = null; uploadedbuf = null;
+			checkError();
+			
+		#else
+			var useRegularPath = false;
+			
+			if ( useRegularPath ){
+				var sub = new Float32Array(buf, bufPos, vertexCount * stride * 4);
+				if ( debugSendZeroes ) 
+					for ( i in 0...sub.length )
+						sub[i] = 0.0;
+				bufferSubData(GL.ARRAY_BUFFER, startVertex * stride * 4, sub, sub.byteLength);
+				gl.bindBuffer(GL.ARRAY_BUFFER, null);
+				curBuffer = null; curMultiBuffer = null; 
+				checkError();
+			}
+			else {
+				var uploadedbuf : Float32Array = null;
+				var startByte = startVertex * stride * 4;
+				var requestedLen = vertexCount * stride * 4;
+				var zeroBufferLen = 64 * 1024;
+				if ( zeroBufferF == null ) zeroBufferF = new Float32Array( zeroBufferLen );
+				uploadedbuf = zeroBufferF;
+				if ( zeroBufferLen < requestedLen){
+					trace("large vb");
+					uploadedbuf = new Float32Array(buf, bufPos, vertexCount * stride * 4);
+					//keep start etc
+				} else {
+					//copy to zerobuff and avoid alloc
+					var floatStart 	= startVertex * stride;
+					var floatLen 	= vertexCount * stride;
+					for( i in 0...floatLen)
+						zeroBufferF[i] = buf[floatStart + i];
+					startByte = 0;
+					uploadedbuf = zeroBufferF;
+				}
+				
+				bufferSubData(GL.ARRAY_BUFFER, startByte, uploadedbuf, requestedLen);
+				gl.bindBuffer(GL.ARRAY_BUFFER, null);
+				curBuffer = null; curMultiBuffer = null; uploadedbuf = null;
+				checkError();
+			}
+		#end
 	}
 	
-	function bufferData( target:Int, vec : lime.utils.ArrayBufferView, usage:Int ){
+	/**
+	 * 
+	 * @param	target
+	 * @param	vec
+	 * @param	usage
+	 * @param	len shoudl basically be byte length
+	 */
+	function bufferData( target:Int, vec : lime.utils.ArrayBufferView, usage:Int, len:Int  ){
 		#if (lime < "7.1.1" )
 		gl.bufferData( target, vec, usage );
 		#else 
@@ -1353,7 +1433,7 @@ class GlDriver extends Driver {
 			//STATIC_DRAW
 			//DYNAMIC_DRAW
 			
-			gl.bufferData(target, vec.byteLength, vec, usage);
+			gl.bufferData(target, len, vec, usage);
 			
 			#if debug 
 			checkError();
@@ -1361,7 +1441,7 @@ class GlDriver extends Driver {
 		#end
 	}
 	
-	function bufferSubData(id, pos, vec : lime.utils.ArrayBufferView ){
+	function bufferSubData(id, pos, vec : lime.utils.ArrayBufferView, len:Int  ){
 		#if (lime < "7.1.1" )
 			gl.bufferSubData(id, pos, vec);
 		#else
@@ -1369,7 +1449,7 @@ class GlDriver extends Driver {
 			checkError();
 			#end
 			
-			gl.bufferSubData(id, pos, vec.byteLength, vec);
+			gl.bufferSubData(id, pos, len, vec);
 			
 			#if debug 
 			checkError();
@@ -1418,7 +1498,7 @@ class GlDriver extends Driver {
 		
 		checkError();
 		gl.bindBuffer(GL.ARRAY_BUFFER, v.b);
-		bufferSubData(GL.ARRAY_BUFFER, startVertex * stride * 4, sub);
+		bufferSubData(GL.ARRAY_BUFFER, startVertex * stride * 4, sub, sub.byteLength);
 		gl.bindBuffer(GL.ARRAY_BUFFER, null);
 		checkError();
 		curBuffer = null; curMultiBuffer = null;
@@ -1437,21 +1517,22 @@ class GlDriver extends Driver {
 		#else 
 		
 			hxd.System.trace2("uploading index 32");
-			
+			//todo optimize this
 			var buf = new Int32Array(buf.getNative());
 			var sub = new Int32Array(buf, bufPos, indiceCount * 4);
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
-			bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 4, sub);
+			bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 4, sub, sub.byteLength);
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		#end
 	}
 
 	override function uploadIndexesBytes( i : IndexBuffer, startIndice : Int, indiceCount : Int, buf : haxe.io.Bytes , bufPos : Int ) {
 		hxd.System.trace2("uploading bytes 8");
+		//todo optimize this
 		var buf = new Uint8Array(buf.getData());
 		var sub = new Uint8Array(buf, bufPos, indiceCount * 2);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
-		bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub);
+		bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub, sub.byteLength);
 		gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 	}
 	
@@ -1497,50 +1578,106 @@ class GlDriver extends Driver {
 		}
 	}
 	
+	static var gles 	= 
+		[ "#ifndef GL_FRAGMENT_PRECISION_HIGH\n precision mediump float;\n precision mediump int;\n #else\nprecision highp float;\n precision highp int;\n #end"].map( function(s) return "#if GL_ES \n\t"+s+" \n #end \n").join('');
+	static var notgles 	= 
+		[ "#define lowp  ", "#define mediump  " , "#define highp  " ].map( function(s) return "#if !GL_ES \n\t"+s+" \n #end \n").join('');
+	
+		
+	static var regs = [];
+	function _parseShader<T>(shader : Shader , cl : Class<T>, type:Int) {
+		var vertex = type == GL.VERTEX_SHADER;
+		var name = vertex ? "VERTEX" : "FRAGMENT";
+		var code = Reflect.field(cl, name);
+		if ( code == null ) throw "Missing " + Type.getClassName(cl) + "." + name + " shader source";
+		
+		var cst = shader.getConstants(vertex);
+		
+		code = StringTools.trim(cst + code);
+
+		code = gles + code;
+		code = notgles + code;
+
+		// replace haxe-like #if/#else/#end by GLSL ones
+		
+		if ( regs.length == 0 ){
+			regs[ 0 ] = ~/#if +(?!defined) *([A-Za-z0-9_]+)/g;
+			regs[ 1 ] = ~/#if +(?!defined) *! *([A-Za-z0-9_]+)/g;
+			regs[ 2 ] = ~/#elseif +(?!defined) *([A-Za-z0-9_]+)/g;
+			regs[ 3 ] = ~/#elseif +(?!defined) *! *([A-Za-z0-9_]+)/g;
+		}
+		
+		code = regs[0].replace(code, "#if defined ( $1 ) \n");
+		code = regs[1].replace(code, "#if !defined ( $1 ) \n");
+		
+		code = regs[2].replace(code, "#elif defined ( $1 ) \n");
+		code = regs[3].replace(code, "#elif !defined ( $1 ) \n");
+		
+		code = code.split("#end").join("#endif");
+
+		//version should come first
+		#if !opengles
+			#if mac
+			code = "#version 110 \n" + code;
+			#else 
+			code = "#version 100 \n" + code;
+			#end
+		#end
+
+		return code;
+	}
+	
+	function _compileShader(shader:Shader,type:Int,code:String) {
+		var s = gl.createShader(type);
+		checkError();
+		gl.shaderSource(s, code);
+		checkError();
+		gl.compileShader(s);
+		checkError();
+		
+		#if (windows && debug && dumpShader)
+		//System.trace2("source:"+code);
+		var f = sys.io.File.write( "./" + sig + ((type == GL.VERTEX_SHADER) ? ".vsh" : ".fsh"), true);
+		code.replace("\n\n", "\n");
+		f.writeString( code );
+		f.close();
+		#end 
+		
+		var shCode = gl.getShaderParameter(s, GL.COMPILE_STATUS);
+		if ( shCode != cast 1 ) {
+			System.trace1("a shader error occured !");
+			//System.trace1("shader source : \n" + code);
+			
+			var shlog = try {
+				getShaderInfoLog(s, code);
+			}catch (d:Dynamic) {
+				"cannot retrieve";
+			};
+			
+			throw "An error occurred compiling the " + Type.getClass(shader)  + "\n"
+			+ " infolog: " + shlog + "\n"
+			+ " gl_err: " + gl.getError() + "\n"
+			+ " shader_param_err : "+shCode + "\n"
+			+ " code : " + StringTools.htmlEscape(code);
+			
+			checkError();
+		}
+		else {
+			//always print him becaus it can hint gles errors
+			#if debug
+			System.trace3("compile shaderInfoLog ok:" + getShaderInfoLog(s, code));
+			#end
+		}
+		
+		return s;
+	}
+	
 	function buildShaderInstance( shader : Shader ) {
 		var cl = Type.getClass(shader);
 		var fullCode = "";
 		
-		function parseShader(type) {
-			var vertex = type == GL.VERTEX_SHADER;
-			var name = vertex ? "VERTEX" : "FRAGMENT";
-			var code = Reflect.field(cl, name);
-			if ( code == null ) throw "Missing " + Type.getClassName(cl) + "." + name + " shader source";
-			
-			var cst = shader.getConstants(vertex);
-			
-			code = StringTools.trim(cst + code);
-
-			var gles = [ "#ifndef GL_FRAGMENT_PRECISION_HIGH\n precision mediump float;\n precision mediump int;\n #else\nprecision highp float;\n precision highp int;\n #end"];
-			var notgles = [ "#define lowp  ", "#define mediump  " , "#define highp  " ];
-
-			code = gles.map( function(s) return "#if GL_ES \n\t"+s+" \n #end \n").join('') + code;
-			code = notgles.map( function(s) return "#if !GL_ES \n\t"+s+" \n #end \n").join('') + code;
-
-			// replace haxe-like #if/#else/#end by GLSL ones
-			
-			code = ~/#if +(?!defined) *([A-Za-z0-9_]+)/g.replace(code, "#if defined ( $1 ) \n");
-			code = ~/#if +(?!defined) *! *([A-Za-z0-9_]+)/g.replace(code, "#if !defined ( $1 ) \n");
-			
-			code = ~/#elseif +(?!defined) *([A-Za-z0-9_]+)/g.replace(code, "#elif defined ( $1 ) \n");
-			code = ~/#elseif +(?!defined) *! *([A-Za-z0-9_]+)/g.replace(code, "#elif !defined ( $1 ) \n");
-			
-			code = code.split("#end").join("#endif");
-
-			//version should come first
-			#if !opengles
-				#if mac
-				code = "#version 110 \n" + code;
-				#else 
-				code = "#version 100 \n" + code;
-				#end
-			#end
-
-			return code;
-		}
-		
-		var vsCode = parseShader(GL.VERTEX_SHADER);
-		var fsCode = parseShader(GL.FRAGMENT_SHADER);
+		var vsCode = _parseShader(shader,cl,GL.VERTEX_SHADER);
+		var fsCode = _parseShader(shader,cl,GL.FRAGMENT_SHADER);
 					
 		fullCode = vsCode+ "\n" + fsCode;
 		
@@ -1550,53 +1687,8 @@ class GlDriver extends Driver {
 			return shaderCache.get(sig);
 		}
 		
-		function compileShader(type,code) {
-			var s = gl.createShader(type);
-			checkError();
-			gl.shaderSource(s, code);
-			checkError();
-			gl.compileShader(s);
-			checkError();
-			
-			#if (windows && debug && dumpShader)
-			//System.trace2("source:"+code);
-			var f = sys.io.File.write( "./" + sig + ((type == GL.VERTEX_SHADER) ? ".vsh" : ".fsh"), true);
-			code.replace("\n\n", "\n");
-			f.writeString( code );
-			f.close();
-			#end 
-			
-			var shCode = gl.getShaderParameter(s, GL.COMPILE_STATUS);
-			if ( shCode != cast 1 ) {
-				System.trace1("a shader error occured !");
-				//System.trace1("shader source : \n" + code);
-				
-				var shlog = try {
-					getShaderInfoLog(s, code);
-				}catch (d:Dynamic) {
-					"cannot retrieve";
-				};
-				
-				throw "An error occurred compiling the " + Type.getClass(shader)  + "\n"
-				+ " infolog: " + shlog + "\n"
-				+ " gl_err: " + gl.getError() + "\n"
-				+ " shader_param_err : "+shCode + "\n"
-				+ " code : " + StringTools.htmlEscape(code);
-				
-				checkError();
-			}
-			else {
-				//always print him becaus it can hint gles errors
-				#if debug
-				System.trace3("compile shaderInfoLog ok:" + getShaderInfoLog(s, code));
-				#end
-			}
-			
-			return s;
-		}
-		
-		var vs = compileShader(GL.VERTEX_SHADER,vsCode);
-		var fs = compileShader(GL.FRAGMENT_SHADER,fsCode);
+		var vs = _compileShader(shader,GL.VERTEX_SHADER,vsCode);
+		var fs = _compileShader(shader,GL.FRAGMENT_SHADER,fsCode);
 		
 		var p = gl.createProgram();
 

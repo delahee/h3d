@@ -1246,7 +1246,7 @@ class Drawable extends h2d.Sprite {
 		
 		#if sys
 		switch( blendMode ) {
-			default:			shader.leavePremultipliedColors = false;
+			default:					shader.leavePremultipliedColors = false;
 			case Multiply, SoftOverlay:	shader.leavePremultipliedColors = true;
 		}
 		#end

@@ -335,7 +335,7 @@ class Text extends Drawable implements IText {
 		return r;
 	}
 
-	static var 	utf8Text = new hxd.IntStack();
+	//static var 	utf8Text = new hxd.IntStack();
 	
 	@:noDebug
 	static
