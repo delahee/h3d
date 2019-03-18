@@ -116,9 +116,12 @@ class Shader {
 		return "";
 	}
 	
-	public inline function invalidate() {
+	public
+	#if !debug
+	#end
+	function invalidate() {
 		#if debug
-		hxd.System.trace2("shader invalidation !" /*+ haxe.CallStack.callStack()*/);
+		//hxd.System.trace2("shader invalidation !" /*+ haxe.CallStack.callStack()*/);
 		#end
 		instance = null;
 	}

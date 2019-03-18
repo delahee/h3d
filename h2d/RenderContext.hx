@@ -68,7 +68,17 @@ class RenderContext {
 		var tex = textures[0];
 		var isTexPremul  = tex.flags.has(AlphaPremultiplied);
 		var nbTex = countTextures();
-		var shader = hxd.impl.ShaderLibrary.get(true,false,isTexPremul,currentObj.filter,nbTex);
+		var leavePremul = false;
+		
+		#if sys
+		switch( currentObj.blendMode ) {
+			default:
+			case Multiply:		leavePremul = true;
+			case SoftOverlay:	leavePremul = true;
+		}
+		#end 
+		
+		var shader = hxd.impl.ShaderLibrary.get(true,false,isTexPremul,currentObj.filter,nbTex,leavePremul);
 		
 		#if flash
 			shader.tex = (tex=textures[0]);
@@ -88,10 +98,6 @@ class RenderContext {
 		
 		if( shader.killAlpha != currentObj.killAlpha)
 			shader.killAlpha = currentObj.killAlpha;
-		
-		#if sys
-		shader.leavePremultipliedColors = false;
-		#end 
 		
 		switch( currentObj.blendMode ) {
 			
@@ -116,6 +122,9 @@ class RenderContext {
 				
 			case Multiply:
 				mat.blend(DstColor, OneMinusSrcAlpha);
+				#if sys
+				shader.leavePremultipliedColors = true;
+				#end
 				
 			case Erase:
 				mat.blend(Zero, OneMinusSrcAlpha);
@@ -125,9 +134,7 @@ class RenderContext {
 				
 				#if sys
 				shader.leavePremultipliedColors = true;
-				#end
-				
-			case Screen:
+				#end			case Screen:
 				mat.blend(One, OneMinusSrcColor);
 		}
 

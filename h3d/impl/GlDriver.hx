@@ -834,17 +834,12 @@ class GlDriver extends Driver {
 				}
 				else {
 					var zeroBufferByteLen = 64 * 1024;
-					if ( zeroBuffer == null ) {
-						zeroBuffer = new Uint8Array( zeroBufferByteLen );
-						//zeroBuffer.buffer.getData().zero();
-					}
+					if ( zeroBuffer == null ) zeroBuffer = new Uint8Array( zeroBufferByteLen );
 					
 					var requestedLen = count * stride * 4;
 					var buffer = zeroBuffer;
 					if ( zeroBufferByteLen < requestedLen){
-						trace("allocating big vertex:" + requestedLen);
 						var tmp = new Uint8Array(count * stride * 4);
-						//tmp.buffer.getData().zero();
 						buffer = tmp;
 					}
 					
@@ -1583,6 +1578,7 @@ class GlDriver extends Driver {
 	static var notgles 	= 
 		[ "#define lowp  ", "#define mediump  " , "#define highp  " ].map( function(s) return "#if !GL_ES \n\t"+s+" \n #end \n").join('');
 	
+	static var gldefs = gles + notgles;
 		
 	static var regs = [];
 	function _parseShader<T>(shader : Shader , cl : Class<T>, type:Int) {
@@ -1593,10 +1589,14 @@ class GlDriver extends Driver {
 		
 		var cst = shader.getConstants(vertex);
 		
+		#if dumpShader
 		code = StringTools.trim(cst + code);
+		#else
+		code = cst + code;
+		#end
 
-		code = gles + code;
-		code = notgles + code;
+		code = gldefs + code;
+		//code = notgles + code;
 
 		// replace haxe-like #if/#else/#end by GLSL ones
 		
@@ -1672,6 +1672,22 @@ class GlDriver extends Driver {
 		return s;
 	}
 	
+	static function makeCRC32( data : String ) : Int {
+		var init = 0xFFFFFFFF;
+		var crc = init;
+		for( i in 0...data.length ) {
+			var tmp = (crc ^ data.charCodeAt(i)) & 0xFF;
+			for( j in 0...8 ) {
+				if( tmp & 1 == 1 )
+					tmp = (tmp >>> 1) ^ 0xEDB88320;
+				else
+					tmp >>>= 1;
+			}
+			crc = (crc >>> 8) ^ tmp;
+		}
+		return crc ^ init;
+	}
+	
 	function buildShaderInstance( shader : Shader ) {
 		var cl = Type.getClass(shader);
 		var fullCode = "";
@@ -1681,7 +1697,7 @@ class GlDriver extends Driver {
 					
 		fullCode = vsCode+ "\n" + fsCode;
 		
-		var sig = haxe.crypto.Crc32.make( haxe.io.Bytes.ofString( fullCode ) );
+		var sig = makeCRC32( fullCode );
 		if ( shaderCache.exists( sig )) {
 			//hxd.System.trace4("shader cache hit !");
 			return shaderCache.get(sig);

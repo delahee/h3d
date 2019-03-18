@@ -265,6 +265,8 @@ class Console extends h2d.Sprite {
 		tf.text = "";
 	}
 
+	var exp : EReg = ~/[ \t]+/g;
+	
 	function handleCommand( command : String ) {
 		command = StringTools.trim(command);
 		for ( s in shortKeyChars) 
@@ -278,7 +280,7 @@ class Console extends h2d.Sprite {
 		logs.push(command);
 		logIndex = -1;
 
-		var args = ~/[ \t]+/g.split(command);
+		var args = exp.split(command);
 		var cmdName = args[0];
 		if( aliases.exists(cmdName) ) cmdName = aliases.get(cmdName);
 		var cmd = commands.get(cmdName);
