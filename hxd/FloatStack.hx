@@ -16,6 +16,12 @@ class FloatStack {
 		//buf.zero();
 	}
 	
+	public inline function hardReset() {
+		pos = 0;
+		for ( i in 0...pos)
+			buf[i] = 0.0;
+	}
+	
 	public inline function iterator(){
 		return buf.iterator();
 	}

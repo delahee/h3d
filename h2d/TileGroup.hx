@@ -17,19 +17,29 @@ private class TileLayerContent extends h3d.prim.Primitive {
 		return buffer == null;
 	}
 	
-	public function reset() {
+	public override function dispose(){
+		super.dispose();
+		releaseBuffer();
+	}
+	
+	function releaseBuffer(){
 		if ( buffer != null ) {
 			h3d.impl.Buffer.delete( buffer );
 			buffer = null;
+			uploaded = false;
 		}
-		
+	}
+	
+	var uploaded = false;
+	public function reset() {
 		if ( tmp == null ) 	tmp = new hxd.FloatStack();
-		else 				tmp.reset();
+		else 				tmp.hardReset();
 		
 		xMin = hxd.Math.POSITIVE_INFINITY;
 		yMin = hxd.Math.POSITIVE_INFINITY;
 		xMax = hxd.Math.NEGATIVE_INFINITY;
 		yMax = hxd.Math.NEGATIVE_INFINITY;
+		uploaded = false;
 	}
 	
 	public inline function add( x : Int, y : Int, t : Tile ) {
@@ -71,34 +81,38 @@ private class TileLayerContent extends h3d.prim.Primitive {
 	}
 	
 	override public function triCount() {
-		if( buffer == null )
-			return tmp.length >> 3;
-		var v = 0;
-		var b = buffer;
-		while( b != null ) {
-			v += b.nvert;
-			b = b.next;
-		}
-		return v >> 1;
+		return tmp.length >> 3;
 	}
 	
 	override public function alloc(engine:h3d.Engine) {
 		if ( tmp == null ) reset();
 		
-		var doDirect = false;
-		#if sys
-		doDirect = true;
-		#end
-		
-		buffer = engine.mem.allocStack(tmp, 4, 4, true, doDirect );
+		if( buffer == null){
+			var doDirect = false;
+			#if sys
+			doDirect = true;
+			#end
+			buffer = engine.mem.allocStack(tmp, 4, 4, true, doDirect );
+			uploaded = true;
+		}
 	}
 
 	public function doRender(engine, min, len) {
-		if( len > 0 ){
-			if ( buffer == null 
-			|| ((tmp.length >> 2) > buffer.nvert) 
-			|| buffer.isDisposed() ) 
+		if ( len > 0 ){
+			//release excess
+			if ( 	buffer != null  && 	((tmp.length >> 2) > buffer.nvert) )
+				releaseBuffer();
+			
+			//refresh
+			if ( 	buffer == null 
+			|| 		buffer.isDisposed() ) 
 				alloc(engine);
+				
+			//upload!
+			if ( !uploaded ){
+				buffer.uploadStack(tmp, 0, tmp.length >> 2);
+				uploaded = true;
+			}
 				
 			engine.renderQuadBuffer(buffer, min, len);
 		}

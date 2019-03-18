@@ -71,6 +71,10 @@ class Buffer {
 		}
 	}
 	
+	public function uploadStack( stack : hxd.FloatStack, dataPos : Int, nverts:Int) {
+		uploadVector( stack.toData(), dataPos, nverts);
+	}
+	
 	public function uploadVector( data : hxd.FloatBuffer, dataPos : Int, nverts : Int ) {
 		var cur = this;
 		while( nverts > 0 ) {

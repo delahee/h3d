@@ -449,11 +449,11 @@ class MemoryManager {
 	}
 
 	public function allocStack( v : hxd.FloatStack, stride, align, ?isDynamic = false, ?isDirect = false ) : Buffer {
-		var nvert = Std.int(v.length / stride);
-		var b : Buffer = null;
-		if ( isDirect ) b = allocDirect(nvert, stride, align, isDynamic);
-		else 			b = alloc(nvert, stride, align, isDynamic);
-		b.uploadVector(v.toData(), 0, nvert);
+		var nvert 			= Std.int(v.length / stride);
+		var b : Buffer 		= null;
+		if ( isDirect ) 	b = allocDirect(nvert, stride, align, isDynamic);
+		else 				b = alloc(nvert, stride, align, isDynamic);
+		b.uploadStack(v, 0, nvert);
 		return b;
 	}
 	
