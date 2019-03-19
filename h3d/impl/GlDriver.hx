@@ -318,6 +318,15 @@ class GlDriver extends Driver {
 		checkError();
 	}
 	
+	public function isGLES_3(){
+		return extensions.exists("OES_vertex_array_object")&&extensions.exists("KHR_context_flush_control");
+	}
+	
+	public function isGLES_3_1(){
+		return extensions.exists("KHR_debug")&&extensions.exists("KHR_robustness")&&extensions.exists("OES_geometry_shader");
+	}
+	 
+	
 	function setupDevice() {
 		#if ios
 		checkError();
@@ -390,6 +399,9 @@ class GlDriver extends Driver {
 			}
 		if ( supportsBGRA != BGRANone) hxd.System.trace1("BGRA support is :" + supportsBGRA);
 		
+		if ( isGLES_3()){
+			supportSeamlessCubemap = true;
+		}
 		#if noBGRA
 		supportsBGRA = BGRANone;
 		#end
@@ -1507,7 +1519,7 @@ class GlDriver extends Driver {
 			var buf = new Uint16Array(buf.getNative());
 			var sub = new Uint16Array(buf, bufPos, indiceCount * 2 );
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, i);
-			bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub);
+			bufferSubData(GL.ELEMENT_ARRAY_BUFFER, startIndice * 2, sub, sub.byteLength);
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		#else 
 		
