@@ -1838,8 +1838,8 @@ class GlDriver extends Driver {
 		for( k in 0...nuni ) {
 			parseUniInfo.inf = new GLActiveInfo( gl.getActiveUniform(p, k) );
 			
-			if( parseUniInfo.inf.name.substr(0, 6) == "webgl_" ) 	continue; // skip native uniforms
-			if( parseUniInfo.inf.name.substr(0, 3) == "gl_" )		continue;
+			if( parseUniInfo.inf.name.startsWith("webgl_") 	) 	continue; // skip native uniforms
+			if( parseUniInfo.inf.name.startsWith("gl_" )	)	continue;
 				
 			var name = parseUniInfo.inf.name;
 			
@@ -1851,9 +1851,9 @@ class GlDriver extends Driver {
 			parseUniInfo.variables.set( tu.name, { } );
 		}
 		
-		#if debug
-		System.trace4('shader code : $allCode');
-		#end
+		//#if debug
+		//System.trace4('shader code : $allCode');
+		//#end
 		
 		inst.program = p;
 		checkError();
@@ -1871,8 +1871,23 @@ class GlDriver extends Driver {
 	//var parseUniInfo : { var texIndex : Int; var inf: openfl.gl.GLActiveInfo;};
 	var parseUniInfo : UniformContext;
 	
+	
+	var eregCache : Map<String, EReg> = new Map();
+	
+	//var varCommentRegEngine 	: EReg 	= new EReg(str + "[ \\t]*\\/\\*([A-Za-z0-9_]+)\\*\\/", "g");
+	//var varArrayAccRegEngine 	: EReg  = new EReg("[A-Z0-9_]+[ \t]+" + str + "\\[[a-z](.+?)\\]", "gi");
+	//var varArrayLenRegEngine 	: EReg	= new EReg("uniform sampler2D " + name+"\\[([0-9]+)\\]", "gi");
+	
+	function getEreg(lit, opt) : EReg {
+		//don't care about options as it does no vary...
+		if ( eregCache.exists(lit))	return eregCache.get(lit);
+		eregCache.set( lit,new EReg(lit, opt) );
+		
+		return  eregCache.get(lit);
+	}
+	
 	inline function findVarComment(str,code){
-		var r = new EReg(str + "[ \\t]*\\/\\*([A-Za-z0-9_]+)\\*\\/", "g");
+		var r = getEreg(str + "[ \\t]*\\/\\*([A-Za-z0-9_]+)\\*\\/", "g");
 		return 
 		if ( r.match(code) )
 			r.matched(1);
@@ -1881,7 +1896,7 @@ class GlDriver extends Driver {
 	}
 	
 	inline function hasArrayAccess(str,code){
-		var r = new EReg("[A-Z0-9_]+[ \t]+" + str + "\\[[a-z](.+?)\\]", "gi");
+		var r = getEreg("[A-Z0-9_]+[ \t]+" + str + "\\[[a-z](.+?)\\]", "gi");
 		return 
 		if ( r.match(code) )
 			true;
@@ -1890,7 +1905,7 @@ class GlDriver extends Driver {
 	
 	
 	inline function getUniformArrayLength(name:String, code:String) {
-		var r = new EReg("uniform sampler2D " + name+"\\[([0-9]+)\\]", "gi");
+		var r = getEreg("uniform sampler2D " + name+"\\[([0-9]+)\\]", "gi");
 		//trace( code);
 		if ( r.match( code )) {
 			return Std.parseInt( r.matched(1));
