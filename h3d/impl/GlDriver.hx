@@ -1388,11 +1388,13 @@ class GlDriver extends Driver {
 				var uploadedbuf : Float32Array = null;
 				var startByte = startVertex * stride * 4;
 				var requestedLen = vertexCount * stride * 4;
-				var zeroBufferLen = 64 * 1024;
+				var zeroBufferLen = 256 * 1024;
 				if ( zeroBufferF == null ) zeroBufferF = new Float32Array( zeroBufferLen );
 				uploadedbuf = zeroBufferF;
 				if ( zeroBufferLen < requestedLen){
-					trace("large vb");
+					#if debug
+					//trace("large vb");
+					#end
 					uploadedbuf = new Float32Array(buf, bufPos, vertexCount * stride * 4);
 					//keep start etc
 				} else {

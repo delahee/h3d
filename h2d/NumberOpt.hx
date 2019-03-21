@@ -36,12 +36,9 @@ class NumberOpt extends h2d.SpriteBatch {
 	var zeroCode = "0".code;
 	
 	function allocGlyph(){
-		if ( glyphs.length == 0 ){
-			return new BatchElement( font.getChar('0'.code).t );
-		}
-		else {
-			return glyphs.pop();
-		}
+		return 
+		if ( glyphs.length == 0 ) 	new BatchElement( font.getChar('0'.code).t );
+		else 						glyphs.pop();
 	}
 	
 	function deleteGlyph(e:BatchElement){
@@ -80,7 +77,8 @@ class NumberOpt extends h2d.SpriteBatch {
 			g.x = cx;
 			g.y = 0;
 			
-			cx += c.width;
+			cx += letterSpacing + c.width + font.defaultLetterSpacing;
+				
 			if ( i > 0 ) cx += c.getKerningOffset(vals.unsafeGet(i - 1) + zeroCode);
 			add(g);
 			i++;

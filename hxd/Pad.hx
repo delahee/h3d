@@ -245,7 +245,7 @@ class Pad {
 		L2:4,
 		R2:5,
 		
-		start : 0,
+		start : 12,
 		dpadUp : 17,
 		dpadDown : 18,
 		dpadLeft : 19,
@@ -314,7 +314,10 @@ class Pad {
 		style:CBS_PC,
 	}
 	
-	public static var CONFS :Array<Dynamic> = [CONFIG_DUMMY,CONFIG_XARCADE, CONFIG_XBOX,CONFIG_RAP4 , CONFIG_HORI_MINI_PS4, CONFIG_HORI_MINI_PS3, CONFIG_SWITCH_ATTACHED_TO_CONSOLE ];
+	public static var CONFS :Array<Dynamic> = [
+		CONFIG_DUMMY, CONFIG_XBOX,
+		CONFIG_XARCADE, CONFIG_RAP4 ,
+		CONFIG_HORI_MINI_PS4, CONFIG_HORI_MINI_PS3, CONFIG_SWITCH_ATTACHED_TO_CONSOLE ];
 
 	public var connected(default, null) = true;
 	public var name(get, never) : String;
@@ -374,12 +377,14 @@ class Pad {
 		
 	}
 
+	public static var AXIS_DIFFERENTIAL_THRESHOLD = 0.25;
+	
 	public function isDown(idx:Int) : Bool {
 		if ( idx >= values.length || idx < 0 ) {
 			//button/axis cannot be bound
 			return false;
 		}
-		return values[idx] <= -0.25 || values[idx] >= 0.25;
+		return values[idx] <= - AXIS_DIFFERENTIAL_THRESHOLD || values[idx] >= AXIS_DIFFERENTIAL_THRESHOLD;
 	}
 	
 	public function isChanged(idx:Int) : Bool {
@@ -390,7 +395,7 @@ class Pad {
 		if ( idx >= values.length || idx < 0 ) {
 			return false;
 		}
-		return prevValues[idx] <= -0.25 || prevValues[idx] >= 0.25;
+		return prevValues[idx] <= - AXIS_DIFFERENTIAL_THRESHOLD || prevValues[idx] >= AXIS_DIFFERENTIAL_THRESHOLD;
 	}
 	
 	public function isAxis(btIdx:Int){

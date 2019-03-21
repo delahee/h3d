@@ -2,9 +2,9 @@ package h2d;
 
 class HtmlText extends Drawable {
 
-	public var font(default, set) : Font;
-	public var htmlText(default, set) : String;
-	public var textColor(default, set) : Int;
+	public var font(default, set) 		: Font;
+	public var htmlText(default, set) 	: String;
+	public var textColor(default, set) 	: Int;
 	
 	public var textWidth(get, null) : Int;
 	public var textHeight(get, null) : Int;
@@ -14,6 +14,11 @@ class HtmlText extends Drawable {
 	public var maxWidth : Null<Float>;
 	
 	var glyphs : TileColorGroup;
+	
+	var utf8Text = new hxd.IntStack();
+	var xPos : Int;
+	var yPos : Int;
+	var xMax : Int;
 	
 	public function new( font : Font, ?parent ) {
 		super(parent);
@@ -56,10 +61,6 @@ class HtmlText extends Drawable {
 		return t;
 	}
 	
-	var xPos : Int;
-	var yPos : Int;
-	var xMax : Int;
-	
 	function initGlyphs( text : String, rebuild = true, ?lines : Array<Int> ) {
 		if( rebuild ) glyphs.reset();
 		
@@ -75,8 +76,6 @@ class HtmlText extends Drawable {
 		return ret;
 	}
 	
-	static var utf8Text = new hxd.IntStack();
-	
 	public function splitText( text : String, leftMargin = 0 ) {
 		if( maxWidth == null )
 			return text;
@@ -84,7 +83,13 @@ class HtmlText extends Drawable {
 		var x = leftMargin, prevChar = -1;
 		
 		utf8Text.reset();
-		haxe.Utf8.iter( text,utf8Text.push );
+		
+		#if flash
+		for( i in 0...text.length )
+			utf8Text.push(StringTools.fastCodeAt(text,i));
+		#else
+			haxe.Utf8.iter( text, utf8Text.push );
+		#end
 		
 		for( i in 0...utf8Text.length ) {
 			var cc = utf8Text.unsafeGet(i);
@@ -135,7 +140,7 @@ class HtmlText extends Drawable {
 					switch( a.toLowerCase() ) {
 					case "color":
 						colorChanged = true;
-						glyphs.setDefaultColor(Std.parseInt("0x" + v.substr(1)));
+						glyphs.setDefaultColor(Std.parseInt("0x" + v.substr(1)),1.0);
 					default:
 					}
 				}
@@ -149,7 +154,7 @@ class HtmlText extends Drawable {
 			for( child in e )
 				addNode(child, rebuild);
 			if( colorChanged )
-				glyphs.setDefaultColor(textColor);
+				glyphs.setDefaultColor(textColor,1.0);
 		} else {
 			var t = splitText(e.nodeValue.split("\n").join(" "), xPos);
 			var prevChar = -1;

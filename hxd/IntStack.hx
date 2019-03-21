@@ -55,7 +55,7 @@ class IntStack {
 		for ( i in 0...arr.length) arr[i] = 0;
 		pos = 0;
 	}
-	
+		
 	public inline function iterator() {
 		return new IntStackIterator(arr,get_length());
 	}

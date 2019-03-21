@@ -2,9 +2,9 @@ package h2d;
 import h2d.Font.FontChar;
 
 class Kerning {
-	public var prevChar : Int;
-	public var offset : Int;
-	public var next : Null<Kerning>;
+	public var prevChar 	: Int = 0;
+	public var offset 		: Int = 0;
+	public var next 		: Null<Kerning> = null;
 	public function new(c, o) {
 		this.prevChar = c;
 		this.offset = o;
@@ -12,9 +12,9 @@ class Kerning {
 }
 
 class FontChar {
-	public var t : h2d.Tile;
-	public var width : Int;
-	var kerning : Null<Kerning>;
+	public var t 		: h2d.Tile = null;
+	public var width 	: Int = 0;
+	var kerning 		: Null<Kerning> = null;
 	
 	public function new(t,w) {
 		this.t = t;
@@ -67,6 +67,7 @@ class Font {
 	
 	public var emptyChar(default,null) : FontChar;//let's see what happens
 	public var defaultChar : FontChar;//let's see what happens
+	public var defaultLetterSpacing : Float = 0.0;
 	
 	public
 	function new(name,size) {

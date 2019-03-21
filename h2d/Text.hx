@@ -375,7 +375,7 @@ class Text extends Drawable implements IText {
 					var cc = utf.unsafeGet(k++);
 					if( font.charset.isSpace(cc) || cc == '\n'.code ) break;
 					var e = font.getChar(cc);
-					size += e.width + info.letterSpacing + e.getKerningOffset(prevChar);
+					size += e.width + font.defaultLetterSpacing + info.letterSpacing + e.getKerningOffset(prevChar);
 					prevChar = cc;
 				}
 				if( size > info.maxWidth ) {

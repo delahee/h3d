@@ -9,6 +9,7 @@ private class TileLayerContent extends h3d.prim.Primitive {
 	public var xMax : Float;
 	public var yMax : Float;
 	
+	var uploaded = false;
 	public function new() {
 		reset();
 	}
@@ -30,7 +31,7 @@ private class TileLayerContent extends h3d.prim.Primitive {
 		}
 	}
 	
-	var uploaded = false;
+	
 	public function reset() {
 		if ( tmp == null ) 	tmp = new hxd.FloatStack();
 		else 				tmp.hardReset();

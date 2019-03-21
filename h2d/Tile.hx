@@ -367,6 +367,8 @@ class Tile {
 	}
 
 	public inline function copy(t:h2d.Tile) {
+		x = t.x;
+		y = t.y;
 		innerTex = t.innerTex;
 		u = t.u;
 		u2 = t.u2;

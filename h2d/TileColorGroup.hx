@@ -11,16 +11,17 @@ private class TileLayerContent extends h3d.prim.Primitive {
 	public var xMax : Float;
 	public var yMax : Float;
 
+	var uploaded = false;
+	
 	public function new() {
 		reset();
 	}
+	
+	public function isEmpty() {
+		return buffer == null;
+	}
 
 	public function reset() {
-		if ( buffer != null ) {
-			h3d.impl.Buffer.delete( buffer );
-			buffer = null;
-		}
-		
 		if ( tmp == null ) 	tmp = new hxd.FloatStack();
 		else 				tmp.reset();
 		
@@ -28,18 +29,30 @@ private class TileLayerContent extends h3d.prim.Primitive {
 		yMin = hxd.Math.POSITIVE_INFINITY;
 		xMax = hxd.Math.NEGATIVE_INFINITY;
 		yMax = hxd.Math.NEGATIVE_INFINITY;
+		uploaded = false;
+	}
+	
+	public override function dispose(){
+		super.dispose();
+		releaseBuffer();
+		uploaded = false;
+	}
+	
+	
+	function releaseBuffer(){
+		if ( buffer != null ) {
+			h3d.impl.Buffer.delete( buffer );
+			buffer = null;
+			uploaded = false;
+		}
+	}
+	
+	function vertCount() {
+		return tmp.length >> 3;
 	}
 
 	override public function triCount() {
-		if( buffer == null )
-			return tmp.length >> 4;
-		var v = 0;
-		var b = buffer;
-		while( b != null ) {
-			v += b.nvert;
-			b = b.next;
-		}
-		return v >> 1;
+		return (tmp.length >> 4);
 	}
 
 	public function add( x : Int, y : Int, r : Float, g : Float, b : Float, a : Float, t : Tile ) {
@@ -101,7 +114,7 @@ private class TileLayerContent extends h3d.prim.Primitive {
 		var  r = hxd.Math.b2f(c>>16);
 		var  g = hxd.Math.b2f(c>>8);
 		var  b = hxd.Math.b2f(c);
-		var  a = hxd.Math.b2f(c>>24);
+		var  a = hxd.Math.b2f(c>>>24);
 	
 		tmp.push(r);
 		tmp.push(g);
@@ -158,17 +171,31 @@ private class TileLayerContent extends h3d.prim.Primitive {
 	override public function alloc(engine:h3d.Engine) {
 		if ( tmp == null ) reset();
 		
-		if ( buffer != null ) throw "buffer overwrite";
-		buffer = engine.mem.allocStack(tmp, 8, 4, true);
-		if ( buffer.b.flags.has(BBF_DIRTY))
-			throw "assert dirty";
+		if( buffer == null){
+			var doDirect = false;
+			#if sys
+			doDirect = true;
+			#end
+			buffer = engine.mem.allocStack(tmp, 8, 4, true);
+			uploaded = true;
+		}
 	}
 
 	public function doRender(engine, min, len) {
-		if( len > 0 ) {
-			if ( buffer == null 
-			|| ((tmp.length >> 3) > buffer.nvert)
-			|| buffer.isDisposed() ) alloc(engine);
+		if ( len > 0 ) {
+			if ( 	buffer != null  && 	( vertCount() > buffer.nvert) )
+				releaseBuffer();
+				
+			//refresh
+			if ( 	buffer == null 
+			|| 		buffer.isDisposed() ) 
+				alloc(engine);
+				
+			//upload!
+			if ( !uploaded ){
+				buffer.uploadStack(tmp, 0, vertCount());
+				uploaded = true;
+			}
 			
 			engine.renderQuadBuffer(buffer, min, len);
 		}
@@ -234,8 +261,8 @@ class TileColorGroup extends Drawable {
 		tile = t;
 		rangeMin = rangeMax = -1;
 		shader.hasVertexColor = true;
-		curColor = new h3d.Vector(1, 1, 1, 1);
-		content = new TileLayerContent();
+		curColor	= new h3d.Vector(1, 1, 1, 1);
+		content 	= new TileLayerContent();
 	}
 
 	public function reset() {
@@ -259,7 +286,7 @@ class TileColorGroup extends Drawable {
 		super.onDelete();
 	}
 
-	public function setDefaultColor( rgb : Int, alpha = 1.0 ) {
+	public function setDefaultColor( rgb : Int, ?alpha = 1.0 ) {
 		hxd.Assert.isTrue( alpha <= 1.0001);
 		curColor.x = ((rgb >> 16) & 0xFF) / 255;
 		curColor.y = ((rgb >> 8) & 0xFF) / 255;
@@ -287,7 +314,7 @@ class TileColorGroup extends Drawable {
 			}
 			else {
 				ctx.flush();
-				setupShader(ctx.engine, tile, 0);
+				setupShader(ctx.engine, tile, Drawable.BASE_TILE_DONT_CARE);
 				content.doRender(ctx.engine, min, len);
 			}
 		}
