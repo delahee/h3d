@@ -11,10 +11,11 @@ class Buffer {
 	public static var GUID = 2048;
 	
 	public var id = 0;
+	public var pos 		: Int = 0;
+	public var nvert 	: Int = 0;
+	
 	public var b : MemoryManager.BigBuffer;
-	public var pos : Int;
-	public var nvert : Int;
-	public var next : Buffer;
+	public var next 	: Buffer;
 	
 	#if debug
 	public var allocPos : AllocPos;
@@ -28,6 +29,7 @@ class Buffer {
 		this.pos = pos;
 		this.nvert = nvert;
 		id = GUID++;
+		next = null;
 		//trace("B:newing#" + id);
 	}
 	
@@ -117,19 +119,23 @@ class Buffer {
 	static var pool : hxd.Stack<Buffer> = null;
 	
 	public static 
-	inline 
-	function alloc(ab:h3d.impl.MemoryManager.BigBuffer,pos:Int,nvert:Int):Buffer{
+	function alloc(ab:h3d.impl.MemoryManager.BigBuffer, vertexPos:Int,nvert:Int):Buffer{
 		if ( pool == null ) pool = new hxd.Stack<Buffer>();
 		
 		var b = pool.pop();
-		if ( b == null ) 	b = new Buffer(ab, pos, nvert);
-		else  				b.reset(ab,pos,nvert);
+		if ( b == null ) 	{
+			b = new Buffer(ab, vertexPos, nvert);
+			//trace("fresh " + vertexPos + " " + nvert);
+		}
+		else  				{
+			b.reset(ab, vertexPos, nvert);
+			//trace("reuse " + vertexPos + " " + nvert);
+		}
 		
 		return b;
 	}
 	
 	public static 
-	inline 
 	function delete(b:Buffer){
 		if ( b == null ) return;
 		b.dispose();

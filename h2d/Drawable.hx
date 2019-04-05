@@ -830,7 +830,7 @@ class Drawable extends h2d.Sprite {
 	public var writeAlpha : Bool;
 	
 	public var textures : Array<h3d.mat.Texture>;
-	public var emit : Bool;
+	public var emit : Bool = false;
 	
 	public static var DEFAULT_EMIT = false;
 	public static var DEFAULT_FILTER = false;
@@ -1390,9 +1390,10 @@ class Drawable extends h2d.Sprite {
 	inline function hasSampleAlphaToCoverage() return h3d.Engine.getCurrent().driver.hasFeature( SampleAlphaToCoverage );
 	
 	public inline function canEmit() {
-		#if (flash||noEmit)
+		#if (flash || noEmit)
 			return false;
 		#else
+		
 		if ( isExoticShader() || ! emit)	return false;
 		else  								return true;
 		#end

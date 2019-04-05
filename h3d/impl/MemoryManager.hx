@@ -115,7 +115,7 @@ class BigBuffer {
 
 	static var pool : hxd.Stack<BigBuffer> = null;
 	public static 
-	inline 
+	
 	function alloc(mem, v, stride, size,isDynamic=false):BigBuffer{
 		if ( pool == null ) pool = new hxd.Stack<BigBuffer>();
 		
@@ -127,7 +127,7 @@ class BigBuffer {
 	}
 	
 	public static 
-	inline 
+	
 	function delete(b:BigBuffer){
 		if ( b == null ) return;
 		b.dispose();
@@ -451,8 +451,15 @@ class MemoryManager {
 	public function allocStack( v : hxd.FloatStack, stride, align, ?isDynamic = false, ?isDirect = false ) : Buffer {
 		var nvert 			= Std.int(v.length / stride);
 		var b : Buffer 		= null;
-		if ( isDirect ) 	b = allocDirect(nvert, stride, align, isDynamic);
-		else 				b = alloc(nvert, stride, align, isDynamic);
+		
+		if ( isDirect == true ) 	{
+			b = allocDirect(nvert, stride, align, isDynamic);
+		}
+		else 				{
+			b = alloc(nvert, stride, align, isDynamic);
+			
+		}
+		
 		b.uploadStack(v, 0, nvert);
 		return b;
 	}
@@ -493,8 +500,9 @@ class MemoryManager {
 		@:privateAccess buf.b = b;
 		#end
 		b.free.pos = nvect;
-		b.free.count = nalloc-nvect;
-		return Buffer.alloc( b,0, nvect );
+		b.free.count = nalloc - nvect;
+		var bres = Buffer.alloc( b, 0, nvect );
+		return bres;
 	}
 
 	/**
@@ -512,6 +520,8 @@ class MemoryManager {
 		//trace( "gpu alloc:"+allocPos.fileName+" " + allocPos.lineNumber+" size:"+(nvect*stride*4));
 		//trace( nvect );
 		#end
+		
+		trace("reg alloc");
 		
 		var b : BigBuffer = buffers[stride];
 		var free : FreeCell = null;

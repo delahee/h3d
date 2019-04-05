@@ -176,20 +176,23 @@ private class TileLayerContent extends h3d.prim.Primitive {
 			#if sys
 			doDirect = true;
 			#end
-			buffer = engine.mem.allocStack(tmp, 8, 4, true);
+			buffer = engine.mem.allocStack(tmp, 8, 4, true,doDirect);
 			uploaded = true;
 		}
 	}
 
 	public function doRender(engine, min, len) {
 		if ( len > 0 ) {
-			if ( 	buffer != null  && 	( vertCount() > buffer.nvert) )
+			if ( 	buffer != null  && 	( vertCount() > buffer.nvert) ){
 				releaseBuffer();
+				trace("releasing");
+			}
 				
 			//refresh
 			if ( 	buffer == null 
-			|| 		buffer.isDisposed() ) 
+			|| 		buffer.isDisposed() ) {
 				alloc(engine);
+			}
 				
 			//upload!
 			if ( !uploaded ){
@@ -318,5 +321,6 @@ class TileColorGroup extends Drawable {
 				content.doRender(ctx.engine, min, len);
 			}
 		}
+		
 	}
 }

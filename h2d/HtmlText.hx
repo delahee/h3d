@@ -208,6 +208,7 @@ class HtmlText extends Drawable {
 	public var dropShadow : { dx : Float, dy : Float, color : Int, alpha : Float };
 	
 	override function draw(ctx:RenderContext) {
+		glyphs.emit = emit;
 		glyphs.filter = filter;
 		glyphs.blendMode = blendMode;
 

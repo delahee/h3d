@@ -21,9 +21,13 @@ import hxd.System;
 		typedef IndexBuffer = openfl.gl.GLBuffer;
 		@:publicFields
 		class GLVB {
-			var b : openfl.gl.GLBuffer;
-			var stride : Int;
+			var b 		: openfl.gl.GLBuffer;
+			var stride 	: Int = 0;
 			public function new(b = null, s = 0) { this.b = b; this.stride = s; };
+			
+			public function toString(){
+				return b + " stride:" + stride;
+			}
 		}
 		typedef VertexBuffer = GLVB;
 		typedef Texture = openfl.gl.GLTexture;
@@ -32,8 +36,12 @@ import hxd.System;
 		@:publicFields
 		class GLVB {
 			var b : lime.graphics.opengl.GLBuffer;
-			var stride : Int;
+			var stride : Int = 0;
 			public function new(b = null, s = 0) { this.b = b; this.stride = s; };
+			
+			public function toString(){
+				return b + " stride:" + stride;
+			}
 		}
 		typedef VertexBuffer = GLVB;
 		typedef Texture = lime.graphics.opengl.GLTexture;
