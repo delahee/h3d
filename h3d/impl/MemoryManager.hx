@@ -518,10 +518,7 @@ class MemoryManager {
 	public function alloc( nvect : Int, stride, align, ?isDynamic = false /*, ?allocPos : AllocPos*/ ) : Buffer {
 		#if debug
 		//trace( "gpu alloc:"+allocPos.fileName+" " + allocPos.lineNumber+" size:"+(nvect*stride*4));
-		//trace( nvect );
 		#end
-		
-		trace("reg alloc");
 		
 		var b : BigBuffer = buffers[stride];
 		var free : FreeCell = null;

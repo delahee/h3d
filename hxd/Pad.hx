@@ -225,6 +225,8 @@ class Pad {
 	
 	public static var CONFIG_SWITCH_DUAL  : BaseConf = null;
 	public static var CONFIG_SWITCH_PRO  : BaseConf = null;
+	public static var CONFIG_SWITCH_LEFT  : BaseConf = null;
+	public static var CONFIG_SWITCH_RIGHT  : BaseConf = null;
 	
 	public static var CONFIG_SWITCH_ATTACHED_TO_CONSOLE : BaseConf = cast {
 		ids:["6e7061645f68616e6468656c64307801"],
@@ -541,6 +543,18 @@ class Pad {
 		CONFIG_SWITCH_PRO.matchString = CONFIG_SWITCH_PRO.name;
 		
 		CONFS.push(CONFIG_SWITCH_PRO );
+		
+		CONFIG_SWITCH_LEFT = Reflect.copy( CONFIG_SWITCH_ATTACHED_TO_CONSOLE );
+		CONFIG_SWITCH_LEFT.name = "Joy-Con (Left)";
+		CONFIG_SWITCH_LEFT.matchString = CONFIG_SWITCH_LEFT.name;
+		
+		CONFS.push( CONFIG_SWITCH_LEFT );
+		
+		CONFIG_SWITCH_RIGHT = Reflect.copy( CONFIG_SWITCH_ATTACHED_TO_CONSOLE );
+		CONFIG_SWITCH_RIGHT.name = "Joy-Con (Right)";
+		CONFIG_SWITCH_RIGHT.matchString = CONFIG_SWITCH_RIGHT.name;
+		
+		CONFS.push( CONFIG_SWITCH_RIGHT );
 	}
 	#end
 	
