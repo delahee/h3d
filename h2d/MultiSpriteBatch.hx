@@ -62,7 +62,7 @@ class MultiBatchElement {
 		rotation = 0; scaleX = scaleY = 1;
 		priority = 0;
 		setColor(0xffffff,1.0);
-		tile = t;
+		tile = t.clone();
 		visible = true;
 		blendMode = h2d.BlendMode.Normal;
 	}
@@ -79,7 +79,7 @@ class MultiBatchElement {
 		colorG = e.colorG;
 		colorB = e.colorB;
 		colorA = e.colorA;
-		tile = e.tile.clone();
+		tile.copy( e.tile );
 		visible = e.visible;
 		blendMode = e.blendMode;
 		data = e.data;
@@ -98,7 +98,7 @@ class MultiBatchElement {
 		nu.colorG = colorG;
 		nu.colorB = colorB;
 		nu.colorA = colorA;
-		nu.tile = tile.clone();
+		nu.tile.copy( tile );
 		nu.visible = visible;
 		nu.blendMode = blendMode;
 		nu.data = data;

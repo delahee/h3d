@@ -46,6 +46,7 @@ private class CoreObjects  {
 		}
 		
 		planBuffer = h3d.Engine.getCurrent().mem.allocVector(vector, 4, 4);
+		hxd.Pools.init();
 	}
 	
 	public inline function getEmptyTile() {

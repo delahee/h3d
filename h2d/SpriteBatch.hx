@@ -61,7 +61,7 @@ class BatchElement {
 		rotation = 0; scaleX = scaleY = 1;
 		priority = 0;
 		setColor(0xffffff,1.0);
-		tile = t;
+		tile = t.clone();
 		visible = true;
 	}
 	
@@ -70,7 +70,7 @@ class BatchElement {
 		rotation = 0; scaleX = scaleY = 1;
 		priority = 0;
 		setColor(0xffffff,1.0);
-		tile = t;
+		tile.copy(t);
 		visible = true;
 		data = null;
 	}
@@ -87,13 +87,13 @@ class BatchElement {
 		colorG = e.colorG;
 		colorB = e.colorB;
 		colorA = e.colorA;
-		tile = e.tile;
+		tile.copy( e.tile );
 		visible = e.visible;
 	}
 	
 	//returns an unattached clone
 	public function clone<T>(?s:T) : T {
-		var nu : BatchElement = (s==null) ? new BatchElement(tile) : cast s;
+		var nu : BatchElement = (s==null) ? new BatchElement(tile.clone()) : cast s;
 		nu.x 		= x; 
 		nu.y 		= y;
 		nu.alpha 	= alpha;
@@ -105,7 +105,7 @@ class BatchElement {
 		nu.colorG 	= colorG;
 		nu.colorB 	= colorB;
 		nu.colorA 	= colorA;
-		nu.tile 	= tile;
+		nu.tile.copy(tile);
 		nu.visible 	= visible;
 		if( data!=null) nu.data		= Reflect.copy(data);
 		return cast nu;
@@ -184,6 +184,8 @@ class BatchElement {
 	
 	public function dispose() {
 		remove();
+		if(tile!=null)
+			hxd.Pools.tiles.free(tile);
 		tile = null;
 	}
 

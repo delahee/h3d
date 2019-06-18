@@ -357,12 +357,8 @@ class Tile {
 	}
 
 	public inline function clone() {
-		var t = new Tile(null, x, y, width, height, dx, dy);
-		t.innerTex = innerTex;
-		t.u = u;
-		t.u2 = u2;
-		t.v = v;
-		t.v2 = v2;
+		var t = hxd.Pools.tiles.alloc();
+		t.copy(this);
 		return t;
 	}
 
