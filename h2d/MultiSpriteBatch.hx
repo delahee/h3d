@@ -114,7 +114,11 @@ class MultiBatchElement {
 	@:noDebug
 	public function dispose() {
 		remove();
-		tile = null;
+		
+		if(tile!=null){
+			hxd.Pools.tiles.free(tile);
+			tile = null;
+		}
 	}
 
 	public var width(get, set):Float;
