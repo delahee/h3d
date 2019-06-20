@@ -185,7 +185,7 @@ private class TileLayerContent extends h3d.prim.Primitive {
 		if ( len > 0 ) {
 			if ( 	buffer != null  && 	( vertCount() > buffer.nvert) ){
 				releaseBuffer();
-				trace("releasing");
+				//trace("releasing");
 			}
 				
 			//refresh

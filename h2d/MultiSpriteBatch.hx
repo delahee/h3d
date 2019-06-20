@@ -61,8 +61,13 @@ class MultiBatchElement {
 		x = 0; y = 0; alpha = 1.0;
 		rotation = 0; scaleX = scaleY = 1;
 		priority = 0;
-		setColor(0xffffff,1.0);
-		tile = t.clone();
+		setColor(0xffffff, 1.0);
+		
+		if( t != null )
+			tile = t.clone();
+		else 
+			tile = hxd.Pools.tiles.alloc();
+			
 		visible = true;
 		blendMode = h2d.BlendMode.Normal;
 	}
