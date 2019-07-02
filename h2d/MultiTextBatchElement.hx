@@ -81,16 +81,17 @@ class MultiTextBatchElement implements IText {
 	public var visible(default, set) 	: Bool 		= true;
 	public var name						: String	= null;
 
-	public function new(font:h2d.Font, master:MultiSpriteBatch) {
+	public function new(font:h2d.Font, master:MultiSpriteBatch, ?t:String="") {
 		this.font = font;
 		this.sp = master;
 		layout = new MTBLayout(this);
 
 		textAlign = Left;
 		letterSpacing = 1.0;
-		text = "";
 		textColor = 0xFFFFFF;
 		alpha = 1.0;
+		
+		text = t;
 	}
 
 	public inline function scale(v:hxd.Float32) {
@@ -179,6 +180,7 @@ class MultiTextBatchElement implements IText {
 		haxe.Utf8.iter( text,utf.push );
 		
 		rebuild();
+		
 		return t;
 	}
 
@@ -210,6 +212,7 @@ class MultiTextBatchElement implements IText {
 	function rebuild() {
 		if ( text != null && font != null ) {
 			var r = initGlyphs(utf);
+			_textColor(textColor);
 			tWidth = r.x;
 			tHeight = r.y;
 		}
@@ -245,11 +248,8 @@ class MultiTextBatchElement implements IText {
 		rebuild();
 		return w;
 	}
-
-	function set_textColor(c) {
-		if( c == this.textColor )
-			return c;
-		this.textColor = c;
+	
+	function _textColor(c) {
 		var hasDropShadow = dropShadow != null;
 		if ( !hasDropShadow) {
 			for ( e in elements) {
@@ -266,6 +266,14 @@ class MultiTextBatchElement implements IText {
 					e.setColor( textColor ,alpha );
 			}
 		}
+	}
+
+	function set_textColor(c) {
+		c = c & 0xffffff;
+		if( c == this.textColor )
+			return c;
+		this.textColor = c;
+		_textColor(c);
 		return c;
 	}
 

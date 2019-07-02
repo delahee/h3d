@@ -22,6 +22,13 @@ class TextLayoutInfos {
 		lineSpacing = lis;
 		letterSpacing = les;
 	}
+	
+	public inline function reset(t,m,lis,les){
+		textAlign = t;
+		maxWidth = m;
+		lineSpacing = lis;
+		letterSpacing = les;
+	}
 }
 
 interface ITextPos {
@@ -41,6 +48,10 @@ class TileGroupAsPos implements ITextPos {
 
 	public inline function add(x:Int,y:Int,t:h2d.Tile) {
 		tg.add(x,y,t);
+	}
+	
+	public inline function set( tg){
+		this.tg = tg;
 	}
 }
 
@@ -324,18 +335,32 @@ class Text extends Drawable implements IText {
 		#end
 		return s;
 	}
+	
+	var _info : TextLayoutInfos;
+	var _absPos : TileGroupAsPos;
+	
 
 	@:noDebug
 	function initGlyphs( utf : hxd.IntStack, rebuild = true, lines : Array<Int> = null , ?onGlyph:Int->Float->Float->Void) : h2d.col.PointInt {
-		var info = new TextLayoutInfos(textAlign, maxWidth, lineSpacing, letterSpacing);
-		if( onGlyph!=null ) info.onGlyph = onGlyph;
-		var r = _initGlyphs( new TileGroupAsPos(glyphs), font, info, utf, rebuild, lines);
+		if( _info == null )
+			_info = new TextLayoutInfos(textAlign, maxWidth, lineSpacing, letterSpacing);
+		else 
+			_info.reset(textAlign, maxWidth, lineSpacing, letterSpacing);
+			
+		var info = _info;
+		info.onGlyph = onGlyph;
+		
+		if ( _absPos == null)
+			_absPos = new TileGroupAsPos(glyphs);
+		else 
+			_absPos.set(glyphs);
+			
+		var absPos  =  _absPos;
+		var r : h2d.col.PointInt = _initGlyphs( absPos, font, info, utf, rebuild, lines);
 		numLines = 	if( font == null || r == null || info == null ) 1
 					else Std.int(r.y / (font.lineHeight + info.lineSpacing));
 		return r;
 	}
-
-	//static var 	utf8Text = new hxd.IntStack();
 	
 	@:noDebug
 	static

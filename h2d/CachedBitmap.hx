@@ -124,6 +124,7 @@ class CachedBitmap extends Bitmap {
 		#end
 		
 		tex = new h3d.mat.Texture(tw, th, h3d.mat.Texture.TargetFlag() );
+		tex.filter = filter ? Linear : Nearest;
 		tex.name = 'CachedBitmap:'+name;
 		tex.realloc = innerRealloc.bind(tex);
 		
@@ -167,11 +168,11 @@ class CachedBitmap extends Bitmap {
 			clean();
 		
 		if ( (!freezed || !renderDone) && !skipRender ) {
-			
 			//trace("updating frozen");
 			ctx.flush();
 
 			var tile = getTile();
+			tex.filter = filter ? Linear : Nearest;
 			var oldA = matA, oldB = matB, oldC = matC, oldD = matD, oldX = absX, oldY = absY;
 			//
 			var w =  2 / tex.width  * targetScale;

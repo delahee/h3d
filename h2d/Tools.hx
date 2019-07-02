@@ -102,6 +102,7 @@ class Tools {
 	
 	public inline static function getEmptyTexture() return getCoreObjects().getEmptyTexture();
 	public inline static function getVoidTexture() 	return getCoreObjects().getVoidTexture();
+	public inline static function getWhiteTexture() return getCoreObjects().getWhiteTexture();
 	
 	public inline static function getVoidTile() 	return getCoreObjects().getVoidTile();
 	public inline static function getEmptyTile() 	return getCoreObjects().getEmptyTile();

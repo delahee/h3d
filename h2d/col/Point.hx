@@ -36,8 +36,18 @@ class Point {
 		return dx * dx + dy * dy;
 	}
 	
+	public inline function distanceSqXY( px:Float, py:Float ) {
+		var dx = x - px;
+		var dy = y - py;
+		return dx * dx + dy * dy;
+	}
+	
 	public inline function distance( p : Point ) {
 		return Math.sqrt(distanceSq(p));
+	}
+	
+	public inline function distanceXY( px:Float, py:Float ) {
+		return Math.sqrt( distanceSqXY( px,py));
 	}
 	
 	public function toString() {

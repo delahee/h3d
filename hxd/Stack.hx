@@ -145,6 +145,10 @@ class Stack<T>  {
 		return arr[pos - 1];
 	}
 	
+	public inline function indexOf(elem:T) : Int { 
+		return arr.indexOf(elem);
+	}
+	
 	public inline function unsafeGet(idx:Int) {
 		return arr[idx];
 	}

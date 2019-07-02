@@ -79,7 +79,7 @@ class MultiBatchElement {
 		colorG = e.colorG;
 		colorB = e.colorB;
 		colorA = e.colorA;
-		tile = e.tile.clone();
+		tile.copy( e.tile );
 		visible = e.visible;
 		blendMode = e.blendMode;
 		data = e.data;

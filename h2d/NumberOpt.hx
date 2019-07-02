@@ -6,11 +6,10 @@ import hxd.Stack;
 class NumberOpt extends h2d.SpriteBatch {
 	public var val : Int = 1024*1024;
 	
-	var font : h2d.Font;
-	
-	var glyphs 	: hxd.Stack<BatchElement>;
-	var vals 	: hxd.IntStack = new hxd.IntStack();
-	
+	var font 			: h2d.Font;
+	var glyphs 			: hxd.Stack<BatchElement>;
+	var vals 			: hxd.IntStack = new hxd.IntStack();
+	var textColor 		: Int = 0xffffff;
 	var letterSpacing = 1;
 	
 	public function new(fnt:h2d.Font, ?p:h2d.Sprite) {
@@ -28,7 +27,7 @@ class NumberOpt extends h2d.SpriteBatch {
 		if ( val == nb ) return nb;
 		
 		drawVal(nb);
-		
+		setTextColor( textColor );
 		val = nb;
 		return nb;
 	}
@@ -83,6 +82,13 @@ class NumberOpt extends h2d.SpriteBatch {
 			add(g);
 			i++;
 		}
+	}
+	
+	
+	public function setTextColor(t){
+		textColor = t;
+		for ( e in getElements() )
+			e.setColor( (0xff << 24) | textColor ); 
 	}
 	
 }

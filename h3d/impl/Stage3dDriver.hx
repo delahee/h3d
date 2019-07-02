@@ -299,7 +299,9 @@ class Stage3dDriver extends Driver {
 		
 		apiCall();
 		
-		if ( isDisposed() )  return null;
+		if ( isDisposed() )  {
+			return null;
+		}
 		
 		//error 3694 here indicates texture creation attempt bfore context is restored
 		return ( t.isCubic ) 

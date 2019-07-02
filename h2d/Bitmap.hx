@@ -48,7 +48,7 @@ class Bitmap extends Drawable {
 		return h;
 	}
 	
-	public inline function setColor(color24:Int, alpha:Float ){
+	public inline function setColor(color24:Int, alpha:Float = 1.0){
 		if ( color == null ) color = new h3d.Vector();
 		color.setColorAlpha( (color24 | (0xff<<24)), alpha );
 	}

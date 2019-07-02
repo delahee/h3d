@@ -20,10 +20,10 @@ class HtmlText extends Drawable {
 	var yPos : Int;
 	var xMax : Int;
 	
-	public function new( font : Font, ?parent ) {
+	public function new( font : Font, ?parent:h2d.Sprite, ?text : String ="" ) {
 		super(parent);
 		this.font = font;
-		htmlText = "";
+		htmlText = text;
 		shader = glyphs.shader;
 		textColor = 0xFFFFFF;
 	}

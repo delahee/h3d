@@ -179,36 +179,6 @@ class BLib {
 		}
 	}
 
-	public function addBatchElement(sb:SpriteBatch, ?priority:Int=0, k:String, frame:Int, ?xr=0.0, ?yr=0.0) : Null<h2d.SpriteBatch.BatchElement> {
-		if (sb.tile.getTexture() != tile.getTexture())
-			throw SLBError.NotSameSLBFromBatch;
-
-		var be = sb.alloc(tile, priority);
-		var fd = getFrameData(k, frame);
-		if( fd==null )
-			throw 'Unknown group $k#$frame!';
-
-		be.tile.setPos(fd.x, fd.y);
-		be.tile.setSize(fd.wid, fd.hei);
-
-		#if fixCenter
-		be.tile = be.tile.center(
-			Std.int(fd.realFrame.x + fd.realFrame.realWid*xr),
-			Std.int(fd.realFrame.y + fd.realFrame.realHei*yr)
-		);
-		#else
-		be.tile = be.tile.center(fd.realFrame.x, fd.realFrame.y);
-		be.tile.setCenterRatio(xr,yr);
-		#end
-
-		return be;
-	}
-
-
-	public function addBatchElementRandom(sb:SpriteBatch, k:String, ?xr=0.0, ?yr=0.0, ?rndFunc:Int->Int) : Null<h2d.SpriteBatch.BatchElement> {
-		return addBatchElement(sb, k, getRandomFrame(k, rndFunc), xr,yr);
-	}
-
 	/**
 	 * Experimental
 	 * @param	factor of growth of the flash.display.BitmapData

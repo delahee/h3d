@@ -51,7 +51,7 @@ class TBLayout implements h2d.Text.ITextPos{
 						lnx = 0.00001;
 					e.x = t.x + ((x + d.dx/lnx * dsx) * t.scaleX);
 					e.y = t.y + ((y + d.dy/lnx * dsy) * t.scaleY);
-					e.tile = tile;
+					
 					e.setColor( d.color,t.alpha * d.alpha );
 					e.scaleX = t.scaleX;
 					e.scaleY = t.scaleY;
@@ -63,7 +63,6 @@ class TBLayout implements h2d.Text.ITextPos{
 				es.push(e);
 				e.x = t.x + ((x + d.dx) * t.scaleX);
 				e.y = t.y + ((y + d.dy) * t.scaleY);
-				e.tile = tile;
 				e.setColor( d.color,t.alpha * d.alpha  );
 				e.scaleX = t.scaleX;
 				e.scaleY = t.scaleY;
@@ -76,7 +75,6 @@ class TBLayout implements h2d.Text.ITextPos{
 		e.y = y * t.scaleY + t.y;
 		e.scaleX = t.scaleX;
 		e.scaleY = t.scaleY;
-		e.tile = tile;
 		e.setColor( t.textColor,t.alpha );
 	}
 }
