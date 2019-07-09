@@ -176,8 +176,9 @@ class BatchElement {
 		this.priority = v;
 		if ( batch != null)
 		{
-			batch.delete(this);
-			batch.add( this, v );
+			batch.changePriority(this, v);
+			//batch.delete(this);
+			//batch.add( this, v );
 		}
 		return v;
 	}
@@ -297,17 +298,17 @@ class SpriteBatch extends Drawable {
 		e.batch = this;
 		e.priority = prio;
 
-		//should e.remove first
-		//if ( prio == null )	{
-			//if( first == null )
-				//first = last = e;
-			//else {
-				//last.next = e;
-				//e.prev = last;
-				//last = e;
-			//}
-		//}
-		//else {
+		/*should e.remove first
+		if ( prio == null )	{
+			if( first == null )
+				first = last = e;
+			else {
+				last.next = e;
+				e.prev = last;
+				last = e;
+			}
+		}
+		else {*/
 			if( first == null ){
 				first = last = e;
 			}
@@ -351,7 +352,7 @@ class SpriteBatch extends Drawable {
 						first = e;
 				}
 			}
-		//}
+		// }
 		length++;
 		return e;
 	}
@@ -384,6 +385,75 @@ class SpriteBatch extends Drawable {
 		length--;
 	}
 
+	@:allow(h2d.BatchElement)
+	@:noDebug
+	function changePriority(e : BatchElement, newPrio: Int) {
+		e.priority = newPrio;
+		
+		if( first == e ) {
+			delete(e);
+			add(e, newPrio);
+			return;
+		}
+		
+		if( e.batch != this ) {
+			add(e, newPrio);
+			return;
+		}
+		
+		//BUBBLE
+		if (e.prev.priority <= newPrio) {
+			var prev = e.prev;
+			e.remove();
+
+			while (prev.priority <= newPrio) {
+				prev = prev.prev;
+				if (prev == null) {
+					delete(e);
+					add(e, newPrio);
+					return;
+				}
+			}
+
+			var nnext = prev.next;
+			if (nnext != null)
+				nnext.prev = e;
+			e.next = nnext;
+
+			prev.next = e;
+			e.prev = prev;
+		}
+		else {
+			var next = e.next;
+			if (next == null) return;
+
+			e.remove();
+
+			while (next.priority > newPrio) {//the order is still preserved like a remove/add call pair
+				if (next.next == null) {
+					next.next = e;
+					e.prev = next;
+
+					e.batch = this;
+					length++;
+					return;
+				}
+				else 
+					next = next.next;
+			}
+
+			var nprev = next.prev;
+			if (nprev != null) {
+				nprev.next = e;
+				e.prev = nprev;
+			}
+			e.next = next;
+			next.prev = e;
+		}
+		
+		e.batch = this;
+		length++;
+	}
 
 	@:noDebug
 	public function pushElemSRT( tmp : FloatBuffer, e:BatchElement, pos :Int):Int {
