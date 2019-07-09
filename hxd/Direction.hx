@@ -35,4 +35,8 @@ package hxd;
 		if( y > 0 ) y = 1;
 		return (x + 1) | ((y + 1) << 2);
 	}
+	
+	public static function all(){
+		return [Up, Left, Right, Down];
+	}
 }

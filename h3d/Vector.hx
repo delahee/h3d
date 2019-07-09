@@ -349,7 +349,8 @@ class Vector {
 	}
 	
 	public static inline function fromColorAlpha( c : Int, alpha : Float = 1.0 ) {
-		return new Vector(((c>>16)&0xFF),((c>>8)&0xFF),(c&0xFF),alpha);
+		var s = 1.0 / 255;
+		return new Vector(((c>>16)&0xFF)*s,((c>>8)&0xFF)*s,(c&0xFF)*s,alpha);
 	}
 	
 	public static var ONE = new h3d.Vector(1.0, 1.0, 1.0, 1.0);

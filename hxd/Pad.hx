@@ -381,9 +381,23 @@ class Pad {
 
 	public static var AXIS_DIFFERENTIAL_THRESHOLD = 0.25;
 	
+	
+	public function axisIsNeg(idx:Int){
+		if ( idx >= values.length || idx < 0 ) {
+			return false;
+		}
+		return values[idx] <= - AXIS_DIFFERENTIAL_THRESHOLD;
+	}
+	
+	public function axisIsPos(idx:Int){
+		if ( idx >= values.length || idx < 0 ) {
+			return false;
+		}
+		return values[idx] >= AXIS_DIFFERENTIAL_THRESHOLD;
+	}
+	
 	public function isDown(idx:Int) : Bool {
 		if ( idx >= values.length || idx < 0 ) {
-			//button/axis cannot be bound
 			return false;
 		}
 		return values[idx] <= - AXIS_DIFFERENTIAL_THRESHOLD || values[idx] >= AXIS_DIFFERENTIAL_THRESHOLD;
@@ -530,7 +544,6 @@ class Pad {
 		#end
 	}
 	
-	#if switch
 	static function generateDual(){
 		CONFIG_SWITCH_DUAL = Reflect.copy( CONFIG_SWITCH_ATTACHED_TO_CONSOLE );
 		CONFIG_SWITCH_DUAL.name = "Joy-Con (Dual)";
@@ -556,7 +569,6 @@ class Pad {
 		
 		CONFS.push( CONFIG_SWITCH_RIGHT );
 	}
-	#end
 	
 	#end
 
