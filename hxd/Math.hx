@@ -301,4 +301,7 @@ class Math {
 		return Math.abs(f0 - f1) <= e;
 	}
 	
+	public static inline function fract(f0:Float){
+		return f0 - Std.int(f0);
+	}
 }

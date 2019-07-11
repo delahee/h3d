@@ -3,10 +3,10 @@ package hxd;
 @generic
 class Pool<T> {
 
-	public var actives : hxd.Stack<T> = new hxd.Stack<T>();//set to null to avoid tracking it
-	var pool 	: hxd.Stack<T> = new hxd.Stack<T>();
-	public var allocProc : T -> Void = function(_){}
-	public var deleteProc :T -> Void = function(_){}
+	public var 	actives : hxd.Stack<T> = new hxd.Stack<T>();//set to null to avoid tracking it
+	public var 	pool 	: hxd.Stack<T> = new hxd.Stack<T>();
+	public var 	allocProc : T -> Void = function(_){}
+	public var 	deleteProc :T -> Void = function(_){}
 	var cl : Class <T>;
 	
 	public function new( cl : Class<T>, ?allocProc : T -> Void, ?deleteProc : T -> Void ) {
@@ -57,5 +57,13 @@ class Pool<T> {
 	
 	public function toString(){
 		return "active:" + nbActives()+" pooled:" + nbPooled();
+	}
+	
+	public function ring( ringSize : Int ){
+		while( actives.length > ringSize ){
+			var e = actives.get(0);
+			actives.removeOrderedAt(0);
+			pool.push(e);
+		}
 	}
 }
