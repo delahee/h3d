@@ -201,9 +201,10 @@ class MultiBatchElement {
 		this.priority = v;
 		if ( batch != null)
 		{
-			var b = batch;
+			batch.changePriority(this, v);
+			/*var b = batch;
 			b.delete(this);
-			b.add( this, v );
+			b.add( this, v );*/
 		}
 		return v;
 	}
@@ -365,7 +366,76 @@ class MultiSpriteBatch extends Drawable {
 		e.next = null;
 		length--;
 	}
+	
+	@:allow(h2d.MultiBatchElement)
+	@:noDebug
+	function changePriority(e : MultiBatchElement, newPrio: Int) {
+		e.priority = newPrio;
+		
+		if( first == e ) {
+			delete(e);
+			add(e, newPrio);
+			return;
+		}
+		
+		if( e.batch != this ) {
+			add(e, newPrio);
+			return;
+		}
+		
+		//BUBBLE
+		if (e.prev.priority <= newPrio) {
+			var prev = e.prev;
+			e.remove();
 
+			while (prev.priority <= newPrio) {
+				prev = prev.prev;
+				if (prev == null) {
+					delete(e);
+					add(e, newPrio);
+					return;
+				}
+			}
+
+			var nnext = prev.next;
+			if (nnext != null)
+				nnext.prev = e;
+			e.next = nnext;
+
+			prev.next = e;
+			e.prev = prev;
+		}
+		else {
+			var next = e.next;
+			if (next == null) return;
+
+			e.remove();
+
+			while (next.priority > newPrio) {//the order is still preserved like a remove/add call pair
+				if (next.next == null) {
+					next.next = e;
+					e.prev = next;
+
+					e.batch = this;
+					length++;
+					return;
+				}
+				else 
+					next = next.next;
+			}
+
+			var nprev = next.prev;
+			if (nprev != null) {
+				nprev.next = e;
+				e.prev = nprev;
+			}
+			e.next = next;
+			next.prev = e;
+		}
+		
+		e.batch = this;
+		length++;
+	}
 
 	@:noDebug
 	public function pushElemSRT( tmp : FloatBuffer, e:MultiBatchElement, pos :Int):Int {
