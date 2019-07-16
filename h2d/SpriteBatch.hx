@@ -176,9 +176,9 @@ class BatchElement {
 		this.priority = v;
 		if ( batch != null)
 		{
-			batch.changePriority(this, v);
-			//batch.delete(this);
-			//batch.add( this, v );
+			//batch.changePriority(this, v);
+			batch.delete(this);
+			batch.add( this, v );
 		}
 		return v;
 	}
