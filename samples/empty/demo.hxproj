@@ -52,14 +52,14 @@
     <hidden path="bin" />
   </hiddenPaths>
   <!-- Executed before build -->
-  <preBuildCommand>BUILD_WIN.BAT</preBuildCommand>
+  <preBuildCommand>"$(CompilerPath)/haxelib" run lime build "$(OutputFile)" $(TargetBuild) -$(BuildConfig) -Dfdb</preBuildCommand>
   <!-- Executed after build -->
   <postBuildCommand alwaysRun="False" />
   <!-- Other project options -->
   <options>
     <option showHiddenPaths="True" />
     <option testMovie="Custom" />
-    <option testMovieCommand="RUN_WIN.BAT" />
+    <option testMovieCommand="" />
   </options>
   <!-- Plugin storage -->
   <storage />

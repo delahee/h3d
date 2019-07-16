@@ -4,7 +4,8 @@ import hxd.Stage;
 class Demo extends flash.display.Sprite{
 	var engine : h3d.Engine;
 	var scene : h2d.Scene;
-		
+	var sb : h2d.SpriteBatch;
+	
 	function new() {
 		super();
 		
@@ -14,39 +15,39 @@ class Demo extends flash.display.Sprite{
 		engine.init();
 		
 	}
-	var sb :h2d.SpriteBatch;
-	
-	static function getNumDecomp(v:Int){
-		var v:Float = v;
-		var vals = new hxd.IntStack();
-		
-		vals.reset();
-		
-		if ( v == 0 ){
-			vals.push(0);
-		}
-		else {
-			while ( Std.int(v) != 0 ){
-				var idx = Std.int(v) % 10;
-				vals.push(idx);
-				v = v / 10;
-			}
-		}
-		
-		vals.reverse();
-		trace(vals);
-	}
 	
 	function init() {
 		
-		getNumDecomp( 150 );
-		getNumDecomp( 149 );
-		getNumDecomp( 20000 );
-		getNumDecomp( 21000 );
-		getNumDecomp( 666666666 );
+		//hxd.RingBuffer.RBTest.test();
+		
+		var p = new hxd.Pool<h3d.Vector>(h3d.Vector);
+		
+		p.ring( 3 );
+		var v0 = p.alloc(); v0.x = 0;
+		var v1 = p.alloc(); v1.x = 1;
+		var v2 = p.alloc(); v2.x = 2;
+		var v3 = p.alloc(); v3.x = 3;
+		var v4 = p.alloc(); v4.x = 4;
+		
+		p.ring( 3 );
+		
+		for ( e in p.actives )
+			trace( e.x );
+		
+		p.ring( 3 );
+		
+		p.free(v3);
+		
+		p.ring( 3 );
+		
+		for ( e in p.actives )
+			trace( e.x );
+		
+		var i = 0;
 		
 		hxd.System.setLoop(update);
 		scene = new h2d.Scene();
+		
 		
 		var g = new h2d.Graphics(scene);
 		g.beginFill(0x00FFFF,0.5);
