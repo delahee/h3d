@@ -201,10 +201,10 @@ class MultiBatchElement {
 		this.priority = v;
 		if ( batch != null)
 		{
-			batch.changePriority(this, v);
-			/*var b = batch;
+			//batch.changePriority(this, v);
+			var b = batch;
 			b.delete(this);
-			b.add( this, v );*/
+			b.add( this, v );
 		}
 		return v;
 	}
