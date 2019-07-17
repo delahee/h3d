@@ -304,4 +304,8 @@ class Math {
 	public static inline function fract(f0:Float){
 		return f0 - Std.int(f0);
 	}
+	
+	public static inline function sign(v:Float){
+		return v < 0 ? 1 : -1;
+	}
 }
