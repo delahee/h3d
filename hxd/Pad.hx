@@ -375,9 +375,7 @@ class Pad {
 		#end
 	}
 	
-	public dynamic function onRemoval() {
-		
-	}
+	public var onRemoval : hxd.Signal = new hxd.Signal();
 
 	public static var AXIS_DIFFERENTIAL_THRESHOLD = 0.25;
 	
@@ -586,7 +584,7 @@ class Pad {
 		for (p in padList.copy()) {
 			if (p.d == e.device ) {
 				p.destroyed = true;
-				p.onRemoval();
+				p.onRemoval.trigger();
 				padList.remove(p);
 			}
 		}

@@ -350,8 +350,13 @@ class LocalFileSystem implements FileSystem {
 			
 			var froot = sys.FileSystem.fullPath(frootPath);
 			trace("frootPath:"+frootPath);
-			if ( !sys.FileSystem.isDirectory( getOSPath(froot)) ) 
+			if ( !sys.FileSystem.isDirectory( getOSPath(froot)) ) {
+				#if debug
+				var osp = getOSPath(froot);
+				trace("osp:" + osp);
+				#end
 				throw "sys:Could not find dir " + dir;
+			}
 			
 			baseDir = froot.split("\\").join("/");
 			if( !StringTools.endsWith(baseDir, "/") ) baseDir += "/";

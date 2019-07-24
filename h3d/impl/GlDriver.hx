@@ -230,7 +230,9 @@ class GlDriver extends Driver {
 	var curShader : Shader.ShaderInstance;
 	var curMatBits : Null<Int>;
 	
-	var curTex : Array<h3d.mat.Texture> = [];
+	var curTex 		: Array<h3d.mat.Texture> 		= [];
+	var curFilter 	: Array<h3d.mat.Data.Filter> 	= [];
+	
 	var vidx : Array<Int> = [0, 0, 0, 0];
 	
 	public var resetSwitch = 0;
@@ -472,9 +474,13 @@ class GlDriver extends Driver {
 		curBuffer = null;
 		curMultiBuffer = null;
 		curShader = null;
+		
 		if(curTex!=null)
-		for( i in 0...curTex.length)
-			curTex[i] = null;
+			for( i in 0...curTex.length){
+				curTex[i] = null;
+				curFilter[i] = h3d.mat.Data.Filter.Invalid;
+			}
+				
 			
 		gl.useProgram(null);
 	}
@@ -2113,7 +2119,12 @@ class GlDriver extends Driver {
 	 * @return true if context was reused ( maybe you can make good use of the info )
 	 */
 	public function setupTexture( t : h3d.mat.Texture, stage : Int, mipMap : h3d.mat.Data.MipMap, filter : h3d.mat.Data.Filter, wrap : h3d.mat.Data.Wrap ) : Bool {
-		if ( curTex[stage] != t ) {
+		var force = false;
+		
+		if ( curFilter[stage] != filter )
+			force = true;
+			
+		if ( curTex[stage] != t || force) {
 			
 			if ( t != null && t.isDisposed()) {
 				if ( t.isDisposed() ) {
@@ -2154,7 +2165,9 @@ class GlDriver extends Driver {
 				gl.texParameteri(texMode, TEXTURE_MAX_ANISOTROPY_EXT, hxd.Math.imin( supportAnisotropic, t.anisotropicLevel) );
 			
 			checkError();
+			
 			curTex[stage] = t;
+			curFilter[stage] = filter;
 			
 			if ( t != null) t.lastFrame = frame;
 			

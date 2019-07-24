@@ -46,6 +46,8 @@ enum MipMap {
 enum Filter {
 	Nearest;
 	Linear;
+	
+	Invalid;
 }
 
 enum Wrap {

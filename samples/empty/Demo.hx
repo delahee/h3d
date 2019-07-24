@@ -18,31 +18,6 @@ class Demo extends flash.display.Sprite{
 	
 	function init() {
 		
-		//hxd.RingBuffer.RBTest.test();
-		
-		var p = new hxd.Pool<h3d.Vector>(h3d.Vector);
-		
-		p.ring( 3 );
-		var v0 = p.alloc(); v0.x = 0;
-		var v1 = p.alloc(); v1.x = 1;
-		var v2 = p.alloc(); v2.x = 2;
-		var v3 = p.alloc(); v3.x = 3;
-		var v4 = p.alloc(); v4.x = 4;
-		
-		p.ring( 3 );
-		
-		for ( e in p.actives )
-			trace( e.x );
-		
-		p.ring( 3 );
-		
-		p.free(v3);
-		
-		p.ring( 3 );
-		
-		for ( e in p.actives )
-			trace( e.x );
-		
 		var i = 0;
 		
 		hxd.System.setLoop(update);

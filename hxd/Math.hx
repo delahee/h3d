@@ -308,4 +308,10 @@ class Math {
 	public static inline function sign(v:Float){
 		return v < 0 ? 1 : -1;
 	}
+	
+	public static inline 
+	function trunk(v:Float, digit:Int) : Float{
+		var hl = Math.pow( 10.0 , digit );
+		return Std.int( v * hl ) / hl;
+	}
 }
