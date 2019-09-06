@@ -5,13 +5,13 @@
     <movie outputType="CustomBuild" />
     <movie input="" />
     <movie path="application.xml" />
-    <movie fps="30" />
+    <movie fps="60" />
     <movie width="1280" />
     <movie height="720" />
     <movie version="0" />
     <movie minorVersion="0" />
     <movie platform="Lime" />
-    <movie background="FFFFFF" />
+    <movie background="CACACA" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
   <classpaths>
@@ -33,7 +33,7 @@
     <option noInlineOnDebug="False" />
     <option mainClass="ApplicationMain" />
     <option enabledebug="True" />
-    <option additional="--macro openfl._internal.utils.ExtraParams.include()&#xA;--macro lime.Lib.extraParams()&#xA;-swf-version 11.6&#xA;-dce no&#xA;-swf-version 12&#xA;-debug " />
+    <option additional="--macro openfl._internal.utils.ExtraParams.include()&#xA;--macro lime.Lib.extraParams()&#xA;-swf-version 11.6&#xA;-dce no&#xA;-swf-version 14&#xA;-debug " />
   </build>
   <!-- haxelib libraries -->
   <haxelib>

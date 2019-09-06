@@ -221,6 +221,10 @@ class GlDriver extends Driver {
     public static inline var MAX_TEXTURE_MAX_ANISOTROPY_EXT  	= 0x84FF;
 	public static inline var TEXTURE_CUBE_MAP_SEAMLESS          = 0x884F;
 	
+	public static inline var  GL_TEXTURE_RECTANGLE             = 0x84F5;
+	public static inline var  GL_TEXTURE_BINDING_RECTANGLE     = 0x84F6;
+	public static inline var  GL_PROXY_TEXTURE_RECTANGLE       = 0x84F7;
+	public static inline var  GL_MAX_RECTANGLE_TEXTURE_SIZE    = 0x84F8;
 	
 	public static inline var ETC1_RGB8_OES =  0x8D64;
 	
@@ -763,7 +767,15 @@ class GlDriver extends Driver {
 	}
 	
 	inline function getTexMode( t : h3d.mat.Texture ) {
-		return (t!=null && t.isCubic) ? GL.TEXTURE_CUBE_MAP : GL.TEXTURE_2D;
+		return 
+		if ( t == null )
+			GL.TEXTURE_2D;//don't assume the worst
+		else if ( t.isCubic)
+			GL.TEXTURE_CUBE_MAP;
+		else if ( t.isRectangle && !hasFeature( TextureNPOT ))
+			GL_TEXTURE_RECTANGLE;//please have mercy on our soul if unsupported
+		else 
+			GL.TEXTURE_2D;
 	}
 	
 	override function allocTexture( t : h3d.mat.Texture ) : h3d.impl.Texture {
@@ -1343,8 +1355,12 @@ class GlDriver extends Driver {
 			gl.texImage2D(	texMode, mipLevel, 
 							internalFormat, t.width >> mipLevel, t.height >> mipLevel, 0, 
 							externalFormat, byteType, pixelBytes);
-		else if ( texMode == GL.TEXTURE_CUBE_MAP ) {
+		else if ( texMode == GL.TEXTURE_CUBE_MAP ) 
 			gl.texImage2D(	GL.TEXTURE_CUBE_MAP_POSITIVE_X+side, mipLevel, 
+							internalFormat, t.width >> mipLevel, t.height >> mipLevel, 0, 
+							externalFormat, byteType, pixelBytes);
+		else if( texMode == GL_TEXTURE_RECTANGLE ){
+			gl.texImage2D(	texMode, mipLevel, 
 							internalFormat, t.width >> mipLevel, t.height >> mipLevel, 0, 
 							externalFormat, byteType, pixelBytes);
 		}
@@ -1496,6 +1512,14 @@ class GlDriver extends Driver {
 		#end
 	}
 	
+	function uniformMatrix3fv(loc, v : Float32Array){
+		#if (lime >= "7.1.1")
+		gl.uniformMatrix3fv(loc, Math.round(v.length / 9), false, v);
+		#else
+		gl.uniformMatrix3fv(loc, false, v);
+		#end
+	}
+	
 	function uniformMatrix4fv(loc, v : Float32Array){
 		#if (lime >= "7.1.1")
 		gl.uniformMatrix4fv(loc, v.length >> 4, false, v);
@@ -1557,8 +1581,10 @@ class GlDriver extends Driver {
 		case "vec2": Vec2;
 		case "vec3": Vec3;
 		case "vec4": Vec4;
+		case "mat2": Mat2;
+		case "mat3": Mat3;
 		case "mat4": Mat4;
-		default: throw "Unknown type " + t;
+		default: throw "Unknown decodeType type " + t;
 		}
 	}
 	
@@ -1575,7 +1601,7 @@ class GlDriver extends Driver {
 		case GL.FLOAT_MAT4:		Mat4;
 		default:
 			gl.pixelStorei(t, 0); // get DEBUG value
-			throw "Unknown type " + t;
+			throw "Unknown decodeTypeInt type " + t;
 		}
 	}
 	
@@ -1588,7 +1614,7 @@ class GlDriver extends Driver {
 			case Mat2: 4;
 			case Mat3: 9;
 			case Mat4: 16;
-			case Tex2d, TexCube, Struct(_), Index(_): throw "Unexpected " + t;
+			case Tex2d, TexRect,TexCube, Struct(_), Index(_): throw "Unexpected " + t;
 			case Elements(_, nb,t ): return nb * typeSize(t); 
 		}
 	}
@@ -1635,14 +1661,17 @@ class GlDriver extends Driver {
 		
 		code = code.split("#end").join("#endif");
 
-		//version should come first
-		#if !opengles
-			#if mac
-			code = "#version 110 \n" + code;
-			#else 
-			code = "#version 100 \n" + code;
+		if( shader.version == null){
+			#if !opengles
+				#if mac
+				code = "#version 110 \n" + code;
+				#else 
+				code = "#version 100 \n" + code;
+				#end
 			#end
-		#end
+		} else {
+			code = "#version "+shader.version+" \n" + code;
+		}
 
 		return code;
 	}
@@ -2187,6 +2216,48 @@ class GlDriver extends Driver {
 		return t;
 	}
 	
+	inline function blitMatrices33(a:Array<Matrix>, transpose) {
+		var t = createF32( a.length * 9 );
+		var p = 0;
+		for ( m in a ){
+			blitMatrix33( m, transpose, p,t  );
+			p += 16;
+		}
+		return t;
+	}
+	
+	inline function blitMatrix33(a:Matrix, transpose, ofs = 0, t : Float32Array=null) {
+		if (t == null) t = createF32( 9 );
+		
+		if ( !transpose) {
+			t[ofs+0] 	= a._11; 
+			t[ofs+1] 	= a._12; 
+			t[ofs+2] 	= a._13; 
+			     
+			t[ofs+3] 	= a._21; 
+			t[ofs+4] 	= a._22; 
+			t[ofs+5] 	= a._23; 
+			    
+			t[ofs+6] 	= a._31; 
+			t[ofs+7]	= a._32; 
+			t[ofs+8] 	= a._33; 
+		}
+		else {
+			t[ofs+0] 	= a._11; 
+			t[ofs+1] 	= a._21; 
+			t[ofs+2] 	= a._31; 
+			     
+			t[ofs+3] 	= a._12; 
+			t[ofs+4] 	= a._22; 
+			t[ofs+5] 	= a._32; 
+			    
+			t[ofs+6] 	= a._13; 
+			t[ofs+7] 	= a._23; 
+			t[ofs+8] 	= a._33; 
+		}
+		return t;
+	}
+	
 	inline function blitMatrix(a:Matrix, transpose, ofs = 0, t :Float32Array=null) {
 		if (t == null) t = createF32( 16 );
 		
@@ -2266,6 +2337,19 @@ class GlDriver extends Driver {
 		//System.trace3("setting uniform " + u.name+ " of type "+t +" and value "+val );
 		
 		switch( t ) {
+			
+		case Mat3:
+			
+			#if debug
+			if ( Std.is( val , Array)) throw "error";
+			#end
+			
+			var m : h3d.Matrix = val;
+			
+			uniformMatrix3fv(u.loc, buff = blitMatrix33(m, true) );
+			
+			deleteF32(buff);
+			
 		case Mat4:
 			
 			#if debug
@@ -2278,9 +2362,7 @@ class GlDriver extends Driver {
 			
 			deleteF32(buff);
 			
-			//System.trace3("one matrix batch " + m + " of val " + val);
-			
-		case Tex2d,TexCube:
+		case Tex2d,TexRect,TexCube:
 			var t : h3d.mat.Texture = val;
 			if ( t == null)  t = h2d.Tools.getEmptyTexture();
 			
@@ -2320,13 +2402,15 @@ class GlDriver extends Driver {
 					if (arr.length > nb) arr = arr.slice(0, nb);
 					uniform4fv( u.loc, buff = packArray4(arr));
 					
+				case Mat3: 
+					var ms : Array<h3d.Matrix> = val;
+					uniformMatrix3fv(u.loc, buff = blitMatrices33(ms, true) );
+					
 				case Mat4: 
 					var ms : Array<h3d.Matrix> = val;
-					//if ( nb != null && ms.length != nb)  System.trace3('Array uniform type mismatch $nb requested, ${ms.length} found');
-						
 					uniformMatrix4fv(u.loc, buff = blitMatrices(ms, true) );
 					
-				case Tex2d,TexCube:
+				case Tex2d,TexRect,TexCube:
 				{
 					var textures : Array<h3d.mat.Texture> = val;
 					var base = u.index;
@@ -2756,6 +2840,7 @@ class GlDriver extends Driver {
 	var hasPVRTC1 : Null<Bool> = null;
 	var hasS3TC: Null<Bool> = null;
 	var hasETC1 : Null<Bool> = null;
+	var hasTextureNPOT : Null<Bool> = null;
 	
 	public override function hasFeature( f : Feature ) : Bool{
 		return
@@ -2793,7 +2878,19 @@ class GlDriver extends Driver {
 			case AnisotropicFiltering:
 				return supportAnisotropic > 0;
 				
-			default:			super.hasFeature(f);
+			case TextureNPOT:
+				if ( hasTextureNPOT == null) {
+					hasTextureNPOT = (
+							extensions.get("ARB_texture_non_power_of_two") != null
+						||	extensions.get("GL_ARB_texture_non_power_of_two" ) != null
+						||	extensions.get("GL_OES_texture_npot" )!=null );
+					hxd.System.trace2("npot support is :" + hasTextureNPOT);
+					trace("npot support is :" + hasTextureNPOT);
+				}
+				return hasTextureNPOT;
+				
+			default:			
+				super.hasFeature(f);
 		}
 	}
 }

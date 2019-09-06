@@ -1171,8 +1171,8 @@ class Demo extends flash.display.Sprite
 	
 	var k : Keys;
 	function update() 	{
-		#if ( cpp )
-		invalidate();
+		#if cpp 
+		flash.Lib.current.invalidate();
 		#end
 		
 		k.update();

@@ -28,6 +28,7 @@ enum ShaderType {
 	Mat3;
 	Mat4;
 	Tex2d;
+	TexRect;
 	TexCube;
 	Byte3;
 	Byte4;
@@ -104,6 +105,7 @@ class ShaderInstance {
 class Shader {
 	
 	public var shared : Bool = false;
+	public var version : Null<String>;
 	var instance : ShaderInstance;
 	
 	public function new() {
@@ -199,7 +201,7 @@ class ShaderMacros {
 				case "vec4", "vec3" if( hint == "byte4" ): macro : Int;
 				case "vec2", "vec3", "vec4": macro : h3d.Vector;
 				case "mat3", "mat4": macro : h3d.Matrix;
-				case "sampler2D", "samplerCube": macro : h3d.mat.Texture;
+				case "sampler2D", "samplerRect", "samplerCube": macro : h3d.mat.Texture;
 				default:
 					// most likely a struct, handle it manually
 					if( type.charCodeAt(0) >= 'A'.code && type.charCodeAt(0) <= 'Z'.code )

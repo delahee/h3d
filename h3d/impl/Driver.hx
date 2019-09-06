@@ -64,6 +64,8 @@ enum Feature {
 	ETC1;
 	
 	AnisotropicFiltering;
+	
+	TextureNPOT;
 }
 
 enum Query {

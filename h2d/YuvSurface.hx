@@ -3,14 +3,13 @@ import h3d.Engine;
 import h3d.Vector;
 import hxd.Profiler;
 
-class SimpleShader extends h3d.impl.Shader {
+class YuvShader extends h3d.impl.Shader {
 	#if flash
 	public override function clone(?c:h3d.impl.Shader) : h3d.impl.Shader {
-		var n : SimpleShader = (c != null) ? cast c :Type.createEmptyInstance( cast Type.getClass(this) );
+		var n : YuvShader = (c != null) ? cast c :Type.createEmptyInstance( cast Type.getClass(this) );
 		super.clone( n );
 		return n;
 	}
-	
 	static var SRC = {
 		var input : {
 			pos : Float2,
@@ -28,6 +27,9 @@ class SimpleShader extends h3d.impl.Shader {
 		
 		var texResolution 		: Float2;
 		var texResolutionFS 	: Float2;
+		
+		var srcBias : Float3;
+		var srcXForm : M33;
 		
 		function vertex( size : Float3, matA : Float3, matB : Float3 ) {
 			var tmp : Float4;
@@ -51,13 +53,16 @@ class SimpleShader extends h3d.impl.Shader {
 		var filter : Bool;
 		var tileWrap : Bool;
 		
-		function fragment( tex : Texture ) {
+		function fragment( texY : Texture, texUV : Texture) {
 			var tcoord = tuv;
 			
-			var col:Float4;
-			col = tex.get(tcoord, filter = ! !filter, wrap = tileWrap);
-
-			out = col;
+			var y:Float 			= texY.get(tcoord, filter = ! !filter, wrap = tileWrap).r;
+			var cbcr 	: Float2 	= texUV.get(tcoord, filter = ! !filter, wrap = tileWrap).rg;
+			var yuv 	: Float3 	= [y, cbcr.x, cbcr.y];
+			
+			yuv 		-= srcBias;
+			yuv 		*= srcXForm;
+			out 		= [yuv.x,yuv.y,yuv.z,1.0];
 		}
 	}
 	
@@ -80,6 +85,13 @@ class SimpleShader extends h3d.impl.Shader {
 	public var filter : Bool;				
 	public var tileWrap : Bool;	        
 	
+	/*
+	public function new (){
+		super();
+		version = "140";
+	}
+	*/
+	
 	/**
 	 * This is the constant set, they are set / compiled for first draw and will enabled on all render thereafter
 	 * 
@@ -89,7 +101,7 @@ class SimpleShader extends h3d.impl.Shader {
 		
 		var cst = [];
 		if( vertex ) {
-			if( size != null ) cst.push("#define hasSize");
+			if ( size != null ) cst.push("#define hasSize");
 			if( uvScale != null ) cst.push("#define hasUVScale");
 			if( uvPos != null ) cst.push("#define hasUVPos");
 		} 
@@ -145,28 +157,41 @@ class SimpleShader extends h3d.impl.Shader {
 	";
 	
 	static var FRAGMENT = "
-	
 		varying vec2 tuv;
 		
-		uniform sampler2D tex;
 		uniform vec2 texResolutionFS;
 		
+		uniform sampler2D 	texY;
+		uniform sampler2D 	texUV;
+		
+		uniform vec3		srcBias;
+		uniform mat3		srcXForm;
+		
 		void main(void) {
-			gl_FragColor = texture2D(tex, tuv);
+			vec2 tcoord = tuv;
+			
+			float y		= texture2D(texY,tcoord).r;
+			vec2 cbcr 	= texture2D(texUV,tcoord).rg;
+			vec3 yuv 	= vec3(y, cbcr.x, cbcr.y);
+			
+			yuv 		-= srcBias;
+			yuv 		*= srcXForm;
+			
+			gl_FragColor = vec4(yuv.x, yuv.y, yuv.z, 1.0);
 		}
 	";
 	
 	#end
 }
 
-class Simple extends h2d.Sprite {
+class YuvSurface extends h2d.Sprite {
 	
 	public static inline var HAS_SIZE = 1;
 	public static inline var HAS_UV_SCALE = 2;
 	public static inline var HAS_UV_POS = 4;
 	public static inline var BASE_TILE_DONT_CARE = 8;
 
-	public var shader : SimpleShader;
+	public var shader : YuvShader;
 	
 	//public var alpha(get, set) : Float;
 	
@@ -174,24 +199,38 @@ class Simple extends h2d.Sprite {
 	public var blendMode(default, set) : BlendMode;
 	public var tileWrap(get, set) : Bool;
 	
+	public var srcBias(get,set) : Vector;
+	public var srcXForm(get,set) : h3d.Matrix;
+	
 	public static var DEFAULT_EMIT = false;
 	public static var DEFAULT_FILTER = false;
 		
-	public var tile : Tile;
+	public var texY : h3d.mat.Texture;
+	public var texUV : h3d.mat.Texture;
+	
+	var tileY : Tile;
+	var tileUV : Tile;
 
-	public function new(parent, ?sh:SimpleShader) {
+	public function new(parent, ?sh:YuvShader) {
 		super(parent);
 		
 		blendMode = Normal;
 		
-		shader = (sh == null) ? new SimpleShader() : cast sh;
+		shader = (sh == null) ? new YuvShader() : cast sh;
 		shader.zValue = 0;
 		filter = DEFAULT_FILTER;
 		
 		shader.texResolution 	= new h3d.Vector(0, 0, 0, 0);
 		shader.texResolutionFS 	= new h3d.Vector(0, 0, 0, 0);
 		
-		tile = h2d.Tile.fromTexture(h2d.Tools.getWhiteTexture());
+		texY = h2d.Tools.getWhiteTexture();
+		texUV = h2d.Tools.getWhiteTexture();
+		
+		tileY = h2d.Tile.fromTexture(h2d.Tools.getWhiteTexture());
+		tileUV = h2d.Tile.fromTexture(h2d.Tools.getWhiteTexture());
+		
+		srcXForm = new h3d.Matrix();
+		srcBias = new h3d.Vector();
 	}
 
 	public override function clone<T>( ?s:T ) : T {
@@ -223,35 +262,41 @@ class Simple extends h2d.Sprite {
 		return shader.filter = v;
 	}
 
-	function get_tileWrap() {
-		return shader.tileWrap;
+	function get_tileWrap() 	return shader.tileWrap;
+	function set_tileWrap(v) 	return shader.tileWrap = v;
+	
+	function get_srcBias()		return shader.srcBias;
+	function set_srcBias(v:Vector){
+		shader.srcBias = v;
+		return srcBias;
 	}
 	
-	function set_tileWrap(v) {
-		return shader.tileWrap = v;
+	function get_srcXForm()		return shader.srcXForm;
+	function set_srcXForm(v : h3d.Matrix){
+		shader.srcXForm = v;
+		return srcXForm;
 	}
 	
 	static var tmpColor = h3d.Vector.ONE.clone();
 	
-	function drawTile( ctx:RenderContext, tile ) {
+	function drawTile( ctx:RenderContext ) {
 		ctx.flush();
-		setupShader(ctx.engine, tile, HAS_SIZE | HAS_UV_POS | HAS_UV_SCALE);
+		setupShader(ctx.engine,  HAS_SIZE | HAS_UV_POS | HAS_UV_SCALE);
 		ctx.engine.renderQuadBuffer(Tools.getCoreObjects().planBuffer);
 	}
 	
-	function setupShader( engine : h3d.Engine, tile : h2d.Tile, options : Int ) {
+	function setupShader( engine : h3d.Engine, options : Int ) {
 		var core = Tools.getCoreObjects();
 		var shader = shader;
 		var mat = core.tmpMaterial;
 		
-		if ( tile == null ) 
+		if ( tileY == null ) 
 			return;
 
-		var tex : h3d.mat.Texture = tile.getTexture();
-		
-		var oldFilter = tex.filter;
-		if( tex!=null){
-			tex.filter = (filter)? Linear:Nearest;
+		var texY : h3d.mat.Texture = tileY.getTexture();
+		var oldFilter = texY.filter;
+		if( texY!=null){
+			texY.filter = (filter)? Linear:Nearest;
 		}
 		
 		switch( blendMode ) {
@@ -278,22 +323,22 @@ class Simple extends h2d.Sprite {
 		
 		if( options & HAS_SIZE != 0 ) {
 			var tmp = core.tmpSize;
-			tmp.x = tile.width;
-			tmp.y = tile.height;
+			tmp.x = tileY.width;
+			tmp.y = tileY.height;
 			tmp.z = 1;
 			shader.size = tmp;
 		}
 		
 		if( options & HAS_UV_POS != 0 ) {
-			core.tmpUVPos.x = tile.u;
-			core.tmpUVPos.y = tile.v;
+			core.tmpUVPos.x = tileY.u;
+			core.tmpUVPos.y = tileY.v;
 			
 			shader.uvPos = core.tmpUVPos;
 		}
 		
 		if( options & HAS_UV_SCALE != 0 ) {
-			core.tmpUVScale.x = tile.u2 - tile.u;
-			core.tmpUVScale.y = tile.v2 - tile.v;
+			core.tmpUVScale.x = tileY.u2 - tileY.u;
+			core.tmpUVScale.y = tileY.v2 - tileY.v;
 			
 			shader.uvScale = core.tmpUVScale;
 		}
@@ -305,7 +350,7 @@ class Simple extends h2d.Sprite {
 		tmp.y = matC;
 		
 		if ( options & BASE_TILE_DONT_CARE!=0 ) tmp.z = absX;
-		else tmp.z = absX + tile.dx * matA + tile.dy * matC;
+		else tmp.z = absX + tileY.dx * matA + tileY.dy * matC;
 		
 		shader.matA = tmp;
 		var tmp = core.tmpMatB;
@@ -313,33 +358,34 @@ class Simple extends h2d.Sprite {
 		tmp.y = matD;
 		
 		if ( options & BASE_TILE_DONT_CARE!=0 )	tmp.z = absY
-		else 									tmp.z = absY + tile.dx * matB + tile.dy * matD;
+		else 									tmp.z = absY + tileY.dx * matB + tileY.dy * matD;
 		
-		shader.texResolution.x = 1.0 / tex.width;
-		shader.texResolution.y = 1.0 / tex.height;
+		shader.texResolution.x = 1.0 / texY.width;
+		shader.texResolution.y = 1.0 / texY.height;
 		shader.texResolutionFS.load( shader.texResolution);
 		
 		shader.matB = tmp;
-		shader.tex = tile.getTexture();
+		shader.texY = tileY.getTexture();
+		shader.texUV = tileUV.getTexture();
 		
 		mat.shader = shader;
 		engine.selectMaterial(mat);
 		
-		tex.filter = oldFilter;
+		texY.filter = oldFilter;
 	}
 	
 	public override function set_width(w:Float):Float {
-		scaleX = w / tile.width;
+		scaleX = w / tileY.width;
 		return w;
 	}
 	
 	public override function set_height(h:Float):Float {
-		scaleY = h / tile.height;
+		scaleY = h / tileY.height;
 		return h;
 	}
 	
 	override function draw( ctx : RenderContext ) {		
-		drawTile(ctx, tile);	
+		drawTile(ctx);	
 	}
 	
 	public function canEmit() {

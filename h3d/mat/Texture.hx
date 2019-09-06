@@ -23,6 +23,7 @@ class Texture {
 	
 	public var isCubic(get, null) : Bool; 		function get_isCubic() return flags.has( TextureFlags.Cubic );
 	public var isTarget(get, null) : Bool;		function get_isTarget() return flags.has( TextureFlags.Target );
+	public var isRectangle(get, null) : Bool;	function get_isRectangle() return flags.has( TextureFlags.IsRectangle );
 	
 	var lastFrame : Int;
 	var bits : Int;
@@ -51,6 +52,10 @@ class Texture {
 		this.mem = engine==null ? null : engine.mem;
 		this.width = w;
 		this.height = h;
+		
+		if ( width != height && engine.driver.hasFeature( TextureNPOT)){
+			flags.set( IsRectangle );
+		}
 		this.filter = Linear;
 		this.wrap = Clamp;
 		this.lastFrame = engine == null ? 0 : engine.frameCount;

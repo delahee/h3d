@@ -111,8 +111,12 @@ class Tile {
 			return new Tile( t, 0, 0, pixels.width, pixels.height);
 		}
 			
-		var pix2 = pixels.makeSquare(true);
-		var t = h3d.mat.Texture.fromPixels(pix2,retain);
+		var pix2 = pixels;
+		if( !h3d.Engine.getCurrent().driver.hasFeature( TextureNPOT) )
+			pix2 = pixels.makeSquare(true);
+			
+		var t = h3d.mat.Texture.fromPixels(pix2, retain);
+		
 		if( !retain ) 
 			if ( pix2 != pixels ) pix2.dispose();
 		
@@ -380,7 +384,6 @@ class Tile {
 		height = t.height;
 		return t;
 	}
-	
 	
 	public function split( frames : Int = 0, vertical = false ) {
 		var tl = [];

@@ -89,6 +89,7 @@ enum TextureFlags {
 	MipMapped;
 	/**
 		This is a not power of two texture. Automatically set when having width or height being not power of two.
+		useful for video textures
 	**/
 	IsRectangle;
 	/**
