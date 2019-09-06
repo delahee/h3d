@@ -154,7 +154,7 @@ class GlDriver extends Driver {
 	var canvas : js.html.CanvasElement;
 	public var gl : js.html.webgl.RenderingContext;
 	#elseif cpp
-	static var gl = GL;
+	public static var gl = GL;
 	#end
 	
 	public static inline var BGR_EXT = 0x80E0;

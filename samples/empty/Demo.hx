@@ -23,7 +23,6 @@ class Demo extends flash.display.Sprite{
 		hxd.System.setLoop(update);
 		scene = new h2d.Scene();
 		
-		
 		var g = new h2d.Graphics(scene);
 		g.beginFill(0x00FFFF,0.5);
 		g.lineStyle(2.0);
@@ -61,6 +60,11 @@ class Demo extends flash.display.Sprite{
 		e.setSize (32 , 32 );
 		e.x = 300;
 		e.y = 100;
+		
+		var s = new h2d.Simple( scene );
+		s.scale(5);
+		s.x = 500;
+		s.y = 500;
 	}
 	
 	function update() 	{
