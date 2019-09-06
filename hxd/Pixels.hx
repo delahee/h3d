@@ -196,6 +196,19 @@ class Pixels {
 				u |= bytes.get( p+3 );
 				u;
 			
+			case Mixed(8,0,0,0):
+				var p = (y * width + x)  + bytes.position;
+				return bytes.get(p);
+				
+			case Mixed(8,8,0,0):
+				var p = ((y * width + x) << 1) + bytes.position;
+				
+				var color = (bytes.get(p)) | (bytes.get(p + 1) << 8);
+				var g = (color >> 0)	& 0x0f; 
+				var r = (color >> 4)	& 0x0f; 
+				
+				return (r << 8) ;
+				
 			//warning mixed format are gpu endianness...(too easy...)
 			case Mixed(4, 4, 4, 4):
 				var p = ((y * width + x) << 1) + bytes.position;
@@ -230,6 +243,12 @@ class Pixels {
 					bytes.set(		p+bytes.position,z);
 					bytes.set(1	+	p+bytes.position,z);
 				}
+				
+			case 1:
+				for ( i in 0...width * height ) {
+					var p = i;
+					bytes.set(		p+bytes.position,z);
+				}
 		};
 	}
 	
@@ -242,6 +261,19 @@ class Pixels {
 		var b = color & 0xFF;
 		
 		switch (format) {
+			case Mixed( 8, 0 , 0 ,0 ) :
+				for ( i in 0...width * height ){
+					var p = i;
+					bytes.set( 		p + bytes.position , r);
+				}
+				
+			case Mixed( 8, 8 , 0 ,0 ) :
+				for ( i in 0...width * height ){
+					var p = (i << 1);
+					bytes.set( 		p + bytes.position , r);
+					bytes.set( 1 + 	p + bytes.position , g);
+				}
+				
 			case BGRA:
 				for ( i in 0...width * height ) {
 					var p = (i << 2);
@@ -264,12 +296,21 @@ class Pixels {
 			p += ((x + y * width) << 2);
 		else if( bytesPerPixel(format) == 2) 
 			p += ((x + y * width) << 1);
+		else if( bytesPerPixel(format) == 1) 
+			p += x + y * width;
 			
 		var a = color >>> 24;
 		var r = (color >> 16) & 0xFF;
 		var g = (color >> 8) & 0xFF;
 		var b = color & 0xFF;
 		switch(format) {
+			case Mixed( 8,0,0,0 ):
+				bytes.set(p, 		r);
+				
+			case Mixed( 8,8,0,0 ):
+				bytes.set(p, 		r);
+				bytes.set(p + 1, 	g);
+				
 			case BGRA:
 				bytes.set(p, 	b);
 				bytes.set(p+1, 	g);
@@ -298,7 +339,7 @@ class Pixels {
 	
 	public static function bytesPerPixel( format : PixelFormat ) {
 		return switch( format ) {
-			case ARGB, BGRA, RGBA: 4;
+			case ARGB, BGRA, RGBA	: 4;
 			case Mixed(r, g, b, a):
 				return (r + g + b + a) >> 3;
 			default:0;

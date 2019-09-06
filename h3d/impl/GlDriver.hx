@@ -1293,8 +1293,6 @@ class GlDriver extends Driver {
 				default: throw "gl pixel format assert "+ pix.format;
 			}
 			
-			#if true
-			//experimental
 			if ( as == 0 && rs == 8 && bs == 0 && gs == 0) {
 				#if opengles
 				internalFormat = GL.LUMINANCE;
@@ -1304,10 +1302,18 @@ class GlDriver extends Driver {
 				externalFormat = GL.LUMINANCE;
 				#end
 				byteType = GL.UNSIGNED_BYTE;
-			} else
-			#end
-			
-			if ( rs == 5 && gs == 6 && bs == 5) {
+			} 
+			else if ( as == 0 && rs == 8 && bs == 0 && gs == 8) {
+				#if opengles
+				internalFormat = GL.RG8;
+				externalFormat = GL.RG;
+				#else 
+				internalFormat = GL.RG8;
+				externalFormat = GL.RG;
+				#end
+				byteType = GL.UNSIGNED_BYTE;
+			}
+			else if ( rs == 5 && gs == 6 && bs == 5) {
 				#if opengles
 				internalFormat = GL.RGB;
 				externalFormat = GL.RGB;

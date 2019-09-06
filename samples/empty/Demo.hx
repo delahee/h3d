@@ -82,12 +82,41 @@ class Demo extends flash.display.Sprite{
 		s.x = 500;
 		s.y = 300;
 		
+		//test rect tex
 		var t = new h3d.mat.Texture( 18, 6 );
 		t.clear(0xffff00ff);
 		
 		var bmp = new h2d.Bitmap( h2d.Tile.fromTexture(t), scene );
 		bmp.x = 550;
 		bmp.y = 300;
+		
+		//
+		var w = 24;
+		var h = 32;
+		var r200 = hxd.impl.Tmp.getBytesView( Math.round(w * h ));
+		for ( i in 0...r200.length )
+			r200.set( i, 200 );
+		var px = new hxd.Pixels(w, h, r200 , Mixed(8, 0, 0, 0));
+		trace( "0x"+ StringTools.hex( px.getPixel( 0, 0) ));
+		var bmp = new h2d.Bitmap( h2d.Tile.fromPixels(px), scene );
+		bmp.x = 580;
+		bmp.y = 300;
+		hxd.impl.Tmp.saveBytesView( r200 );
+		
+		//
+		var w = 24;
+		var h = 32;
+		var rg200100 = hxd.impl.Tmp.getBytesView( Math.round(w * h * 2));
+		for ( i in 0...rg200100.length ){
+			rg200100.set( (i<<1), 		0xde );
+			rg200100.set( (i<<1) + 1, 	0xad );
+		}
+		var px = new hxd.Pixels(w, h, rg200100 , Mixed(8, 8, 0, 0));
+		trace( "0x"+ StringTools.hex( px.getPixel( 0, 0) ));
+		var bmp = new h2d.Bitmap( h2d.Tile.fromPixels(px), scene );
+		bmp.x = 630;
+		bmp.y = 300;
+		hxd.impl.Tmp.saveBytesView( rg200100 );
 	}
 	
 	function update() 	{

@@ -114,15 +114,24 @@ class Texture extends Resource {
 		
 		tex.name = entry.name;
 		
+		var allowRects = h3d.Engine.getCurrent().driver.hasFeature(TextureNPOT);
+		
 		if( inf.isPNG ) {
 			function load() {
 				checkResize();
 
 				// immediately loading the PNG is faster than going through loadBitmap
-				var pixels = getPixels();
-				pixels.makeSquare();
-				tex.uploadPixels(pixels);
-				pixels.dispose();
+				if ( isSquare || allowRects ){
+					var px = getPixels();
+					tex.uploadPixels(px);
+					px.dispose();
+				}
+				else {
+					var pixels = getPixels();
+					pixels.makeSquare();
+					tex.uploadPixels(pixels);
+					pixels.dispose();
+				}
 			}
 			if( entry.isAvailable )
 				load();
@@ -133,7 +142,7 @@ class Texture extends Resource {
 			entry.loadBitmap(function(bmp) {
 				checkResize();
 
-				if( isSquare )
+				if( isSquare || allowRects  )
 					tex.uploadBitmap(bmp);
 				else {
 					var pixels = bmp.getPixels();
