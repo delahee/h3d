@@ -203,10 +203,10 @@ class Tile {
 	public function setTexture(tex:h3d.mat.Texture) {
 		this.innerTex = tex;
 		if( tex != null ) {
-			this.u = (x ) / tex.width;
-			this.v = (y ) / tex.height;
-			this.u2 = (x + width ) / tex.width;
-			this.v2 = (y + height ) / tex.height;
+			this.u = ( x ) / tex.width;
+			this.v = ( y ) / tex.height;
+			this.u2 = ( x + width ) / tex.width;
+			this.v2 = ( y + height ) / tex.height;
 		}
 	}
 

@@ -15,3 +15,7 @@ bin
 /h3d/impl/*.bak
 /h2d/*.bak
 *.bak
+/samples/video_primitives/SWITCH_VARS.bat
+/samples/video_primitives/bin
+/samples/video_primitives/tpl
+/samples/video_primitives/OPEN_HAXE_SWITCH.bat

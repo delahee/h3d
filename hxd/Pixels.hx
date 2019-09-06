@@ -204,10 +204,10 @@ class Pixels {
 				var p = ((y * width + x) << 1) + bytes.position;
 				
 				var color = (bytes.get(p)) | (bytes.get(p + 1) << 8);
-				var g = (color >> 0)	& 0x0f; 
-				var r = (color >> 4)	& 0x0f; 
+				var g = (color >> 0)	& 0xFF; 
+				var r = (color >> 8)	& 0xFF; 
 				
-				return (r << 8) ;
+				return (r << 8) | g;
 				
 			//warning mixed format are gpu endianness...(too easy...)
 			case Mixed(4, 4, 4, 4):

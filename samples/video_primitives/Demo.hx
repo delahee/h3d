@@ -76,8 +76,20 @@ class Demo extends flash.display.Sprite{
 		
 		
 		var s = new h2d.YuvSurface( scene );
-		s.texY = h3d.mat.Texture.fromColor(0xff00FF00);
-		s.texUV = h3d.mat.Texture.fromColor(0xff00FF00);
+		
+		s.texY = h3d.mat.Texture.fromColor(0x0);
+		s.texUV = h3d.mat.Texture.fromColor(0x0);
+		
+		s.uploadingTexY 	= h3d.mat.Texture.fromColor(0xffffffff);
+		s.uploadingTexUV 	= h3d.mat.Texture.fromColor(0xffffffff);
+		
+		var m : h3d.Matrix = new h3d.Matrix();
+		m.set( 
+			1, 0, 0, 0,
+			0, 1, 0, 0,
+			0, 0, 1, 0,
+			0, 0, 0, 1 );
+		s.srcXForm = m;
 		s.scale( 5 );
 		s.x = 500;
 		s.y = 300;

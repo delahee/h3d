@@ -2889,7 +2889,8 @@ class GlDriver extends Driver {
 					hasTextureNPOT = (
 							extensions.get("ARB_texture_non_power_of_two") != null
 						||	extensions.get("GL_ARB_texture_non_power_of_two" ) != null
-						||	extensions.get("GL_OES_texture_npot" )!=null );
+						||	extensions.get("GL_OES_texture_npot" ) != null
+						||	extensions.get("OES_texture_npot" )!=null);
 					hxd.System.trace2("npot support is :" + hasTextureNPOT);
 					trace("npot support is :" + hasTextureNPOT);
 				}

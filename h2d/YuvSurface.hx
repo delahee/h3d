@@ -205,11 +205,14 @@ class YuvSurface extends h2d.Sprite {
 	public static var DEFAULT_EMIT = false;
 	public static var DEFAULT_FILTER = false;
 		
-	public var texY : h3d.mat.Texture;
-	public var texUV : h3d.mat.Texture;
+	public var texY 	: h3d.mat.Texture;
+	public var texUV 	: h3d.mat.Texture;
 	
-	var tileY : Tile;
-	var tileUV : Tile;
+	public var uploadingTexY : h3d.mat.Texture;
+	public var uploadingTexUV: h3d.mat.Texture;
+	
+	var tileY 	: Tile;
+	var tileUV 	: Tile;
 
 	public function new(parent, ?sh:YuvShader) {
 		super(parent);
@@ -223,8 +226,11 @@ class YuvSurface extends h2d.Sprite {
 		shader.texResolution 	= new h3d.Vector(0, 0, 0, 0);
 		shader.texResolutionFS 	= new h3d.Vector(0, 0, 0, 0);
 		
-		texY = h2d.Tools.getWhiteTexture();
-		texUV = h2d.Tools.getWhiteTexture();
+		texY 	= h2d.Tools.getWhiteTexture();
+		texUV 	= h2d.Tools.getWhiteTexture();
+		
+		uploadingTexY 	= h2d.Tools.getWhiteTexture();
+		uploadingTexUV 	= h2d.Tools.getWhiteTexture();
 		
 		tileY = h2d.Tile.fromTexture(h2d.Tools.getWhiteTexture());
 		tileUV = h2d.Tile.fromTexture(h2d.Tools.getWhiteTexture());
@@ -292,12 +298,14 @@ class YuvSurface extends h2d.Sprite {
 		
 		if ( tileY == null ) 
 			return;
+			
+		tileY.setTexture(texY);
+		tileUV.setTexture(texUV);
 
 		var texY : h3d.mat.Texture = tileY.getTexture();
 		var oldFilter = texY.filter;
-		if( texY!=null){
-			texY.filter = (filter)? Linear:Nearest;
-		}
+		texY.filter = (filter)? Linear:Nearest;
+		texUV.filter = (filter)? Linear:Nearest;
 		
 		switch( blendMode ) {
 			case Normal:
@@ -372,6 +380,14 @@ class YuvSurface extends h2d.Sprite {
 		engine.selectMaterial(mat);
 		
 		texY.filter = oldFilter;
+		
+		var oY = texY;
+		texY = uploadingTexY;
+		uploadingTexY = oY;
+		
+		var oUV = texUV;
+		texUV = uploadingTexUV;
+		uploadingTexUV = oUV;
 	}
 	
 	public override function set_width(w:Float):Float {
