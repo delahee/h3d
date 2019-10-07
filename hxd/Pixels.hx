@@ -30,6 +30,15 @@ class Pixels {
 		this.format = format;
 	}
 	
+	public function reuse( width : Int, height : Int, bytes : hxd.BytesView, format : hxd.PixelFormat){
+		//just trash old data and be done with it
+		hxd.Assert.notNull(bytes);
+		this.width = width;
+		this.height = height;
+		this.bytes = bytes;
+		this.format = format;
+	}
+	
 	public inline function isDispose() {
 		return bytes == null;
 	}

@@ -6,7 +6,7 @@ class BytesView {
 	var position	: Int;
 	var length			: Int;
 	
-	function new( b,p,l) {
+	inline function new( b:haxe.io.Bytes,p:Int,l:Int) {
 		bytes = b;
 		position = p;
 		length = l;

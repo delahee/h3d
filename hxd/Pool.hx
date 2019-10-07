@@ -43,8 +43,16 @@ class Pool<T> {
 		if (t == null) return;
 		
 		deleteProc(t);
-		if(actives!=null)actives.remove(t);
+		if(actives!=null) actives.remove(t);
 		pool.push(t);
+	}
+	
+	public function deleteAll() : Void{
+		for( t in actives.backWardIterator()){
+			deleteProc(t);
+			pool.push(t);
+		}
+		actives.hardReset();
 	}
 	
 	public function nbPooled(){
@@ -66,4 +74,10 @@ class Pool<T> {
 			pool.push(e);
 		}
 	}
+	
+	public function hardReset(){
+		actives.hardReset();
+		pool.hardReset();
+	}
+	
 }

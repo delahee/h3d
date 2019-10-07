@@ -3,6 +3,14 @@ import h3d.Engine;
 import h3d.Vector;
 import hxd.Profiler;
 
+enum ColorSpace{
+	CS_YCbCr2020;
+	CS_YCbCr601;
+	CS_YCbCr601_ER;
+	
+	CS_None;
+}
+
 class YuvShader extends h3d.impl.Shader {
 	#if flash
 	public override function clone(?c:h3d.impl.Shader) : h3d.impl.Shader {
@@ -24,9 +32,6 @@ class YuvShader extends h3d.impl.Shader {
 		var texelAlign : Bool;
 		var halfPixelInverse 	: Float2;
 		var halfTexelInverse	: Float2;
-		
-		var texResolution 		: Float2;
-		var texResolutionFS 	: Float2;
 		
 		var srcBias : Float3;
 		var srcXForm : M33;
@@ -84,6 +89,7 @@ class YuvShader extends h3d.impl.Shader {
 	
 	public var filter : Bool;				
 	public var tileWrap : Bool;	        
+	public var doubleBuffering = true;
 	
 	/*
 	public function new (){
@@ -159,8 +165,6 @@ class YuvShader extends h3d.impl.Shader {
 	static var FRAGMENT = "
 		varying vec2 tuv;
 		
-		uniform vec2 texResolutionFS;
-		
 		uniform sampler2D 	texY;
 		uniform sampler2D 	texUV;
 		
@@ -214,6 +218,11 @@ class YuvSurface extends h2d.Sprite {
 	var tileY 	: Tile;
 	var tileUV 	: Tile;
 
+	var innerSizeX : Int = 0;
+	var innerSizeY : Int = 0;
+	
+	public var doubleBuffering = true;
+	
 	public function new(parent, ?sh:YuvShader) {
 		super(parent);
 		
@@ -223,20 +232,76 @@ class YuvSurface extends h2d.Sprite {
 		shader.zValue = 0;
 		filter = DEFAULT_FILTER;
 		
-		shader.texResolution 	= new h3d.Vector(0, 0, 0, 0);
-		shader.texResolutionFS 	= new h3d.Vector(0, 0, 0, 0);
-		
-		texY 	= h2d.Tools.getWhiteTexture();
-		texUV 	= h2d.Tools.getWhiteTexture();
-		
-		uploadingTexY 	= h2d.Tools.getWhiteTexture();
-		uploadingTexUV 	= h2d.Tools.getWhiteTexture();
-		
-		tileY = h2d.Tile.fromTexture(h2d.Tools.getWhiteTexture());
-		tileUV = h2d.Tile.fromTexture(h2d.Tools.getWhiteTexture());
+		setTextureSize(8,8);
 		
 		srcXForm = new h3d.Matrix();
 		srcBias = new h3d.Vector();
+	}
+	
+	public override function dispose(){
+		super.dispose();
+		if ( texY != null){
+			texY.destroy(true);
+			texY = null;
+		}
+		if ( texUV != null) {
+			texUV.destroy(true);
+			texUV = null;
+		}
+		
+		if ( uploadingTexY != null){
+			uploadingTexY.destroy(true);
+			uploadingTexY = null;
+		}
+		if ( uploadingTexUV != null) {
+			uploadingTexUV.destroy(true);
+			uploadingTexUV = null;
+		}
+		
+		tileY = null;
+		tileUV = null;
+	}
+	
+	public function setTextureSize(w, h){
+		if ( innerSizeX == w && innerSizeY == h ) 
+			return;
+		
+		if ( texY != null){
+			texY.destroy(true);
+			texY = null;
+		}
+		if ( texUV != null) {
+			texUV.destroy(true);
+			texUV = null;
+		}
+		
+		if ( uploadingTexY != null){
+			uploadingTexY.destroy(true);
+			uploadingTexY = null;
+		}
+		if ( uploadingTexUV != null) {
+			uploadingTexUV.destroy(true);
+			uploadingTexUV = null;
+		}
+		
+		var pix8 : hxd.Pixels = hxd.Pixels.alloc( w, h, Mixed(8,0,0,0) );
+		pix8.fill(0xff);
+		
+		var pix16 : hxd.Pixels = hxd.Pixels.alloc( w>>1, h>>1, Mixed(8,8,0,0) );
+		pix16.fill(0xffff);
+		
+		texY 	= new h3d.mat.Texture( w, h );
+		texUV 	= new h3d.mat.Texture( w>>1, h>>1 );
+		
+		uploadingTexY 	= new h3d.mat.Texture( w, h );
+		uploadingTexUV 	= new h3d.mat.Texture( w>>1, h>>1 );
+		
+		tileY = h2d.Tile.fromTexture(texY);
+		tileUV = h2d.Tile.fromTexture(texUV);
+		
+		innerSizeX = w;
+		innerSizeY = h;
+		trace("size are correctly set to " + innerSizeX + " " + innerSizeY);
 	}
 
 	public override function clone<T>( ?s:T ) : T {
@@ -304,29 +369,17 @@ class YuvSurface extends h2d.Sprite {
 
 		var texY : h3d.mat.Texture = tileY.getTexture();
 		var oldFilter = texY.filter;
-		texY.filter = (filter)? Linear:Nearest;
-		texUV.filter = (filter)? Linear:Nearest;
+		texY.filter = filter? Linear:Nearest;
+		texUV.filter = filter? Linear:Nearest;
 		
 		switch( blendMode ) {
 			case Normal:
 				mat.blend(SrcAlpha, OneMinusSrcAlpha);
 				
-			case None:
+			//case None:
+			default:
 				mat.blend(One, Zero);
 				mat.sampleAlphaToCoverage = false;
-				
-			case Add:
-				mat.blend(SrcAlpha, One);
-			case SoftAdd:
-				mat.blend(OneMinusDstColor, One);
-			case Multiply:
-				mat.blend(DstColor, OneMinusSrcAlpha);
-			case Erase:
-				mat.blend(Zero, OneMinusSrcAlpha);
-			case SoftOverlay:
-				mat.blend(DstColor, One);
-			case Screen:
-				mat.blend(One, OneMinusSrcColor);
 		}
 		
 		if( options & HAS_SIZE != 0 ) {
@@ -368,10 +421,6 @@ class YuvSurface extends h2d.Sprite {
 		if ( options & BASE_TILE_DONT_CARE!=0 )	tmp.z = absY
 		else 									tmp.z = absY + tileY.dx * matB + tileY.dy * matD;
 		
-		shader.texResolution.x = 1.0 / texY.width;
-		shader.texResolution.y = 1.0 / texY.height;
-		shader.texResolutionFS.load( shader.texResolution);
-		
 		shader.matB = tmp;
 		shader.texY = tileY.getTexture();
 		shader.texUV = tileUV.getTexture();
@@ -380,14 +429,17 @@ class YuvSurface extends h2d.Sprite {
 		engine.selectMaterial(mat);
 		
 		texY.filter = oldFilter;
+		texUV.filter = oldFilter;
 		
-		var oY = texY;
-		texY = uploadingTexY;
-		uploadingTexY = oY;
-		
-		var oUV = texUV;
-		texUV = uploadingTexUV;
-		uploadingTexUV = oUV;
+		if( doubleBuffering ){
+			var oY = texY;
+			texY = uploadingTexY;
+			uploadingTexY = oY;
+			
+			var oUV = texUV;
+			texUV = uploadingTexUV;
+			uploadingTexUV = oUV;
+		}
 	}
 	
 	public override function set_width(w:Float):Float {
@@ -408,4 +460,75 @@ class YuvSurface extends h2d.Sprite {
 		return false;
 	}
 	
+	var pxYDesc : hxd.Pixels;
+	var pxUVDesc : hxd.Pixels;
+	
+	var bit8 : hxd.PixelFormat = Mixed(8, 0, 0, 0);
+	var bit16 : hxd.PixelFormat = Mixed(8, 8, 0, 0);
+	public function uploadY( 
+		w:Int,
+		h:Int,
+		view:hxd.BytesView
+	){
+		//beware for uploading, only on main thread please
+		if ( w != innerSizeX ) throw "bad setup y w";
+		if ( h != innerSizeY ) throw "bad setup y h";
+		
+		if( pxYDesc == null)
+			pxYDesc = new hxd.Pixels( w, h,  view, bit8);
+		else 
+			pxYDesc.reuse( w, h,  view, bit8 );
+			
+		(doubleBuffering ? uploadingTexY : texY).uploadPixels( pxYDesc );
+		tileY.setSize( w , h );
+	}
+	
+	public function uploadUV( 
+		w:Int,
+		h:Int,
+		view:hxd.BytesView
+	){
+		//beware for uploading, only on main thread please
+		if ( w != (innerSizeX>>1) ) throw "bad setup uv w";
+		if ( h != (innerSizeY>>1) ) throw "bad setup uv h";
+		
+		if( pxUVDesc == null)
+			pxUVDesc = new hxd.Pixels( w, h,  view, bit16);
+		else 
+			pxUVDesc.reuse( w, h,  view, bit16 );
+			
+		(doubleBuffering ? uploadingTexUV : texUV).uploadPixels( pxUVDesc );
+		tileUV.setSize( w , h );
+	}
+	
+	var curCs : ColorSpace = ColorSpace.CS_None;
+	public function setColorSpace(cs:ColorSpace){
+		if ( cs == curCs ) return;
+		switch(cs){
+			case CS_YCbCr2020, CS_YCbCr601:
+				var x = 1.164383;
+                var y = 1.138393;
+                var z = 1.138393;
+					
+				srcBias.set( 16.0 / 255.0, 128.0 / 255.0, 128.0 / 255.0);
+				
+				srcXForm._11 = 1.0*x; 	srcXForm._21 = 0.0 * y; 			srcXForm._31 =  1.40200000*z;
+				srcXForm._12 = 1.0*x; 	srcXForm._22 = -0.34413629 * y; 	srcXForm._32 = -0.71413629*z;
+				srcXForm._13 = 1.0*x; 	srcXForm._23 =  1.77200000 * y; 	srcXForm._33 =  0.00000000*z;
+				
+			case CS_YCbCr601_ER:
+				srcBias.set( 0, 128.0 / 255.0, 128.0 / 255.0 );
+				
+				srcXForm._11 = 1.0; 	srcXForm._21 = 0.0 ; 				srcXForm._31 =  1.40200000;
+				srcXForm._12 = 1.0; 	srcXForm._22 = -0.34413629; 		srcXForm._32 = -0.71413629;
+				srcXForm._13 = 1.0; 	srcXForm._23 =  1.77200000; 		srcXForm._33 =  0.00000000;
+				
+			default:
+				throw "Color space unset, dunno how to process :" + cs;
+				return;
+		}
+		//trace("cs set to:" + cs);
+		
+		curCs = cs;
+	}
 }

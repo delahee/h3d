@@ -25,8 +25,19 @@
 	<haxelib name="hxsl" if="flash"/>
 	<haxelib name="air3" if="flash"/>
 	
+	<haxelib name="hxmidilib" />
+	<haxelib name="hxsl" if="flash"/>
+	<haxelib name="air3" if="flash" />
+	<haxelib name="narration" />
+	<haxelib name="castle" />
+	<haxelib name="extralibs" />
+	<haxelib name="ndalibs" />
+	<haxelib name="tjson" />
+	<haxeflag name="-swf-version" value="28" />
+	<haxelib name="hxRazerChroma" if="flash" />
+	
 	<assets path="assets" rename="assets" />
 	
 	<haxeflag name="-dce" value="no" />
-	<app swf-version="14" if="flash" />
+	<!--<app swf-version="14" if="flash" />-->
 </project>

@@ -258,6 +258,10 @@ class GlDriver extends Driver {
 	var screenBuffer : NativeFBO = null;  
 	var curTarget : Null<FBO>;
 	var engine(get, never) : h3d.Engine; 
+	
+	#if cpp
+	public var mainThread : cpp.vm.Thread = null;
+	#end
 
 	inline function get_engine() return h3d.Engine.getCurrent();  
 	
@@ -285,7 +289,7 @@ class GlDriver extends Driver {
 			untyped if ( __js__('typeof')(WebGLDebugUtils) != "undefined" ) gl = untyped WebGLDebugUtils.makeDebugContext(gl);
 			
 		#elseif cpp
-
+		mainThread = cpp.vm.Thread.current();
 		#end
 
 		curMatBits = null;

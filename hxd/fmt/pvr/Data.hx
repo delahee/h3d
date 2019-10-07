@@ -347,7 +347,7 @@ class Data {
 			case 
 				PVRTCI_2bpp_RGB, PVRTCI_2bpp_RGBA, PVRTCI_4bpp_RGB, PVRTCI_4bpp_RGBA, PVRTCII_2bpp, PVRTCII_4bpp, 
 				DXT1, DXT2, DXT3, DXT4, DXT5, 
-				ETC1, ETC2_RGB, ETC2_RGBA, ETC2_RGB_A1, ETC1, EAC_R11, EAC_RG11: true;
+				ETC1, ETC2_RGB, ETC2_RGBA, ETC2_RGB_A1, EAC_R11, EAC_RG11: true;
 			default:false;
 		};
 	}
@@ -432,6 +432,7 @@ class Data {
 	
 	/**
 	 * reads and commit all available mipmaps
+	 * todo : probably make a version that accounts for compression
 	 */
 	public function toTexture( ?frame = 0, ?depth = 0, ?alloc = true) : h3d.mat.Texture {
 		var fl = haxe.EnumFlags.ofInt(0);
@@ -441,7 +442,6 @@ class Data {
 		var lthis = this;
 		function reallocTex(tex:h3d.mat.Texture) {
 			tex.alloc();
-			
 			for ( i in 0...mipmapCount ) {
 				var pixels = lthis.toPixels(i, frame, 0, depth );
 				tex.uploadPixels( pixels, i , 0);

@@ -140,6 +140,24 @@ class Reader {
 		var d : hxd.fmt.pvr.Data = t.read();
 		return d.toTexture();
 	}
+	
+	public static function fromCompressedAssets( path:String ) : h3d.mat.Texture {
+		var fileBytes = sys.io.File.getBytes(path);
+		var bytes = haxe.zip.Uncompress.run( fileBytes );
+		var t : h3d.mat.Texture = fromBytes(bytes);
+		/*
+		t.realloc = function(){
+			
+		};
+		*/
+		return t;
+	}
+	
+	public static function fromBytes( b:haxe.io.Bytes){
+		var t = new hxd.fmt.pvr.Reader(b);
+		var d : hxd.fmt.pvr.Data = t.read();
+		return d.toTexture();
+	}
 	#end
 	
 }
