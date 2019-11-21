@@ -4,7 +4,7 @@ import h2d.SpriteBatch;
 import hxd.Stack;
 
 class NumberOpt extends h2d.SpriteBatch {
-	public var val : Int = 1024*1024;
+	var val : Int = 1024*1024;
 	
 	var font 			: h2d.Font;
 	var glyphs 			: hxd.Stack<BatchElement>;

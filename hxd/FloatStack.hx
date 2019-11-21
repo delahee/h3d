@@ -55,4 +55,8 @@ class FloatStack {
 		return true;
 	}
 	
+	public inline function last():Float {
+		if (pos == 0) return 0.0;
+		return buf[pos - 1];
+	}
 }

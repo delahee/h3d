@@ -442,15 +442,7 @@ class YuvSurface extends h2d.Sprite {
 		}
 	}
 	
-	public override function set_width(w:Float):Float {
-		scaleX = w / tileY.width;
-		return w;
-	}
-	
-	public override function set_height(h:Float):Float {
-		scaleY = h / tileY.height;
-		return h;
-	}
+	public var targetSize : h2d.Vector = null;
 	
 	override function draw( ctx : RenderContext ) {		
 		drawTile(ctx);	
@@ -471,8 +463,10 @@ class YuvSurface extends h2d.Sprite {
 		view:hxd.BytesView
 	){
 		//beware for uploading, only on main thread please
+		#if debug
 		if ( w != innerSizeX ) throw "bad setup y w";
 		if ( h != innerSizeY ) throw "bad setup y h";
+		#end
 		
 		if( pxYDesc == null)
 			pxYDesc = new hxd.Pixels( w, h,  view, bit8);
@@ -481,6 +475,15 @@ class YuvSurface extends h2d.Sprite {
 			
 		(doubleBuffering ? uploadingTexY : texY).uploadPixels( pxYDesc );
 		tileY.setSize( w , h );
+		
+		syncSize();
+	}
+	
+	public function syncSize(){
+		if ( targetSize == null ) return;
+		
+		scaleX = targetSize.x / innerSizeX;
+		scaleY = targetSize.y / innerSizeY;
 	}
 	
 	public function uploadUV( 
@@ -489,8 +492,10 @@ class YuvSurface extends h2d.Sprite {
 		view:hxd.BytesView
 	){
 		//beware for uploading, only on main thread please
+		#if debug
 		if ( w != (innerSizeX>>1) ) throw "bad setup uv w";
-		if ( h != (innerSizeY>>1) ) throw "bad setup uv h";
+		if ( h != (innerSizeY >> 1) ) throw "bad setup uv h";
+		#end
 		
 		if( pxUVDesc == null)
 			pxUVDesc = new hxd.Pixels( w, h,  view, bit16);
