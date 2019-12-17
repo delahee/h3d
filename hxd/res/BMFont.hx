@@ -4,8 +4,6 @@ import hxd.fmt.fnt.CharacterDef;
 import hxd.fmt.fnt.FontDef;
 import hxd.fmt.fnt.FontCharHack;
 
-
-
 class BMFont{
 	public var font : FontDef;
 	public var nativeFont : h2d.Font;
@@ -80,6 +78,8 @@ class BMFont{
 		}
 		if ( font.lineHeight > @:privateAccess nativeFont.lineHeight )
 			@:privateAccess nativeFont.lineHeight = Math.round(font.lineHeight);
+			
+		@:privateAccess nativeFont.baseLine = font.base;
 		nbChars = i;
 	}
 }

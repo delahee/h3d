@@ -58,8 +58,10 @@ class Stage {
 	}
 	
 	public function event( e : hxd.Event ) {
-		for( et in eventTargets )
+		for ( et in eventTargets ){
+			e.nbRef++;
 			et(e);
+		}
 	}
 	
 	public function addEventTarget(et) {

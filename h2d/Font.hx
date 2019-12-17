@@ -57,6 +57,8 @@ class Font {
 	
 	public var name(default, null) : String;
 	public var size(default, null) : Int;
+	public var baseLine(default, null) : Float;
+	
 	public var lineHeight(default, null) : Int;
 	public var tile(default,null) : h2d.Tile;
 	public var charset : hxd.Charset;

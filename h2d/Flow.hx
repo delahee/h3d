@@ -393,7 +393,7 @@ class Flow extends Sprite {
 			var maxWidth = maxWidth == null ? 100000000 : maxWidth - (paddingLeft + paddingRight + borderWidth * 2);
 			var lastIndex = 0;
 
-			inline function alignLine( maxIndex ) {
+			function alignLine( maxIndex ) {
 				if( maxLineHeight < minLineHeight ) maxLineHeight = minLineHeight;
 				for( i in lastIndex...maxIndex ) {
 					var p = properties[i];

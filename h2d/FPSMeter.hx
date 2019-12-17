@@ -19,6 +19,7 @@ class FPSMeter extends h2d.Sprite{
 	public static inline var UI_GREEN 				= 0xff42ff80; 
 	public static inline var UI_BLACK 				= 0xff000000; 
 	
+	
 	public function new( p ) 	{
 		super(p);
 		

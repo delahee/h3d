@@ -279,11 +279,15 @@ class Scene extends Layers implements h3d.IDrawable {
 				}
 				pushList = new Array();
 			}
+			//hxd.Event.free(e);
 		}
 		
 		if ( hasEvents() ){
-			//for( e in pendingEvents )
-				//hxd.Event.free(e);
+			for ( e in pendingEvents ){
+				e.nbRef--;
+				e.tryFree();
+			}
+				
 			pendingEvents.hardReset();
 			allowEventStorage = true;
 		}

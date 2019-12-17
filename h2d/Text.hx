@@ -367,6 +367,7 @@ class Text extends Drawable implements IText {
 	function _initGlyphs( glyphs :ITextPos, font:h2d.Font,info : TextLayoutInfos, utf : hxd.IntStack, rebuild = true, lines : Array<Int> = null ) : h2d.col.PointInt {
 		if ( rebuild ) glyphs.reset();
 		var x = 0, y = 0, xMax = 0, prevChar = -1;
+		var calcY = 0.0;
 		var align = rebuild ? info.textAlign : Left;
 		switch( align ) {
 		case Center, Right:
@@ -428,6 +429,7 @@ class Text extends Drawable implements IText {
 				else
 					x = 0;
 				y += dl;
+				calcY += (dl < font.baseLine + info.lineSpacing) ? (font.baseLine+ info.lineSpacing) : dl;//may serve one day
 				prevChar = -1;
 			} else
 				prevChar = cc;
@@ -436,6 +438,7 @@ class Text extends Drawable implements IText {
 		
 		if ( info.onGlyph != null) info.onGlyph( utf.length, x, y);
 
+		//todo replace y by calcY?
 		var ret = new h2d.col.PointInt(
 			x > xMax ? x : xMax,
 			x > 0 ? y + dl : y > 0 ? y : dl );
@@ -476,6 +479,28 @@ class Text extends Drawable implements IText {
 			glyphs.color.w = alpha;
 		}
 		return c;
+	}
+	
+	override function getBoundsRec( relativeTo:h2d.Sprite, out : h2d.col.Bounds, forSize : Bool ) {
+		super.getBoundsRec(relativeTo, out, forSize);
+		
+		var x : Float;
+		var y : Float;
+		var w : Float;
+		var h : Float;
+		if ( forSize ) {
+			x = 0;
+			y = 0;
+			w = textWidth;
+			h = (tHeight<font.baseLine)? font.baseLine : tHeight;
+		}
+		else {
+			x = 0;
+			y = 0;
+			w = textWidth;
+			h = textHeight;
+		}
+		addBounds(relativeTo, out, x, y, w, h);
 	}
 
 }

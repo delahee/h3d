@@ -28,6 +28,9 @@ class Event {
 	public var charCode 	: Int;
 	public var wheelDelta 	: Float;
 	public var duration 	: Int = 0;
+	public var destroyed 	= true;
+	
+	public var nbRef 		= 0;
 	
 	public inline function new(k,x=0.,y=0.) {
 		kind = k;
@@ -57,6 +60,7 @@ class Event {
 	}
 	
 	public function reset(k, x = 0., y = 0.) {
+		destroyed = false;
 		kind = k;
 		this.relX = x;
 		this.relY = y;
@@ -75,13 +79,21 @@ class Event {
 	public static function alloc(k : EventKind,x=0.0,y=0.0){
 		var e : hxd.Event = null;
 		e = pool.pop();
-		if ( e == null ) e = new hxd.Event( k, x, y);
+		if ( e == null ) 
+			e = new hxd.Event( k, x, y);
 		e.reset(k,x,y);
 		return e;
 	}
 	
 	public static function free(e:hxd.Event){
+		e.destroyed = true;
 		e.reset(ESimulated,-1,-1);
 		pool.push(e);
+	}
+	
+	public function tryFree(){
+		if (nbRef == 0 ){
+			free(this);
+		}
 	}
 }

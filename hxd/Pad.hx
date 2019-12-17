@@ -275,6 +275,51 @@ class Pad {
 		style:CBS_NINTENDO,
 	}
 	
+	public static var CONFIG_PS4_WIRELESS : BaseConf = cast {
+		ids:["Wireless Controller"],
+		name:"Wireless Controller",
+		matchString:"Wireless Controller",
+		metaName:"Wireless Controller",
+		
+		analogX : 0,
+		analogY : 1,
+		
+		X:10,
+		Y:13,
+		LB:14,
+		
+		A:11,
+		B:12,
+		RB:15,
+		
+		start : 19,
+		dpadUp : 6,
+		dpadDown : 7,
+		dpadLeft : 8,
+		dpadRight : 9,
+		
+		share:18,
+		options:29,
+		
+		ranalogX : 2,
+		ranalogY : 5,
+		
+		names : [
+		"LX", "LY", "RX", "", "",//0-4
+		"RY", "DUp", "DDown", "DLeft", "DRight", //5-9
+		"SQUARE", "CROSS", "CIRCLE", "TRIANGLE", "L1",//10-14
+		"R1", "L2", "R2", "Share", "Options", //15-19
+		"L3", "R3", "PS Button",//20-24
+		
+		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
+		"","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",//for pads with exotic button count
+		],
+		defaultYInverted:false,
+		eraseUnconfed:false,
+		style:CBS_SONY,
+	}
+	
 	public static var CONFIG_DUMMY : BaseConf = cast {
 		ids:["dummy"],
 		name:"dummy",
@@ -319,7 +364,7 @@ class Pad {
 	public static var CONFS :Array<Dynamic> = [
 		CONFIG_DUMMY, CONFIG_XBOX,
 		CONFIG_XARCADE, CONFIG_RAP4 ,
-		CONFIG_HORI_MINI_PS4, CONFIG_HORI_MINI_PS3, CONFIG_SWITCH_ATTACHED_TO_CONSOLE ];
+		CONFIG_HORI_MINI_PS4, CONFIG_HORI_MINI_PS3, CONFIG_SWITCH_ATTACHED_TO_CONSOLE,CONFIG_PS4_WIRELESS ];
 
 	public var connected(default, null) = true;
 	public var name(get, never) : String;

@@ -196,10 +196,9 @@ class Stack<T>  {
 	}
 	
 	public function scramble() {
-		var rd = Std.random;
-		for(x in 0...(length + rd( length )) ){
-			var b = rd(length);
-			var a = rd(length);
+		for(x in 0...(length + Std.random( length )) ){
+			var b = Std.random(length);
+			var a = Std.random(length);
 			var temp = arr[a];
 			arr[ a ] = arr[ b ];
 			arr[ b ] = temp;

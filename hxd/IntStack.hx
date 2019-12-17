@@ -51,6 +51,10 @@ class IntStack {
 		return arr[idx];
 	}
 	
+	public inline function get(idx:Int) {
+		return arr[idx];
+	}
+	
 	public inline function reset() {
 		for ( i in 0...arr.length) arr[i] = 0;
 		pos = 0;
@@ -78,5 +82,13 @@ class IntStack {
 	
 	public inline function toData() {
 		return arr;
+	}
+	
+	public inline function load(data:Array<Int>){
+		if (data == null) return;
+		reset();
+		for ( val in data){
+			push(val);
+		}
 	}
 }
