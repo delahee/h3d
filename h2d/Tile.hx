@@ -96,6 +96,7 @@ class Tile {
 		return t;
 	}
 	
+	@:noDebug
 	public static function fromTexture( tex : h3d.mat.Texture ) : h2d.Tile {
 		var t = new Tile(tex, 0, 0, tex.width, tex.height);
 		#if cpp

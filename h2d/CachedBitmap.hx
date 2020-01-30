@@ -43,8 +43,8 @@ class CachedBitmap extends Bitmap {
 		
 		permaTile = h2d.Tools.getEmptyTile().clone();
 		
-		this.width = width;
-		this.height = height;
+		this.width = Math.ceil(width);
+		this.height = Math.ceil(height);
 		
 		tmpZone = new h3d.Vector();
 		
@@ -70,8 +70,8 @@ class CachedBitmap extends Bitmap {
 		}
 		tile = null;
 		permaTile.copy( h2d.Tools.getEmptyTile() );
-		if ( width >= 0 ) permaTile.setWidth( Math.round(width) );
-		if ( height >=0 ) permaTile.setHeight( Math.round(height) );
+		if ( width >= 0 ) permaTile.setWidth( Math.ceil(width) );
+		if ( height >=0 ) permaTile.setHeight( Math.ceil(height) );
 	}
 
 	override function onDelete() {
@@ -89,15 +89,15 @@ class CachedBitmap extends Bitmap {
 	
 	override function set_width(w) {
 		clean();
-		width = w;
-		permaTile.setHeight(Math.round(w));
+		width = Math.ceil(w);
+		permaTile.setWidth(Math.ceil(w));
 		return w;
 	}
 
 	override function set_height(h) {
 		clean();
-		height = h;
-		permaTile.setHeight(Math.round(h));
+		height = Math.ceil(h);
+		permaTile.setHeight(Math.ceil(h));
 		return h;
 	}
 	
@@ -142,8 +142,8 @@ class CachedBitmap extends Bitmap {
 	override function drawRec( ctx : RenderContext ) {
 		if( !visible || getTile() == null ) return;
 
-		tile.width = Std.int(realWidth  / targetScale);
-		tile.height = Std.int(realHeight / targetScale);
+		tile.width = Math.ceil(realWidth  / targetScale);
+		tile.height = Math.ceil(realHeight / targetScale);
 		
 		if (drawToBackBuffer) 
 			draw(ctx);
@@ -214,7 +214,7 @@ class CachedBitmap extends Bitmap {
 			//OpenGL scale -1 on Y Axis ! so the blank part of the texture at the botton would be rendered
 			//if we do not set the Y pos properly
 			var renderZoneY = #if flash oldY #else oldY + (tex.height - realHeight)#end;
-			engine.setRenderZone(Std.int(oldX), Std.int(renderZoneY), Math.round(realWidth), Math.round(realHeight));
+			engine.setRenderZone(Math.ceil(oldX), Math.ceil(renderZoneY), Math.ceil(realWidth), Math.ceil(realHeight));
 			
 			//draw childs
 			for ( c in childs )
@@ -224,7 +224,7 @@ class CachedBitmap extends Bitmap {
 			engine.setTarget(tmpTarget,false,null);			
 			
 			if ( tmpZone != null ) 
-				engine.setRenderZone(Std.int(tmpZone.x), Std.int(tmpZone.y), Std.int(tmpZone.z), Std.int(tmpZone.w));
+				engine.setRenderZone(Math.ceil(tmpZone.x), Math.ceil(tmpZone.y), Math.ceil(tmpZone.z), Math.ceil(tmpZone.w));
 			else
 				engine.setRenderZone();
 			

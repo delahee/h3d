@@ -1,6 +1,11 @@
 package hxd;
 using StringTools;
 
+#if switch
+import lime.console.nswitch.HID;
+import lime.console.nswitch.HID.NpadStyleSet;
+#end
+
 enum ConsoleButtonStyle{
 	CBS_PC;
 	CBS_SONY;
@@ -36,6 +41,28 @@ typedef BaseConf = {
 	var eraseUnconfed:Bool;
 	
 	var style: ConsoleButtonStyle;
+}
+
+typedef XboxConf = {
+	>BaseConf,
+	
+	var ranalogX 	:Int;
+	var ranalogY 	:Int;
+}
+
+typedef NinConf = { 
+	>BaseConf,
+	
+	var NIN_A 	:Int;
+	var NIN_B 	:Int;
+	var NIN_X 	:Int;
+	var NIN_Y 	:Int;
+	
+	var dash	:Int;
+	var plus	:Int;
+	
+	var ranalogX 	:Int;
+	var ranalogY 	:Int;
 }
 
 
@@ -108,7 +135,6 @@ class Pad {
 		eraseUnconfed:true,
 		style:CBS_MS,
 	}
-	
 	
 	public static var CONFIG_RAP4 : BaseConf = cast {
 		ids:["E8AFC630-E6DE-11E5-8002-444553540000"],
@@ -228,7 +254,7 @@ class Pad {
 	public static var CONFIG_SWITCH_LEFT  : BaseConf = null;
 	public static var CONFIG_SWITCH_RIGHT  : BaseConf = null;
 	
-	public static var CONFIG_SWITCH_ATTACHED_TO_CONSOLE : BaseConf = cast {
+	public static var CONFIG_SWITCH_ATTACHED_TO_CONSOLE : NinConf = cast {
 		ids:["6e7061645f68616e6468656c64307801"],
 		name:"Joy-Cons connected to console",
 		matchString:"Joy-Cons",
@@ -236,12 +262,18 @@ class Pad {
 		analogX : 0,
 		analogY : 1,
 		
-		X:9,
-		Y:8,
+		X:8,
+		Y:9,
 		LB:15,
 		
-		A:7,
-		B:6,
+		B:7,
+		A:6,
+		
+		NIN_A : 7,
+		NIN_B : 6,
+		NIN_X : 9,
+		NIN_Y : 8,
+		
 		RB:16,
 		
 		L2:4,
@@ -421,9 +453,7 @@ class Pad {
 	}
 	
 	public var onRemoval : hxd.Signal = new hxd.Signal();
-
 	public static var AXIS_DIFFERENTIAL_THRESHOLD = 0.25;
-	
 	
 	public function axisIsNeg(idx:Int){
 		if ( idx >= values.length || idx < 0 ) {
@@ -537,6 +567,15 @@ class Pad {
 	public static function nbPads() return flash.ui.GameInput.numDevices;
 	#end
 	
+	
+	public function isDummy(){
+		return conf == CONFIG_DUMMY || name == "dummy";
+	}
+	
+	public static function hasPad(){
+		return padList.length > 0;
+	}
+	
 	public static function getList() : Array<Pad>{
 		return padList;
 	}
@@ -584,6 +623,7 @@ class Pad {
 	static function systemInit(){
 		#if switch
 		generateDual();
+		switchInit();
 		#end
 	}
 	
@@ -613,6 +653,11 @@ class Pad {
 		CONFS.push( CONFIG_SWITCH_RIGHT );
 	}
 	
+		#if switch
+		static function switchInit(){
+			
+		}
+		#end
 	#end
 
 	#if (flash||openfl)

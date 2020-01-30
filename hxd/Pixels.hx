@@ -90,6 +90,10 @@ class Pixels {
 		if( flags.has(ReadOnly) )
 			copyInner();
 			
+		#if cpp
+		trace("texture conversion occured to " + target);
+		#end
+			
 		switch( [format, target] ) {
 			case [BGRA, ARGB], [ARGB, BGRA]:
 				// reverse bytes

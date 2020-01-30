@@ -41,6 +41,7 @@ class Reader {
 		input.bigEndian = false;
 	}
 	
+	@:noDebug
 	public function read() : Data {
 		var i = input;
 		var h = readHeader(i);
@@ -56,6 +57,7 @@ class Reader {
 		return d;
 	}
 	
+	@:noDebug
 	function readImages(d:Data) {
 		var ptr = 0;
 		var bpp = d.getBpp();
@@ -85,6 +87,7 @@ class Reader {
 		}
 	}
 	
+	@:noDebug
 	function readMeta(i:haxe.io.BytesInput, h:Header) {
 		var a = [];
 		var meta = h.metadataSize;
@@ -105,6 +108,7 @@ class Reader {
 		return a;
 	}
 	
+	@:noDebug
 	function readHeader(i:haxe.io.BytesInput) : Data.Header {
 		var h = new Header();
 		h.version = i.readInt32();
@@ -141,6 +145,7 @@ class Reader {
 		return d.toTexture();
 	}
 	
+	@:noDebug
 	public static function fromCompressedAssets( path:String ) : h3d.mat.Texture {
 		var fileBytes = sys.io.File.getBytes(path);
 		var bytes = haxe.zip.Uncompress.run( fileBytes );
@@ -153,6 +158,7 @@ class Reader {
 		return t;
 	}
 	
+	@:noDebug
 	public static function fromBytes( b:haxe.io.Bytes){
 		var t = new hxd.fmt.pvr.Reader(b);
 		var d : hxd.fmt.pvr.Data = t.read();
