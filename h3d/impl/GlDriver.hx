@@ -2608,11 +2608,11 @@ class GlDriver extends Driver {
 	}
 	
 	public override function flush(){
-		
+		gl.flush();
 	}
 	
 	public override function finish(){
-		
+		gl.finish();
 	}
 	
 	override function present() {

@@ -30,11 +30,16 @@ typedef BaseConf = {
 	var B 	:Int;
 	var X 	:Int;
 	var Y 	:Int;
+	
 	var LB 	:Int;
 	var RB 	:Int;
 	
+	var LT 	:Int;
+	var RT 	:Int;
+	
 	var start	:Int;
 	
+	var defaultXInverted:Bool;
 	var defaultYInverted :Bool;
 	var matchString :String;
 	var metaName : String;
@@ -55,8 +60,15 @@ typedef NinConf = {
 	
 	var NIN_A 	:Int;
 	var NIN_B 	:Int;
+	
 	var NIN_X 	:Int;
 	var NIN_Y 	:Int;
+	
+	var NIN_L 	:Int;
+	var NIN_ZL 	:Int;
+	
+	var NIN_R 	:Int;
+	var NIN_ZR:Int;
 	
 	var dash	:Int;
 	var plus	:Int;
@@ -164,6 +176,7 @@ class Pad {
 		"R2", "L2", "Options", "", "", //15-19
 		"","","",//20-24
 		],
+		defaultXInverted:false,
 		defaultYInverted:false,
 		eraseUnconfed:true,
 		style:CBS_SONY,
@@ -185,8 +198,8 @@ class Pad {
 		B:12,
 		RB:15,
 		
-		L2:16,
-		R2:17,
+		LT:16,
+		RT:17,
 		
 		start : 19,
 		dpadUp : 6,
@@ -204,6 +217,7 @@ class Pad {
 		"R1", "L2", "R2", "Share", "Options", //15-19
 		"L3","R3","PS Button",//20-24
 		],
+		defaultXInverted:false,
 		defaultYInverted:false,
 		eraseUnconfed:true,
 		style:CBS_SONY,
@@ -234,8 +248,8 @@ class Pad {
 		share:16	,
 		options:17,
 		
-		L2:14,
-		R2:15,
+		LT:14,
+		RT:15,
 		
 		names : [
 		"", "", "", "", "UP",//0-4
@@ -244,6 +258,7 @@ class Pad {
 		"R2", "SHARE", "OPTIONS", "", "", //15-19
 		"PS Button",""," ",//20-24
 		],
+		defaultXInverted:false,
 		defaultYInverted:false,
 		eraseUnconfed:false,
 		style:CBS_SONY,
@@ -253,6 +268,7 @@ class Pad {
 	public static var CONFIG_SWITCH_PRO  : BaseConf = null;
 	public static var CONFIG_SWITCH_LEFT  : BaseConf = null;
 	public static var CONFIG_SWITCH_RIGHT  : BaseConf = null;
+	public static var CONFIG_SWITCH_PRO_PC  : BaseConf = null;
 	
 	public static var CONFIG_SWITCH_ATTACHED_TO_CONSOLE : NinConf = cast {
 		ids:["6e7061645f68616e6468656c64307801"],
@@ -271,13 +287,14 @@ class Pad {
 		
 		NIN_A : 7,
 		NIN_B : 6,
+		
 		NIN_X : 9,
 		NIN_Y : 8,
 		
 		RB:16,
 		
-		L2:4,
-		R2:5,
+		LT:4,
+		RT:5,
 		
 		start : 12,
 		dpadUp : 17,
@@ -294,15 +311,22 @@ class Pad {
 		ranalogX : 2,
 		ranalogY : 3,
 		
+		NIN_L:15,
+		NIN_R:16,
+		
+		NIN_ZL:4,
+		NIN_ZR:5,
+		
 		names : [
 		"leftAnalogX", 		"leftAnalogY", 	"rightAnalogX", 	"rightAnalogY", 		"ZL",//0-4
 		"ZR",				"B", 			"A", 				"Y", 					"X", //5-9
 		BT_DASH, 			"", 			"PLUS", 			"", 					"",//10-14
 		"L", 				"R", 			"dpadUp", 			"dpadDown", 			"dpadLeft", //15-19
-		"dpadRight",		"",				"",//20-24	
+		"dpadRight",		"",				""//20-24	
 		],
 		
 		eraseUnconfed: #if debug false #else true #end,
+		defaultXInverted:false,
 		defaultYInverted:false,
 		style:CBS_NINTENDO,
 	}
@@ -347,6 +371,7 @@ class Pad {
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 		"","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",//for pads with exotic button count
 		],
+		defaultXInverted:false,
 		defaultYInverted:false,
 		eraseUnconfed:false,
 		style:CBS_SONY,
@@ -388,6 +413,7 @@ class Pad {
 		"", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
 		"","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",//for pads with exotic button count
 		],
+		defaultXInverted:false,
 		defaultYInverted:false,
 		eraseUnconfed:false,
 		style:CBS_PC,
@@ -430,7 +456,7 @@ class Pad {
 	public var nativeControls : Array<flash.ui.GameInputControl> = [];
 	#end
 	
-	public static var DEBUG_MODE = false;
+	public static var DEBUG_MODE = true;
 	
 	public var conf:BaseConf;
 	public var destroyed = false;
@@ -594,6 +620,8 @@ class Pad {
 		return dummy;
 	}
 	
+	/*
+	 * UNSAFE
 	#if (flash||openfl)
 	public static function getPadById(id:String) {
 		for ( p in padList)
@@ -602,6 +630,7 @@ class Pad {
 		return dummy;
 	}
 	#end
+	*/
 	
 	public static function wait( onPad : Pad -> Void ) {
 		#if (flash||openfl)
@@ -621,18 +650,25 @@ class Pad {
 	
 	#if (flash||openfl)
 	static function systemInit(){
-		#if switch
 		generateDual();
+		#if switch
 		switchInit();
 		#end
 	}
 	
 	static function generateDual(){
+		#if debug trace("dual confs done"); #end
 		CONFIG_SWITCH_DUAL = Reflect.copy( CONFIG_SWITCH_ATTACHED_TO_CONSOLE );
 		CONFIG_SWITCH_DUAL.name = "Joy-Con (Dual)";
 		CONFIG_SWITCH_DUAL.matchString = CONFIG_SWITCH_DUAL.name;
 		
 		CONFS.push(CONFIG_SWITCH_DUAL );
+		
+		CONFIG_SWITCH_PRO_PC = Reflect.copy( CONFIG_SWITCH_ATTACHED_TO_CONSOLE );
+		CONFIG_SWITCH_PRO_PC.name = "Pro Controller";
+		CONFIG_SWITCH_PRO_PC.matchString = CONFIG_SWITCH_PRO_PC.name;
+		
+		CONFS.push(CONFIG_SWITCH_PRO_PC );
 		
 		CONFIG_SWITCH_PRO = Reflect.copy( CONFIG_SWITCH_ATTACHED_TO_CONSOLE );
 		CONFIG_SWITCH_PRO.name = "Switch Pro Controller compatible";
@@ -653,11 +689,11 @@ class Pad {
 		CONFS.push( CONFIG_SWITCH_RIGHT );
 	}
 	
-		#if switch
-		static function switchInit(){
-			
-		}
-		#end
+	#if switch
+	static function switchInit(){
+		
+	}
+	#end
 	#end
 
 	#if (flash||openfl)
@@ -695,32 +731,65 @@ class Pad {
 			if( p.d == flash.ui.GameInput.getDeviceAt(i) )
 				p.index = i;
 				
+		#if false
 		for ( ps in padList ) {
-			if ( ps.d.id == p.d.id )
+			if ( ps.d.id == p.d.id ){
+				#if debug
+				trace("already have pad with same id " + p.d.id+" <> "+ps.d.id );
+				#end
 				return;
+			}
 		}
+		#end
 		
 		//match device to see if known
 		var pid = p.d.id;
 		var pname = p.name;
-		for ( c in CONFS) {
-			if ( (pname.toLowerCase().indexOf( c.matchString.toLowerCase()  ) >= 0)
-			//&&	(p.d.id == c.ids[0] || p.d.id == c.ids[1]) 
-			){
-				//trace("found one match " + c.name);
-				p.conf = c;
-				if ( c.defaultXInverted ) p.xInverted = true;
-				if ( c.defaultYInverted ) p.yInverted = true;
-				break;
-			}
-		}
 		
+		if ( pname == null ) trace("no pname?");
+		
+		var idx = 0;
+		var pnameLc = pname.toLowerCase();
+		try{
+			for ( ac in CONFS) {
+				var c : BaseConf = ac;
+				
+				if ( c.matchString == null){
+					trace("no matchstring ?" + c.name);
+					idx++;
+					continue;
+				}
+				var cmlc = c.matchString.toLowerCase();
+				//trace("trying : " + pnameLc + " <> "+cmlc);
+				if ( (pnameLc.indexOf( cmlc ) >= 0)
+				//&&	(p.d.id == c.ids[0] || p.d.id == c.ids[1]) 
+				){
+					#if debug
+					trace("found one match " + c.name);
+					#end
+					p.conf = c;
+					if ( c.defaultXInverted == true ) p.xInverted = true;
+					if ( c.defaultYInverted == true ) p.yInverted = true;
+					break;
+				}
+				idx++;
+			}
+		}catch (d:Dynamic){
+			trace("failure on " + pname+" on"+idx);
+			trace( CONFS[idx] );
+			trace(d);
+		}
+			
 		if ( p.conf == null){
 			p.conf = CONFIG_DUMMY;
 		}
 		
 		#if garbageStick
 		p.conf = CONFIG_DUMMY;
+		#end
+		
+		#if debug
+		trace("enabling pad " + p.conf.name);
 		#end
 		
 		p.d.enabled = true;
@@ -740,7 +809,7 @@ class Pad {
 			
 			
 			#if debug
-			if ( DEBUG_MODE ) trace("add ctrl : " + c.id);
+			//if ( DEBUG_MODE ) trace("add ctrl : " + c.id);
 			#end
 				
 			if( StringTools.startsWith(c.id, "AXIS_") ) {
@@ -775,6 +844,10 @@ class Pad {
 		padList.push(p);
 		
 		if ( onPad != null ) onPad(p);
+		
+		#if debug
+		trace("pad successfully installed");
+		#end
 	}
 	
 	static var op : flash.events.GameInputEvent->Void;

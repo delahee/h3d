@@ -221,6 +221,9 @@ class YuvSurface extends h2d.Sprite {
 	var innerSizeX : Int = 0;
 	var innerSizeY : Int = 0;
 	
+	/**
+	 * Avoid writing in a texture you are rendering which allows much faster rendering
+	 */
 	public var doubleBuffering = true;
 	
 	public function new(parent, ?sh:YuvShader) {
@@ -285,23 +288,35 @@ class YuvSurface extends h2d.Sprite {
 		}
 		
 		var pix8 : hxd.Pixels = hxd.Pixels.alloc( w, h, Mixed(8,0,0,0) );
-		pix8.fill(0xff);
+		pix8.fill(0x0);
 		
 		var pix16 : hxd.Pixels = hxd.Pixels.alloc( w>>1, h>>1, Mixed(8,8,0,0) );
-		pix16.fill(0xffff);
+		pix16.fill(0x0);
 		
 		texY 	= new h3d.mat.Texture( w, h );
-		texUV 	= new h3d.mat.Texture( w>>1, h>>1 );
+		texY.uploadPixels(pix8);
+		
+		texUV 	= new h3d.mat.Texture( w >> 1, h >> 1 );
+		texUV.uploadPixels(pix16 );
 		
 		uploadingTexY 	= new h3d.mat.Texture( w, h );
-		uploadingTexUV 	= new h3d.mat.Texture( w>>1, h>>1 );
+		uploadingTexY.uploadPixels(pix8);
+		
+		uploadingTexUV 	= new h3d.mat.Texture( w >> 1, h >> 1 );
+		uploadingTexUV.uploadPixels(pix16 );
 		
 		tileY = h2d.Tile.fromTexture(texY);
 		tileUV = h2d.Tile.fromTexture(texUV);
 		
 		innerSizeX = w;
 		innerSizeY = h;
+		
+		#if debug
 		trace("size are correctly set to " + innerSizeX + " " + innerSizeY);
+		#end
+		
+		pix8 = null;
+		pix16 = null;
 	}
 
 	public override function clone<T>( ?s:T ) : T {
@@ -430,7 +445,15 @@ class YuvSurface extends h2d.Sprite {
 		
 		texY.filter = oldFilter;
 		texUV.filter = oldFilter;
-		
+	}
+	
+	override function drawRec( ctx : RenderContext ) {
+		super.drawRec(ctx);
+		//always flip even if not visible
+		flip();
+	}
+	
+	public function flip(){
 		if( doubleBuffering ){
 			var oY = texY;
 			texY = uploadingTexY;

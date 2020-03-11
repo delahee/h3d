@@ -448,6 +448,7 @@ class Text extends Drawable implements IText {
 	var tHeight : Null<Int> = null;
 	function get_textHeight() : Int {
 		if ( tHeight != null) return tHeight;
+		if ( font == null ) return 0;
 		var r = initGlyphs(utf, false);
 		tWidth = r.x;
 		tHeight = r.y;
@@ -457,6 +458,7 @@ class Text extends Drawable implements IText {
 	var tWidth : Null<Int> = null;
 	function get_textWidth() : Int {
 		if ( tWidth != null) return tWidth;
+		if ( font == null ) return 0;
 		var r = initGlyphs(utf, false);
 		tWidth = r.x;
 		tHeight = r.y;

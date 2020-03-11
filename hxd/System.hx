@@ -77,6 +77,7 @@ opengl
 	
 	static function get_screenDPI() return flash.system.Capabilities.screenDPI;
 	
+	
 	static var loop = null;
 	public static function setLoop( update : Void -> Void, ?render: Void->Void ) {
 		if( loop != null ) flash.Lib.current.removeEventListener(flash.events.Event.ENTER_FRAME, loop);
@@ -85,6 +86,9 @@ opengl
 			loop = null;
 		else {
 			loop = function(_) {
+				#if (cpp && (openfl >= "6.5.0"))
+				flash.Lib.current.invalidate();
+				#end
 				update();
 				if( render !=null ) render();
 			}

@@ -43,6 +43,10 @@ class RingBuffer<T>  {
 		ringSize = size;
 	}
 	
+	public function clear(){
+		posEnd = posStart;
+	}
+	
 	public inline function first() : T {
 		if ( posStart == posEnd ) return null;
 		return arr[posStart];
