@@ -129,8 +129,8 @@ class Bounds {
 	}
 	
 	public inline function scaleCenter( v : Float ) {
-		var dx = (xMax - xMin) * 0.5 * v;
-		var dy = (yMax - yMin) * 0.5 * v;
+		var dx = (xMax - xMin) * 0.5;
+		var dy = (yMax - yMin) * 0.5;
 		var mx = (xMax + xMin) * 0.5;
 		var my = (yMax + yMin) * 0.5;
 		xMin = mx - dx * v;
