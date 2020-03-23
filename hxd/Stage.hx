@@ -353,7 +353,6 @@ class Stage {
 #end
 
 #if openfl
-
 	static function openFLBoot(callb) {
 		
 		System.trace1("ofl boot !");
@@ -372,7 +371,38 @@ class Stage {
 			#end
 		}
 	}
-
 #end
+
+	public static function requestSoftKeyboard(){
+		#if (openfl && switch)
+		trace("requestSoftKeyboard");
+		var str = lime.console.nswitch.Swkbd.getKeyboardResult();
+		if ( str == null ){
+			var stage = hxd.Stage.getInstance();
+			var ke = new flash.events.KeyboardEvent("anon",true,false,0,0);
+			
+			function simKey(code){
+				var ev = hxd.Event.alloc(EKeyDown);
+				ev.charCode = ev.keyCode = code;
+				stage.event(ev);
+				
+				var ev = hxd.Event.alloc(EKeyUp);
+				ev.charCode = ev.keyCode = code;
+				stage.event(ev);
+			}
+			
+			haxe.Utf8.iter( str, function(code:Int){
+				ke.charCode = ke.keyCode = code;
+				simKey(code);
+			});
+			simKey( '\n'.code );
+		}
+		#elseif ( openfl )
+		trace("dunno what to do..");
+		flash.Lib.current.requestSoftKeyboard();
+		#else 
+		trace("dunno what to do...");
+		#end
+	}
 
 }

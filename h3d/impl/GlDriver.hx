@@ -2636,21 +2636,21 @@ class GlDriver extends Driver {
 	function initLime(){
 		var windows = lime.app.Application.current;
 		
-		#if !prod
-		trace("lime detected");
-		#end
-		
-		#if lime_harfbuzz
-		#if !prod
-		trace("harfbuzz detected");
-		#end
-		#end
-		
-		#if lime_cairo
-		#if !prod
-		trace("cairo detected");
-		#end
-		#end
+		//#if !prod
+		//trace("lime detected");
+		//#end
+		//
+		//#if lime_harfbuzz
+		//#if !prod
+		//trace("harfbuzz detected");
+		//#end
+		//#end
+		//
+		//#if lime_cairo
+		//#if !prod
+		//trace("cairo detected");
+		//#end
+		//#end
 	}
 	#end
 
