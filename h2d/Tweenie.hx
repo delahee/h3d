@@ -43,6 +43,8 @@ abstract TVarName(Int) {
 	
 	var VWidth		= 11;
 	var VHeight		= 12;
+	
+	var VCustom		= 20;
 }
 
 @:publicFields
@@ -167,6 +169,8 @@ class Tween {
 			case VScale		: parent.setScale( val );
 			case VWidth		: parent.width		= val;
 			case VHeight	: parent.height		= val;
+			case VCustom	: 
+				//do nothing
 		}
 		//#if debug
 		//trace("val:" + val);
@@ -214,7 +218,7 @@ class Tweenie {
 		return false;
 	}
 
-	public function delay( delay_ms:Float, parent:TSprite, varName: TVarName, to:Float, ?tp:TType, ?duration_ms:Float) {
+	public function delay( delay_ms:Float, parent:TSprite, varName: TVarName, to:Float, ?tp:TType, ?duration_ms:Float) : TTw {
 		var p = create(parent, varName, to, tp, duration_ms);
 		tlist.remove(p);
 		delayList.push(p);//finish pair
@@ -226,7 +230,7 @@ class Tweenie {
 		return p;
 	}
 	
-	public function create(parent:TSprite, varName: TVarName, to:Float, ?tp:TType, ?duration_ms:Float) {
+	public function create(parent:TSprite, varName: TVarName, to:Float, ?tp:TType, ?duration_ms:Float) : TTw {
 		var p = parent;
 		var v = varName;
 		if ( duration_ms==null )
@@ -335,6 +339,8 @@ class Tweenie {
 				case VA			: parentD.color.a;
 				case VWidth		: parent.width;
 				case VHeight	: parent.height;
+				case VCustom	: 
+					return 0.0;
 			}
 		}
 	}
@@ -438,22 +444,22 @@ class Tweenie {
 	static inline function fElasticEnd	(step) 	return bezier(step, 0,	0.7,	1.5,	1	);
 	static inline function fBurn2		(step) 	return bezier(step, 0,	0.7,	 0.4,	1	);
 	
-	static var videntityStep=  identityStep ;
-	static var vfEase		=  fEase		;
-	static var vfEaseIn		=  fEaseIn		;
-	static var vfEaseOut	=  fEaseOut		;	
-	static var vfBurn		=  fBurn		;
-	static var vfBurnIn		=  fBurnIn		;
-	static var vfBurnOut	=  fBurnOut		;	
-	static var vfZigZag		=  fZigZag		;
-	static var vfLoop		=  fLoop		;
-	static var vfLoopEaseIn	=  fLoopEaseIn	;
-	static var vfLoopEaseOut=  fLoopEaseOut	;	
-	static var vfShake		=  fShake		;
-	static var vfShakeBoth	=  fShakeBoth	;
-	static var vfJump		=  fJump		;
-	static var vfElasticEnd	=  fElasticEnd	;
-	static var vfBurn2		=  fBurn2		;
+	public static var videntityStep=  identityStep ;
+	public static var vfEase		=  fEase		;
+	public static var vfEaseIn		=  fEaseIn		;
+	public static var vfEaseOut	=  fEaseOut		;	
+	public static var vfBurn		=  fBurn		;
+	public static var vfBurnIn		=  fBurnIn		;
+	public static var vfBurnOut	=  fBurnOut		;	
+	public static var vfZigZag		=  fZigZag		;
+	public static var vfLoop		=  fLoop		;
+	public static var vfLoopEaseIn	=  fLoopEaseIn	;
+	public static var vfLoopEaseOut=  fLoopEaseOut	;	
+	public static var vfShake		=  fShake		;
+	public static var vfShakeBoth	=  fShakeBoth	;
+	public static var vfJump		=  fJump		;
+	public static var vfElasticEnd	=  fElasticEnd	;
+	public static var vfBurn2		=  fBurn2		;
 	
 	public static  
 	function getInterpolateFunction(type:TType) {
