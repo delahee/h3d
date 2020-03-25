@@ -1024,10 +1024,11 @@ class GlDriver extends Driver {
 		}
 		else {
 			var fbo : FBO = null;
-			
+			var fresh = true;
 			for ( f in fboList) {
 				if ( f.color == tex ) {
 					fbo = f;
+					fresh=false;
 					//System.trace3('reusing render target of ${tex.width} ${tex.height}');
 					break;
 				}
@@ -1105,7 +1106,10 @@ class GlDriver extends Driver {
 			gl.bindFramebuffer(GL.FRAMEBUFFER, fbo.fbo);
 			checkError();
 			
-			if ( clearColor != null) {
+			if( fresh && (clearColor == null) ) clearColor = 0x0;//trigger a shallow clear
+			
+			if ( clearColor != null ) 
+			{
 				//needed ?
 				clear(	Math.b2f(clearColor>> 16),
 						Math.b2f(clearColor>> 8),
