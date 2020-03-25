@@ -264,10 +264,10 @@ class Pad {
 		style:CBS_SONY,
 	}
 	
-	public static var CONFIG_SWITCH_DUAL  : BaseConf = null;
-	public static var CONFIG_SWITCH_PRO  : BaseConf = null;
-	public static var CONFIG_SWITCH_LEFT  : BaseConf = null;
-	public static var CONFIG_SWITCH_RIGHT  : BaseConf = null;
+	public static var CONFIG_SWITCH_DUAL  : NinConf = null;
+	public static var CONFIG_SWITCH_PRO  : NinConf = null;
+	public static var CONFIG_SWITCH_LEFT  : NinConf = null;
+	public static var CONFIG_SWITCH_RIGHT  : NinConf = null;
 	public static var CONFIG_SWITCH_PRO_PC  : BaseConf = null;
 	
 	public static var CONFIG_SWITCH_ATTACHED_TO_CONSOLE : NinConf = cast {
