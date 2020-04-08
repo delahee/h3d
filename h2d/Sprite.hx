@@ -278,7 +278,7 @@ class Sprite {
 	}
 	
 	@:noDebug
-	public inline function set_posChanged(v) {
+	public function set_posChanged(v) {
 		posChanged = v;
 		if( v && childs!=null)
 			for ( c in childs)
@@ -703,12 +703,16 @@ class Sprite {
 	}
 	
 	public function set_width(v:Float):Float {
-		throw "cannot set width of this object";
+		scaleX = 1.0;
+		var w = get_width();
+		scaleX = v  / w;
 		return v;
 	}
 	
-	public function set_height(h:Float):Float {
-		throw "cannot set height of this object";
+	public function set_height(v:Float):Float {
+		scaleY = 1.0;
+		var h = get_height();
+		scaleY = v  / h;
 		return h;
 	}
 	

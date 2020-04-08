@@ -62,7 +62,7 @@ class Texture {
 		
 		this.flags = 		flags;
 		this.mipMap =		flags.has( MipMapped ) ? Nearest : None;
-		if ( this.flags.has(Target))	this.flags.set( TextureFlags.AlphaPremultiplied );
+		if ( this.flags.has(Target) )	this.flags.set( TextureFlags.AlphaPremultiplied );
 		
 		bits &= 0x7FFF;
 
@@ -83,6 +83,12 @@ class Texture {
 		
 		#if debug 
 		name = "Texture #" + id;
+		#end
+		
+		#if switch 
+		if (  this.flags.has(Target) ){
+			clear(0);
+		}
 		#end
 	}
 
@@ -143,6 +149,12 @@ class Texture {
 		var g = (color >> 8) & 0xFF;
 		var r = (color >> 16) & 0xFF;
 		var a = color >>> 24;
+		
+		if ( color == 0 )
+		{
+			p.bytes.clear();
+		}
+		else 
 		for( i in 0...width * height ) {
 			p.bytes.set(k++,b);
 			p.bytes.set(k++,g);

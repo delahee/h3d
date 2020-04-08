@@ -16,6 +16,16 @@ class BytesView {
 		return bytes.get(pos + position);
 	}
 	
+	function clear()
+	{
+		#if cpp
+			cpp.NativeArray.zero( bytes.getData(), position, length );
+		#else
+		for ( i in 0...length)
+			bytes.set(position + i, 0);
+		#end
+	}
+	
 	inline function set( pos : Int ,v)  {
 		bytes.set(pos + position,v);
 	}

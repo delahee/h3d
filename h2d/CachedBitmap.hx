@@ -128,10 +128,6 @@ class CachedBitmap extends Bitmap {
 		tex.name = 'CachedBitmap:'+name;
 		tex.realloc = innerRealloc.bind(tex);
 		
-		#if cpp
-		tex.clear(0x00000000);
-		#end
-		
 		renderDone = false;
 		tile = new Tile(tex, 0, 0, realWidth, realHeight);
 		permaTile.copy(tile);

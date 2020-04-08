@@ -73,7 +73,7 @@ class Any extends Resource {
 		return loader.loadFont(entry.path);
 	}
 
-	public function toBitmap() {
+	public function toBitmap() : hxd.BitmapData {
 		return loader.loadTexture(entry.path).toBitmap();
 	}
 

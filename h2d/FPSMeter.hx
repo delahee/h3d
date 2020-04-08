@@ -73,8 +73,8 @@ class FPSMeter extends h2d.Sprite{
 		
 		var cx = 0;
 		var delta = 1.0 / 60.0;
+		var e = null;
 		for ( s in samples ){
-			var e = null;
 			if ( spool.length == 0 ) 	e = sb.alloc(sb.tile);
 			else 						{ e = spool.pop(); sb.add( e ); }
 			
@@ -97,9 +97,6 @@ class FPSMeter extends h2d.Sprite{
 		
 	}
 	
-	//var timer = 30.0;
-	
-	inline 
 	function sample(val:Float){
 		if ( !samplingEnabled ){
 			samples.removeOrderedAt(0);
@@ -109,6 +106,14 @@ class FPSMeter extends h2d.Sprite{
 		samples.push(val);
 		while( samples.length > maxSamples )
 			samples.removeOrderedAt(0);
+			
+		if ( visible ){
+			#if (debug)
+			if ( val > (1.0 / 60.0)){
+				trace("BAD FRAME update:" + App.me.deltaUpdate+"s render:" + App.me.deltaRender+"s");
+			}
+			#end
+		}
 	}
 	
 	public override function sync(c){

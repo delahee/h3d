@@ -159,7 +159,7 @@ class Reader {
 	}
 	
 	@:noDebug
-	public static function fromBytes( b:haxe.io.Bytes){
+	public static function fromBytes( b:haxe.io.Bytes ){
 		var t = new hxd.fmt.pvr.Reader(b);
 		var d : hxd.fmt.pvr.Data = t.read();
 		return d.toTexture();

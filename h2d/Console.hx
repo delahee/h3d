@@ -11,6 +11,7 @@ enum ConsoleArg {
 }
 
 typedef Args = { name : String, t : ConsoleArg, ?opt : Bool };
+private typedef Cmd = { help : String, args : Array<Args>, callb : Dynamic };
 class Console extends h2d.Sprite {
 
 	public static var HIDE_LOG_TIMEOUT = 3.;
@@ -21,7 +22,7 @@ class Console extends h2d.Sprite {
 	var cursor : h2d.Bitmap;
 	var cursorPos(default, set) : Int;
 	var lastLogTime : Float 				= 0.0;
-	var commands : Map < String, { help : String, args : Array<Args>, callb : Dynamic }> ;
+	var commands : Map < String, Cmd>;
 	var aliases : Map<String,String>;
 	var logDY : Float = 0;
 	var logs : hxd.Stack<String>;
@@ -286,7 +287,10 @@ class Console extends h2d.Sprite {
 		var cmd = commands.get(cmdName);
 		var errorColor = 0xC00000;
 		if( cmd == null ) {
-			log('Unknown command "${cmdName}"',errorColor);
+			log('Unknown command ${cmdName}', errorColor);
+			#if debug
+			trace('Unknown command : >${cmdName}<', errorColor);
+			#end
 			return;
 		}
 		var vargs = new Array<Dynamic>();
@@ -344,7 +348,13 @@ class Console extends h2d.Sprite {
 			Reflect.callMethod(null, cmd.callb, vargs);
 		} catch ( e : String ) {
 			#if debug
-			trace(e);
+				trace("err running cmd :"+command);
+				trace(e);
+				
+				#if cpp
+				trace( haxe.CallStack.toString(haxe.CallStack.exceptionStack()));
+				#end
+			
 			#end
 			log('ERROR $e', errorColor);
 		}
