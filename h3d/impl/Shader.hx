@@ -114,8 +114,8 @@ class Shader {
 	function customSetup( driver : h3d.impl.GlDriver ) {
 	}
 	
-	function getConstants( vertex : Bool ) {
-		return "";
+	function getConstants( cst:hxd.Stack<String>, vertex : Bool ) : hxd.Stack<String> {
+		return cst;
 	}
 	
 	public

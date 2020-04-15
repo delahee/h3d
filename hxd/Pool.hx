@@ -2,11 +2,13 @@ package hxd;
 
 @generic
 class Pool<T> {
-
+	public static var EMPTY_ARRAY = [];
+	
 	public var 	actives : hxd.Stack<T> = new hxd.Stack<T>();//set to null to avoid tracking it
 	public var 	pool 	: hxd.Stack<T> = new hxd.Stack<T>();
 	public var 	allocProc : T -> Void = function(_){}
 	public var 	deleteProc :T -> Void = function(_){}
+	
 	var cl : Class <T>;
 	
 	public function new( cl : Class<T>, ?allocProc : T -> Void, ?deleteProc : T -> Void ) {
@@ -21,7 +23,7 @@ class Pool<T> {
 	public function alloc() : T{
 		if ( pool.length == 0 ){
 			//this active becomes untracked
-			var inst =  Type.createInstance( cl,[] );
+			var inst =  Type.createInstance( cl, EMPTY_ARRAY );
 			allocProc(inst);
 			if(actives!=null)actives.push( inst );
 			return inst;

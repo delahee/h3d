@@ -27,6 +27,7 @@ class Signal {
 		signalsOnce.remove(f);
 	}
 	
+	public inline function clear() purge();
 	public inline function purge() {
 		dispose();
 	}

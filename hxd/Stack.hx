@@ -49,7 +49,9 @@ class Stack<T>  {
 	/**
 	 * slow, breaks order but no realloc nor mass move
 	 */
-	public inline function remove(v:T):Bool{
+	public 
+	#if!debug inline #end
+	function remove(v:T):Bool{
 		var i = arr.indexOf(v);
 		return removeAt(i);
 	}
@@ -58,7 +60,9 @@ class Stack<T>  {
 		return arr[Std.random( get_length() )];
 	}
 	
-	public inline function removeOrdered(v:T):Bool {
+	public 
+	#if!debug inline #end
+	function removeOrdered(v:T):Bool {
 		if ( pos == 0 ) return false;
 		var i = arr.indexOf(v);
 		if ( i < 0 ) return false;
@@ -71,7 +75,9 @@ class Stack<T>  {
 			removeOrderedAt(i);
 	}
 	
-	public inline function removeOrderedAt(idx:Int):Bool {
+	public 
+	#if!debug inline #end
+	function removeOrderedAt(idx:Int):Bool {
 		if ( idx < 0 ) return false;
 		if ( pos == 0 ) return false;
 		for ( i in idx...pos)
@@ -203,6 +209,18 @@ class Stack<T>  {
 			arr[ a ] = arr[ b ];
 			arr[ b ] = temp;
 		}
+	}
+	
+	public function join(sep:String) : String {
+		var str = new StringBuf();
+		
+		for ( i in 0...pos){
+			str.add(arr[i]);
+			if ( i < pos - 1  )
+				str.add(sep);
+		}
+		
+		return str.toString();
 	}
 }
 

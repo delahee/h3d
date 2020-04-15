@@ -1641,18 +1641,37 @@ class GlDriver extends Driver {
 	static var gldefs = gles + notgles;
 		
 	static var regs = [];
-	function _parseShader<T>(shader : Shader , cl : Class<T>, type:Int) {
+	static var SH_NAME_VERTEX = "VERTEX";
+	static var SH_NAME_FRAGMENT = "FRAGMENT";
+	
+	static var shVsCst = new hxd.Stack<String>();
+	static var shFsCst = new hxd.Stack<String>();
+	
+	@:generic
+	function getShaderCode<T>(shader : Shader, cl : Class<T>, type:Int) : String {
 		var vertex = type == GL.VERTEX_SHADER;
-		var name = vertex ? "VERTEX" : "FRAGMENT";
+		var name = vertex ? SH_NAME_VERTEX : SH_NAME_FRAGMENT;
 		var code = Reflect.field(cl, name);
 		if ( code == null ) throw "Missing " + Type.getClassName(cl) + "." + name + " shader source";
-		
-		var cst = shader.getConstants(vertex);
+		return code;
+	}
+	
+	@:generic
+	function parseShader<T>(shader : Shader , cl : Class<T>, type:Int):String {
+		var isVertex = type == GL.VERTEX_SHADER;
+		var code = getShaderCode( shader, cl, type);
+		var cst = shader.getConstants( isVertex ? shVsCst : shFsCst, isVertex );
+		return expandShader(shader, cst, code, type);
+	}
+	
+	function expandShader( shader : Shader, cst:hxd.Stack<String>, source:String, type:Int) : String {
+		var isVertex = type == GL.VERTEX_SHADER;
+		var code = source;
 		
 		#if dumpShader
-		code = StringTools.trim(cst + code);
+		code = StringTools.trim(cst.join("\n") + code);
 		#else
-		code = cst + code;
+		code = cst.join("\n") + code;
 		#end
 
 		code = gldefs + code;
@@ -1700,6 +1719,7 @@ class GlDriver extends Driver {
 		
 		#if (windows && debug && dumpShader)
 		//System.trace2("source:"+code);
+		var sig = CRC32( code );
 		var f = sys.io.File.write( "./" + sig + ((type == GL.VERTEX_SHADER) ? ".vsh" : ".fsh"), true);
 		code.replace("\n\n", "\n");
 		f.writeString( code );
@@ -1735,11 +1755,11 @@ class GlDriver extends Driver {
 		return s;
 	}
 	
-	static function makeCRC32( data : String ) : Int {
+	static function CRC32( data : String ) : UInt {
 		var init = 0xFFFFFFFF;
 		var crc = init;
 		for( i in 0...data.length ) {
-			var tmp = (crc ^ data.charCodeAt(i)) & 0xFF;
+			var tmp = (crc ^ data.fastCodeAt(i)) & 0xFF;
 			for( j in 0...8 ) {
 				if( tmp & 1 == 1 )
 					tmp = (tmp >>> 1) ^ 0xEDB88320;
@@ -1751,20 +1771,72 @@ class GlDriver extends Driver {
 		return crc ^ init;
 	}
 	
-	function buildShaderInstance( shader : Shader ) {
-		var cl = Type.getClass(shader);
-		var fullCode = "";
-		
-		var vsCode = _parseShader(shader,cl,GL.VERTEX_SHADER);
-		var fsCode = _parseShader(shader,cl,GL.FRAGMENT_SHADER);
-					
-		fullCode = vsCode+ "\n" + fsCode;
-		
-		var sig = makeCRC32( fullCode );
-		if ( shaderCache.exists( sig )) {
-			//hxd.System.trace4("shader cache hit !");
-			return shaderCache.get(sig);
+	static function CRC8(data:String) 
+	{
+	   var crc = 0x00;
+	   var extract = 0;
+	   var sum = 0;
+	   for(i in 0...data.length)
+	   {
+		  extract = data.fastCodeAt(i);
+		  for (j in 0...8 ) 
+		  {
+			sum = (crc ^ extract) & 0x01;
+			crc >>= 1;
+			if (sum&1 == 1)
+				crc ^= 0x8C;
+			extract >>= 1;
+		  }
+	   }
+	   return crc;
+	}
+	
+	function makeCstSig(vars:hxd.Stack<String>) : UInt {
+		var crc : UInt = 0xffffFFFF;
+		var i = 0;
+		for ( v in vars ){
+			crc = crc ^ CRC32(v);
+			i++;
 		}
+		return crc;
+	}
+	
+	function buildShaderInstance( shader : Shader ) {
+		#if debug
+		trace("shader cache query	");
+		#end
+		
+		var t0 = haxe.Timer.stamp();
+		var cl = Type.getClass(shader);
+		
+		var vsSource = getShaderCode( shader, cl, GL.VERTEX_SHADER);
+		var fsSource = getShaderCode( shader, cl, GL.FRAGMENT_SHADER);
+		
+		shVsCst.reset();
+		shFsCst.reset();
+		
+		var vsCst = shader.getConstants( shVsCst, true );
+		var fsCst = shader.getConstants( shFsCst, false );
+		
+		var vsSig = makeCstSig(vsCst);
+		var fsSig = makeCstSig(fsCst);
+		
+		var sig : UInt = CRC32( vsSource ) ^ CRC32( fsSource ) ^ vsSig ^ fsSig;
+		
+		var t1 = haxe.Timer.stamp();
+		
+		trace("shader signatures buils in "+( (t1 - t0) * 1000 ) + "ms");
+		if ( shaderCache.exists( sig )) 
+			return shaderCache.get(sig);
+			
+		var vsCode = expandShader(shader, vsCst, vsSource, GL.VERTEX_SHADER);
+		var fsCode = expandShader(shader, fsCst, fsSource, GL.FRAGMENT_SHADER);
+		
+		var fullCode = vsCode+ "\n" + fsCode;
+		
+		#if debug
+		trace("shader cache miss");
+		#end
 		
 		var vs = _compileShader(shader,GL.VERTEX_SHADER,vsCode);
 		var fs = _compileShader(shader,GL.FRAGMENT_SHADER,fsCode);
@@ -1915,6 +1987,7 @@ class GlDriver extends Driver {
 		checkError();
 		
 		@:allowAccess inst.sig = sig;
+		//TODO query much earlier than code unfolding
 		shaderCache.set( sig , inst);
 		return inst;
 	}
@@ -2457,6 +2530,15 @@ class GlDriver extends Driver {
 						}
 						vid[i] = u.index + i;
 					}
+					
+					#if false
+						#if (legacy || haxe_ver >= "3.3")
+						trace("legacy path");
+						#else 
+						trace("other path");
+						#end
+					#end
+					
 					#if (legacy||haxe_ver>="3.3")
 					uniform1iv(u.loc, new lime.utils.Int32Array(vid));
 					#else 

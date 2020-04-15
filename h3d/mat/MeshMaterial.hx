@@ -344,8 +344,8 @@ class MeshShader extends h3d.impl.Shader {
 		return l;
 	}
 	
-	override function getConstants(vertex) {
-		var cst = [];
+	override function getConstants(cst:hxd.Stack<String>, vertex:Bool) : hxd.Stack<String> {
+		cst.reset();
 		if( hasVertexColor ) cst.push("#define hasVertexColor");
 		if( hasVertexColorAdd ) cst.push("#define hasVertexColorAdd");
 		
@@ -398,7 +398,7 @@ class MeshShader extends h3d.impl.Shader {
 		if ( processNormals) 							cst.push("#define processNormals");
 		if ( cubeTexture != null )						cst.push("#define hasCubeTexture");	
 		
-		return cst.join("\n");
+		return cst;
 	}
 	
 

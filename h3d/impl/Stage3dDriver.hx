@@ -49,7 +49,7 @@ class Stage3dDriver extends Driver {
 	var curBuffer : VertexBuffer;
 	var curMultiBuffer : Array<h3d.impl.Buffer.BufferOffset>;
 	var curAttributes : Int;
-	var curTextures : Array<h3d.mat.Texture>;
+	var curTextures : hxd.Stack<h3d.mat.Texture>;
 	var curSamplerBits : Array<Int>=[];
 	var curTarget : h3d.mat.Texture;
 	public var antiAlias : Int = 0;
@@ -75,7 +75,7 @@ class Stage3dDriver extends Driver {
 		flashVersion = Std.parseFloat(v[0] + "." + v[1]);
 		empty = new flash.utils.ByteArray();
 		s3d = flash.Lib.current.stage.stage3Ds[0];
-		curTextures = [];
+		curTextures = new hxd.Stack<h3d.mat.Texture>();
 	}
 	
 	override function getDriverName(details:Bool) {
@@ -120,8 +120,7 @@ class Stage3dDriver extends Driver {
 			apiCall();
 		}
 		
-		while( curTextures.length > 0 )
-			curTextures.pop();
+		curTextures.hardReset();
 		
 		for( i in 0...curSamplerBits.length)
 			curSamplerBits[i] = -1;
@@ -483,14 +482,14 @@ class Stage3dDriver extends Driver {
 					if ( t.isDisposed() ) 		t = h2d.Tools.getEmptyTexture();
 				}
 				
-				var cur = curTextures[i];
+				var cur = curTextures.get(i);
 				
 				t.lastFrame = engine.frameCount;
 				
 				if ( t != cur ) {
 					apiCall();
 					ctx.setTextureAt(i, t.t);
-					curTextures[i] = t;
+					curTextures.set(i, t);
 					engine.textureSwitches++;
 				}
 

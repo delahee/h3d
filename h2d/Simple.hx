@@ -84,17 +84,16 @@ class SimpleShader extends h3d.impl.Shader {
 	 * This is the constant set, they are set / compiled for first draw and will enabled on all render thereafter
 	 * 
 	 */
-	override function getConstants( vertex : Bool ) {
+	override function getConstants( cst : hxd.Stack<String>, vertex : Bool ) : hxd.Stack<String>{
 		var engine = h3d.Engine.getCurrent();
 		
-		var cst = [];
 		if( vertex ) {
 			if( size != null ) cst.push("#define hasSize");
 			if( uvScale != null ) cst.push("#define hasUVScale");
 			if( uvPos != null ) cst.push("#define hasUVPos");
 		} 
 		
-		return cst.join("\n");
+		return cst;
 	}
 	
 	static var VERTEX = "
@@ -141,11 +140,9 @@ class SimpleShader extends h3d.impl.Shader {
 			#end
 			tuv = t;
 		}
-
 	";
 	
 	static var FRAGMENT = "
-	
 		varying vec2 tuv;
 		
 		uniform sampler2D tex;

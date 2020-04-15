@@ -421,14 +421,16 @@ class DrawableShader extends h3d.impl.Shader {
 		return leavePremultipliedColors = v; 
 	}
 		
+	
+	
 	/**
 	 * This is the constant set, they are set / compiled for first draw and will enabled on all render thereafter
 	 * 
 	 */
-	override function getConstants( vertex : Bool ) {
+	override function getConstants( cst:hxd.Stack<String>, vertex : Bool ) {
 		var engine = h3d.Engine.getCurrent();
 		
-		var cst = [];
+		cst.reset();
 		if( vertex ) {
 			if( size != null ) cst.push("#define hasSize");
 			if( uvScale != null ) cst.push("#define hasUVScale");
@@ -462,7 +464,7 @@ class DrawableShader extends h3d.impl.Shader {
 		
 		if ( leavePremultipliedColors ) cst.push( "#define leavePremultipliedColors");
 		
-		return cst.join("\n");
+		return cst;
 	}
 	
 	public function setTextures(v) { 
