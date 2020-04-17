@@ -336,6 +336,7 @@ opengl
 	/**
 	 * trace in the user space channel log
 	 */
+	@:extern
 	public inline static function trace1(msg : Dynamic, ?pos:PosInfos) {
 		#if debug
 		if ( debugLevel >= 1) trace(pos.fileName + ":" + pos.methodName + ":" + pos.lineNumber + " " + msg);
@@ -346,6 +347,7 @@ opengl
 	/**
 	 * trace in the engine space channel log
 	 */
+	@:extern
 	public inline static function trace2(msg : Dynamic, ?pos:PosInfos) {
 		#if debug
 		if ( debugLevel >= 2) trace(pos.fileName + ":" + pos.methodName + ":" + pos.lineNumber + " " + msg);
@@ -356,6 +358,7 @@ opengl
 	/**
 	 * trace in the debug engine space channel log
 	 */
+	@:extern
 	public inline static function trace3(msg : Dynamic, ?pos:PosInfos) {
 		#if debug
 		if ( debugLevel >= 3) trace(pos.fileName + ":" + pos.methodName + ":" + pos.lineNumber + " " + msg);

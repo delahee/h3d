@@ -13,11 +13,14 @@ class Signal {
 		
 		if( signals.length > 0 )
 			for (s in signals) 
-				s();
+				if(s!=null)
+					s();
 		
 		if( signalsOnce.length > 0 ){
-			for (s in signalsOnce) s();
-			signalsOnce = [];
+			for (s in signalsOnce) 
+				if(s!=null)
+					s();
+			signalsOnce=[];
 		}
 		isTriggerring = false;
 	}
@@ -33,10 +36,9 @@ class Signal {
 	}
 	
 	public inline function dispose() {
-		signals = [];
-		signalsOnce = [];
+		signals=[];
+		signalsOnce=[];
 	}
-	
 	
 	public inline function getHandlerCount() return signals.length + signalsOnce.length;
 }

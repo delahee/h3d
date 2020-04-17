@@ -427,45 +427,46 @@ class Tweenie {
 		if ( t.onEnd!=null )		t.onEnd(t.parent);
 	}
 	
-	static inline function identityStep (step) 	return step;
-	static inline function fEase		(step) 	return bezier(step, 0,	0,		1,		1	);
-	static inline function fEaseIn		(step) 	return bezier(step, 0,	0,		0.5,	1	);
-	static inline function fEaseOut		(step) 	return bezier(step, 0,	0.5,	1,		1	);
-	static inline function fBurn		(step) 	return bezier(step, 0,	1,	 	0,		1	);
-	static inline function fBurnIn		(step) 	return bezier(step, 0,	1,	 	1,		1	);
-	static inline function fBurnOut		(step) 	return bezier(step, 0,	0,		0,		1	);
-	static inline function fZigZag		(step) 	return bezier(step, 0,	2.5,	-1.5,	1	);
-	static inline function fLoop		(step) 	return bezier(step, 0,	1.33,	1.33,	0	);
-	static inline function fLoopEaseIn	(step) 	return bezier(step, 0,	0,		2.25,	0	);
-	static inline function fLoopEaseOut	(step) 	return bezier(step, 0,	2.25,	0,		0	);
-	static inline function fShake		(step) 	return bezier(step, 0.5,	1.22,	1.25,0	);
-	static inline function fShakeBoth	(step) 	return bezier(step, 0.5,	1.22,	1.25,0	);
-	static inline function fJump		(step) 	return bezier(step, 0,	2,		2.79,	1	);
-	static inline function fElasticEnd	(step) 	return bezier(step, 0,	0.7,	1.5,	1	);
-	static inline function fBurn2		(step) 	return bezier(step, 0,	0.7,	 0.4,	1	);
+	public static inline function identityStep 	(step:Float):Float 	return step;
+	public static inline function fEase			(step:Float):Float	return bezier(step, 0,		0,		1,		1	);
+	public static inline function fEaseIn		(step:Float):Float	return bezier(step, 0,		0,		0.5,	1	);
+	public static inline function fEaseOut		(step:Float):Float	return bezier(step, 0,		0.5,	1,		1	);
+	public static inline function fBurn			(step:Float):Float	return bezier(step, 0,		1,	 	0,		1	);
+	public static inline function fBurnIn		(step:Float):Float	return bezier(step, 0,		1,	 	1,		1	);
+	public static inline function fBurnOut		(step:Float):Float	return bezier(step, 0,		0,		0,		1	);
+	public static inline function fZigZag		(step:Float):Float	return bezier(step, 0,		2.5,	-1.5,	1	);
+	public static inline function fLoop			(step:Float):Float	return bezier(step, 0,		1.33,	1.33,	0	);
+	public static inline function fLoopEaseIn	(step:Float):Float	return bezier(step, 0,		0,		2.25,	0	);
+	public static inline function fLoopEaseOut	(step:Float):Float	return bezier(step, 0,		2.25,	0,		0	);
+	public static inline function fShake		(step:Float):Float	return bezier(step, 0.5,	1.22,	1.25,0	);
+	public static inline function fShakeBoth	(step:Float):Float	return bezier(step, 0.5,	1.22,	1.25,0	);
+	public static inline function fJump			(step:Float):Float	return bezier(step, 0,		2,		2.79,	1	);
+	public static inline function fElasticEnd	(step:Float):Float	return bezier(step, 0,		0.7,	1.5,	1	);
+	public static inline function fBurn2		(step:Float):Float	return bezier(step, 0,		0.7,	 0.4,	1	);
 	
-	public static var videntityStep=  identityStep ;
-	public static var vfEase		=  fEase		;
-	public static var vfEaseIn		=  fEaseIn		;
-	public static var vfEaseOut	=  fEaseOut		;	
-	public static var vfBurn		=  fBurn		;
-	public static var vfBurnIn		=  fBurnIn		;
-	public static var vfBurnOut	=  fBurnOut		;	
-	public static var vfZigZag		=  fZigZag		;
-	public static var vfLoop		=  fLoop		;
-	public static var vfLoopEaseIn	=  fLoopEaseIn	;
-	public static var vfLoopEaseOut=  fLoopEaseOut	;	
-	public static var vfShake		=  fShake		;
-	public static var vfShakeBoth	=  fShakeBoth	;
-	public static var vfJump		=  fJump		;
-	public static var vfElasticEnd	=  fElasticEnd	;
-	public static var vfBurn2		=  fBurn2		;
+	public static var videntityStep	: Float->Float =  identityStep ;
+	public static var vfEase		: Float->Float =  fEase			;
+	public static var vfEaseIn		: Float->Float =  fEaseIn		;
+	public static var vfEaseOut		: Float->Float =  fEaseOut		;	
+	public static var vfBurn		: Float->Float =  fBurn			;
+	public static var vfBurnIn		: Float->Float =  fBurnIn		;
+	public static var vfBurnOut		: Float->Float =  fBurnOut		;	
+	public static var vfZigZag		: Float->Float =  fZigZag		;
+	public static var vfLoop		: Float->Float =  fLoop			;
+	public static var vfLoopEaseIn	: Float->Float =  fLoopEaseIn	;
+	public static var vfLoopEaseOut : Float->Float =  fLoopEaseOut	;	
+	public static var vfShake		: Float->Float =  fShake		;
+	public static var vfShakeBoth	: Float->Float =  fShakeBoth	;
+	public static var vfJump		: Float->Float =  fJump			;
+	public static var vfElasticEnd	: Float->Float =  fElasticEnd	;
+	public static var vfBurn2		: Float->Float =  fBurn2		;
 	
 	public static  
-	function getInterpolateFunction(type:TType) {
+	function getInterpolateFunction(type:TType) : Float->Float{
 		return switch(type) {
 			case TLinear		: videntityStep   	;
 			case TRand			: videntityStep   	;
+			
 			case TEase			: vfEase		    ;
 			case TEaseIn		: vfEaseIn		 	;
 			case TEaseOut		: vfEaseOut		 	;
@@ -488,7 +489,7 @@ class Tweenie {
 	
 	inline function randFloat(f:Float):Float return Math.random()*f;
 	
-	public function update(?tmod = 1.0) {
+	public function update(?tmod : Float = 1.0) {
 		
 		var deltaMs = tmod / fps * 1000.0;
 		if ( delayList.length > 0 ) {
@@ -507,8 +508,10 @@ class Tweenie {
 				if (t.type==TRand)
 					t.ln+=if(Std.random(100)<33) t.speed * tmod else 0;
 				else
-					t.ln+=t.speed * tmod;
-				t.n = t.interpolate(t.ln);
+					t.ln += t.speed * tmod;
+					
+				var interp : Float -> Float = t.interpolate;
+				t.n = interp(t.ln);
 				if ( t.ln<1 ) {
 					// en cours...
 					var val =

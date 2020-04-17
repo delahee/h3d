@@ -1543,7 +1543,7 @@ class GlDriver extends Driver {
 	}
 
 	override function uploadVertexBytes( v : VertexBuffer, startVertex : Int, vertexCount : Int, buf : haxe.io.Bytes, bufPos : Int ) {
-		hxd.System.trace2("uploading bytes 32 " +startVertex+" : "+vertexCount);
+		//hxd.System.trace2("uploading bytes 32 " +startVertex+" : "+vertexCount);
 		
 		var stride : Int = v.stride;
 		var buf = getUints(buf);
@@ -1560,7 +1560,7 @@ class GlDriver extends Driver {
 
 	override function uploadIndexesBuffer( i : IndexBuffer, startIndice : Int, indiceCount : Int, buf : hxd.IndexBuffer, bufPos : Int ) {
 		#if (opengles && cpp)
-			hxd.System.trace2("uploading index 16");
+			//hxd.System.trace2("uploading index 16");
 
 			var buf = new Uint16Array(buf.getNative());
 			var sub = new Uint16Array(buf, bufPos, indiceCount * 2 );
@@ -1569,7 +1569,7 @@ class GlDriver extends Driver {
 			gl.bindBuffer(GL.ELEMENT_ARRAY_BUFFER, null);
 		#else 
 		
-			hxd.System.trace2("uploading index 32");
+			//hxd.System.trace2("uploading index 32");
 			//todo optimize this
 			var buf = new Int32Array(buf.getNative());
 			var sub = new Int32Array(buf, bufPos, indiceCount * 4);
@@ -1580,7 +1580,7 @@ class GlDriver extends Driver {
 	}
 
 	override function uploadIndexesBytes( i : IndexBuffer, startIndice : Int, indiceCount : Int, buf : haxe.io.Bytes , bufPos : Int ) {
-		hxd.System.trace2("uploading bytes 8");
+		//hxd.System.trace2("uploading bytes 8");
 		//todo optimize this
 		var buf = new Uint8Array(buf.getData());
 		var sub = new Uint8Array(buf, bufPos, indiceCount * 2);
@@ -1756,7 +1756,7 @@ class GlDriver extends Driver {
 	}
 	
 	static function CRC32( data : String ) : UInt {
-		var init = 0xFFFFFFFF;
+		var init : UInt = 0xFFFFFFFF;
 		var crc = init;
 		for( i in 0...data.length ) {
 			var tmp = (crc ^ data.fastCodeAt(i)) & 0xFF;
@@ -1771,7 +1771,7 @@ class GlDriver extends Driver {
 		return crc ^ init;
 	}
 	
-	static function CRC8(data:String) 
+	static function CRC8(data:String) : UInt
 	{
 	   var crc = 0x00;
 	   var extract = 0;
@@ -1802,9 +1802,9 @@ class GlDriver extends Driver {
 	}
 	
 	function buildShaderInstance( shader : Shader ) {
-		#if debug
-		trace("shader cache query	");
-		#end
+		//#if debug
+		//trace("shader cache query	");
+		//#end
 		
 		var t0 = haxe.Timer.stamp();
 		var cl = Type.getClass(shader);
@@ -1821,21 +1821,23 @@ class GlDriver extends Driver {
 		var vsSig = makeCstSig(vsCst);
 		var fsSig = makeCstSig(fsCst);
 		
-		var sig : UInt = CRC32( vsSource ) ^ CRC32( fsSource ) ^ vsSig ^ fsSig;
+		var sig : UInt = ( CRC32( vsSource ) ^ CRC32( fsSource ) ) + ((vsSig + fsSig) << 16);
 		
 		var t1 = haxe.Timer.stamp();
 		
-		trace("shader signatures buils in "+( (t1 - t0) * 1000 ) + "ms");
+		#if debug
+		//trace("shader signatures buils in " + ( (t1 - t0) * 1000 ) + "ms");
+		#end 
+		
 		if ( shaderCache.exists( sig )) 
 			return shaderCache.get(sig);
 			
 		var vsCode = expandShader(shader, vsCst, vsSource, GL.VERTEX_SHADER);
 		var fsCode = expandShader(shader, fsCst, fsSource, GL.FRAGMENT_SHADER);
 		
-		var fullCode = vsCode+ "\n" + fsCode;
-		
 		#if debug
-		trace("shader cache miss");
+		var fullCode = vsCode+ "\n" + fsCode;
+		//trace("shader cache miss");
 		#end
 		
 		var vs = _compileShader(shader,GL.VERTEX_SHADER,vsCode);
