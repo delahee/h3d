@@ -169,13 +169,10 @@ class HtmlText extends Drawable {
 			
 			var newLineCode : Int = haxe.Utf8.charCodeAt("\n",0);
 			
-			trace("nl:" + newLineCode);
-			
 			for ( i in 0...haxe.Utf8.length(t) ) {
 				var cc = haxe.Utf8.charCodeAt( t, i);
 				
 				if ( cc == newLineCode ) {
-					trace("new line !");
 					xPos = 0;
 					yPos += font.lineHeight + lineSpacing;
 					prevChar = -1;
