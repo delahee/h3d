@@ -11,7 +11,7 @@ enum Align {
 
 class TextLayoutInfos {
 	public var textAlign:Align;
-	public var maxWidth:Null<Float>;
+	public var maxWidth:Null<Float> = null;
 	public var lineSpacing:Int;
 	public var letterSpacing:Float;
 	public var onGlyph:Int->Float->Float->Void;
@@ -95,7 +95,7 @@ class Text extends Drawable implements IText {
 	 * Does not take highter bits alpha into account
 	 */
 	public var textColor(default, set) : Int;
-	public var maxWidth(default, set) : Null<Float>;
+	public var maxWidth(default, set) : Null<Float> = null;
 	
 	public var dropShadow : DropShadow;
 

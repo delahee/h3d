@@ -11,7 +11,7 @@ class HtmlText extends Drawable {
 	
 	public var letterSpacing : Float = 0.0;
 	public var lineSpacing:Int;
-	public var maxWidth : Null<Float>;
+	public var maxWidth(default,set) : Null<Float> = null;
 	
 	var glyphs : TileColorGroup;
 	
@@ -35,6 +35,13 @@ class HtmlText extends Drawable {
 	override function onAlloc() {
 		super.onAlloc();
 		if( htmlText != null ) initGlyphs(htmlText);
+	}
+	
+	function set_maxWidth(v:Null<Float>):Null<Float>
+	{
+		this.maxWidth = v;
+		set_htmlText(this.htmlText);
+		return v;
 	}
 	
 	function set_font(f) {
@@ -61,7 +68,7 @@ class HtmlText extends Drawable {
 		return t;
 	}
 	
-	function initGlyphs( text : String, rebuild = true, ?lines : Array<Int> ) {
+	function initGlyphs( text : String, ?rebuild = true, ?lines : Array<Int> ) {
 		if( rebuild ) glyphs.reset();
 		
 		glyphs.setDefaultColor(textColor);
@@ -76,7 +83,7 @@ class HtmlText extends Drawable {
 		return ret;
 	}
 	
-	public function splitText( text : String, leftMargin = 0 ) {
+	public function splitText( text : String, ?leftMargin = 0 ) {
 		if( maxWidth == null )
 			return text;
 		var lines = [], rest = text, restPos = 0;
@@ -97,7 +104,7 @@ class HtmlText extends Drawable {
 			var newline = cc == '\n'.code;
 			var esize = e.width + e.getKerningOffset(prevChar);
 			if( font.charset.isBreakChar(cc) ) {
-				var size = x + esize + letterSpacing;
+				var size : Float = x + esize + letterSpacing;
 				var k = i + 1, max = text.length;
 				var prevChar = prevChar;
 				while( size <= maxWidth && k < utf8Text.length ) {
@@ -109,7 +116,7 @@ class HtmlText extends Drawable {
 				}
 				if( size > maxWidth ) {
 					newline = true;
-					lines.push(text.substr(restPos, i - restPos));
+					lines.push( haxe.Utf8.sub(text, restPos, i - restPos));
 					restPos = i;
 					if( font.charset.isSpace(cc) ) {
 						e = null;
@@ -126,7 +133,8 @@ class HtmlText extends Drawable {
 				prevChar = cc;
 		}
 		if( restPos < text.length )
-			lines.push(text.substr(restPos, text.length - restPos));
+			lines.push( haxe.Utf8.sub(text, restPos, text.length - restPos));
+			
 		return lines.join("\n");
 	}
 	
@@ -158,9 +166,16 @@ class HtmlText extends Drawable {
 		} else {
 			var t = splitText(e.nodeValue.split("\n").join(" "), xPos);
 			var prevChar = -1;
-			for( i in 0...haxe.Utf8.length(t) ) {
-				var cc = haxe.Utf8.charCodeAt( t,i);
-				if( cc == "\n".code ) {
+			
+			var newLineCode : Int = haxe.Utf8.charCodeAt("\n",0);
+			
+			trace("nl:" + newLineCode);
+			
+			for ( i in 0...haxe.Utf8.length(t) ) {
+				var cc = haxe.Utf8.charCodeAt( t, i);
+				
+				if ( cc == newLineCode ) {
+					trace("new line !");
 					xPos = 0;
 					yPos += font.lineHeight + lineSpacing;
 					prevChar = -1;
