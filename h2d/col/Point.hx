@@ -129,6 +129,13 @@ class Point {
 		return new Point(x * s,y * s);
 	}
 	
+	//same but in place
+	public inline function mulScalarIP( s : Float) : Point {
+		x *= s;
+		y *= s;
+		return this;
+	}
+	
 	public inline function divScalar( s : Float) : Point {
 		var d = 1.0 / s;
 		return new Point(x * d,y * d);

@@ -67,7 +67,6 @@ class Tween {
 	var onUpdateT	: Null<TSprite->Float->Void>; // callback appelé avec la progression (0->1) en paramètre
 	var onEnd		: Null<TSprite->Void>;
 	
-	var interpolate	: Float->Float;
 	var delayMs		: Float;
 	
 	public inline function new (
@@ -80,8 +79,7 @@ class Tween {
 	    to			 ,
 	    type		 ,
 	    plays		 ,
-	    fl_pixel	 ,
-	    interpolate
+	    fl_pixel	 
 	) {
 		this.parent			= parent		;
 		this.vname		    = vname		 	;
@@ -93,7 +91,6 @@ class Tween {
 		this.type		    = type		 	;
 		this.plays		    = plays		 	;
 		this.fl_pixel	    = fl_pixel	 	;
-		this.interpolate    = interpolate	;
 		uid = GUID++;
 	}
 	
@@ -107,8 +104,7 @@ class Tween {
 	    to			 ,
 	    type		 ,
 	    plays		 ,
-	    fl_pixel	 ,
-	    interpolate
+	    fl_pixel	 
 	) {
 		//if ( Tweenie.DEBUG )trace("reset " + uid);
 		
@@ -122,7 +118,6 @@ class Tween {
 		this.type		    = type		 	;
 		this.plays		    = plays		 	;
 		this.fl_pixel	    = fl_pixel	 	;
-		this.interpolate    = interpolate	;
 		uid = GUID++;
 		
 		//if ( Tweenie.DEBUG ) trace("nuid: " + uid);
@@ -140,7 +135,6 @@ class Tween {
 		from		= 0.0;
 		to			= 0.0;
 		vname 		= VNone;
-		interpolate	= null;
 		parent 		= null;
 		onUpdate 	= null;
 		onUpdateT 	= null;
@@ -278,8 +272,7 @@ class Tweenie {
 				to,
 				tp,
 				1,
-				false,
-				getInterpolateFunction(tp)
+				false
 			);
 			
 			//if ( DEBUG )trace("newed " + t.uid);
@@ -298,8 +291,7 @@ class Tweenie {
 				to,
 				tp,
 				1,
-				false,
-				getInterpolateFunction(tp)
+				false
 			); 
 			
 			//if ( DEBUG )trace("pooled out " + t.uid);
@@ -345,11 +337,13 @@ class Tweenie {
 		}
 	}
 
-	public static inline function fastPow2(n:Float):Float return n*n;
-	public static inline function fastPow3(n:Float):Float return n*n*n;
+	public static inline function fastPow2(n:hxd.Float32):hxd.Float32 return n*n;
+	public static inline function fastPow3(n:hxd.Float32):hxd.Float32 return n * n * n;
+	
+	public static var ONE : hxd.Float32 = 1.0;
 
-	public static inline function bezier(t:Float, p0:Float, p1:Float, p2:Float, p3:Float) {
-		var minust = 1.0 - t;
+	public static inline function bezier(t:hxd.Float32, p0:hxd.Float32, p1:hxd.Float32, p2:hxd.Float32, p3:hxd.Float32) {
+		var minust : hxd.Float32 = ONE - t;
 		
 		return
 			fastPow3(minust)*p0 +
@@ -391,7 +385,7 @@ class Tweenie {
 	}
 	
 	public function terminateTween(t:TTw, ?fl_allowLoop = false) {
-		var v = t.from+(t.to-t.from)*t.interpolate(1);
+		var v = t.from+(t.to-t.from)* h2d.Tweenie.interp(t.type,1);
 		if (t.fl_pixel)
 			v = Math.round(v);
 		t.apply(v);
@@ -427,42 +421,65 @@ class Tweenie {
 		if ( t.onEnd!=null )		t.onEnd(t.parent);
 	}
 	
-	public static inline function identityStep 	(step:Float):Float 	return step;
-	public static inline function fEase			(step:Float):Float	return bezier(step, 0,		0,		1,		1	);
-	public static inline function fEaseIn		(step:Float):Float	return bezier(step, 0,		0,		0.5,	1	);
-	public static inline function fEaseOut		(step:Float):Float	return bezier(step, 0,		0.5,	1,		1	);
-	public static inline function fBurn			(step:Float):Float	return bezier(step, 0,		1,	 	0,		1	);
-	public static inline function fBurnIn		(step:Float):Float	return bezier(step, 0,		1,	 	1,		1	);
-	public static inline function fBurnOut		(step:Float):Float	return bezier(step, 0,		0,		0,		1	);
-	public static inline function fZigZag		(step:Float):Float	return bezier(step, 0,		2.5,	-1.5,	1	);
-	public static inline function fLoop			(step:Float):Float	return bezier(step, 0,		1.33,	1.33,	0	);
-	public static inline function fLoopEaseIn	(step:Float):Float	return bezier(step, 0,		0,		2.25,	0	);
-	public static inline function fLoopEaseOut	(step:Float):Float	return bezier(step, 0,		2.25,	0,		0	);
-	public static inline function fShake		(step:Float):Float	return bezier(step, 0.5,	1.22,	1.25,0	);
-	public static inline function fShakeBoth	(step:Float):Float	return bezier(step, 0.5,	1.22,	1.25,0	);
-	public static inline function fJump			(step:Float):Float	return bezier(step, 0,		2,		2.79,	1	);
-	public static inline function fElasticEnd	(step:Float):Float	return bezier(step, 0,		0.7,	1.5,	1	);
-	public static inline function fBurn2		(step:Float):Float	return bezier(step, 0,		0.7,	 0.4,	1	);
+	public static inline function identityStep 	(step:hxd.Float32) : hxd.Float32 	return step;
+	public static inline function fEase			(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		0,		1,		1	);
+	public static inline function fEaseIn		(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		0,		0.5,	1	);
+	public static inline function fEaseOut		(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		0.5,	1,		1	);
+	public static inline function fBurn			(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		1,	 	0,		1	);
+	public static inline function fBurnIn		(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		1,	 	1,		1	);
+	public static inline function fBurnOut		(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		0,		0,		1	);
+	public static inline function fZigZag		(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		2.5,	-1.5,	1	);
+	public static inline function fLoop			(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		1.33,	1.33,	0	);
+	public static inline function fLoopEaseIn	(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		0,		2.25,	0	);
+	public static inline function fLoopEaseOut	(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		2.25,	0,		0	);
+	public static inline function fShake		(step:hxd.Float32) : hxd.Float32	return bezier(step, 0.5,	1.22,	1.25,0	);
+	public static inline function fShakeBoth	(step:hxd.Float32) : hxd.Float32	return bezier(step, 0.5,	1.22,	1.25,0	);
+	public static inline function fJump			(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		2,		2.79,	1	);
+	public static inline function fElasticEnd	(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		0.7,	1.5,	1	);
+	public static inline function fBurn2		(step:hxd.Float32) : hxd.Float32	return bezier(step, 0,		0.7,	 0.4,	1	);
 	
-	public static var videntityStep	: Float->Float =  identityStep ;
-	public static var vfEase		: Float->Float =  fEase			;
-	public static var vfEaseIn		: Float->Float =  fEaseIn		;
-	public static var vfEaseOut		: Float->Float =  fEaseOut		;	
-	public static var vfBurn		: Float->Float =  fBurn			;
-	public static var vfBurnIn		: Float->Float =  fBurnIn		;
-	public static var vfBurnOut		: Float->Float =  fBurnOut		;	
-	public static var vfZigZag		: Float->Float =  fZigZag		;
-	public static var vfLoop		: Float->Float =  fLoop			;
-	public static var vfLoopEaseIn	: Float->Float =  fLoopEaseIn	;
-	public static var vfLoopEaseOut : Float->Float =  fLoopEaseOut	;	
-	public static var vfShake		: Float->Float =  fShake		;
-	public static var vfShakeBoth	: Float->Float =  fShakeBoth	;
-	public static var vfJump		: Float->Float =  fJump			;
-	public static var vfElasticEnd	: Float->Float =  fElasticEnd	;
-	public static var vfBurn2		: Float->Float =  fBurn2		;
+	public static var videntityStep	: hxd.Float32->hxd.Float32 =  identityStep ;
+	public static var vfEase		: hxd.Float32->hxd.Float32 =  fEase			;
+	public static var vfEaseIn		: hxd.Float32->hxd.Float32 =  fEaseIn		;
+	public static var vfEaseOut		: hxd.Float32->hxd.Float32 =  fEaseOut		;	
+	public static var vfBurn		: hxd.Float32->hxd.Float32 =  fBurn			;
+	public static var vfBurnIn		: hxd.Float32->hxd.Float32 =  fBurnIn		;
+	public static var vfBurnOut		: hxd.Float32->hxd.Float32 =  fBurnOut		;	
+	public static var vfZigZag		: hxd.Float32->hxd.Float32 =  fZigZag		;
+	public static var vfLoop		: hxd.Float32->hxd.Float32 =  fLoop			;
+	public static var vfLoopEaseIn	: hxd.Float32->hxd.Float32 =  fLoopEaseIn	;
+	public static var vfLoopEaseOut : hxd.Float32->hxd.Float32 =  fLoopEaseOut	;	
+	public static var vfShake		: hxd.Float32->hxd.Float32 =  fShake		;
+	public static var vfShakeBoth	: hxd.Float32->hxd.Float32 =  fShakeBoth	;
+	public static var vfJump		: hxd.Float32->hxd.Float32 =  fJump			;
+	public static var vfElasticEnd	: hxd.Float32->hxd.Float32 =  fElasticEnd	;
+	public static var vfBurn2		: hxd.Float32->hxd.Float32 =  fBurn2		;
+	
+	public static function interp( type:TType, t:hxd.Float32 ){
+		return 
+		switch(type){
+			case TLinear		: h2d.Tweenie.identityStep(t);
+			case TRand			: h2d.Tweenie.identityStep(t);
+			case TEase			: h2d.Tweenie.fEase(t);			
+			case TEaseIn		: h2d.Tweenie.fEaseIn(t);		
+			case TEaseOut		: h2d.Tweenie.fEaseOut(t);		
+			case TBurn			: h2d.Tweenie.fBurn(t);		
+			case TBurnIn		: h2d.Tweenie.fBurnIn(t);		
+			case TBurnOut		: h2d.Tweenie.fBurnOut(t);		
+			case TZigZag		: h2d.Tweenie.fZigZag(t);		
+			case TLoop			: h2d.Tweenie.fLoop(t);			
+			case TLoopEaseIn	: h2d.Tweenie.fLoopEaseIn(t);	
+			case TLoopEaseOut	: h2d.Tweenie.fLoopEaseOut(t);	
+			case TShake			: h2d.Tweenie.fShake(t);		
+			case TShakeBoth		: h2d.Tweenie.fShakeBoth(t);	
+			case TJump			: h2d.Tweenie.fJump(t);			
+			case TElasticEnd	: h2d.Tweenie.fElasticEnd(t);	
+			case TBurn2			: h2d.Tweenie.fBurn2(t);		
+		}
+	}
 	
 	public static  
-	function getInterpolateFunction(type:TType) : Float->Float{
+	function getInterpolateFunction(type:TType) : hxd.Float32->hxd.Float32{
 		return switch(type) {
 			case TLinear		: videntityStep   	;
 			case TRand			: videntityStep   	;
@@ -487,11 +504,10 @@ class Tweenie {
 	
 	public static var vgetInterpolateFunction = getInterpolateFunction;
 	
-	inline function randFloat(f:Float):Float return Math.random()*f;
+	inline function randFloat(f:hxd.Float32):hxd.Float32 return Math.random()*f;
 	
-	public function update(?tmod : Float = 1.0) {
-		
-		var deltaMs = tmod / fps * 1000.0;
+	public function update(?tmod : hxd.Float32 = 1.0) {
+		var deltaMs : hxd.Float32 = tmod / fps * 1000.0;
 		if ( delayList.length > 0 ) {
 			for (t in delayList.backWardIterator() ) {
 				t.delayMs -= deltaMs;
@@ -510,8 +526,7 @@ class Tweenie {
 				else
 					t.ln += t.speed * tmod;
 					
-				var interp : Float -> Float = t.interpolate;
-				t.n = interp(t.ln);
+				t.n = h2d.Tweenie.interp(t.type,t.ln);
 				if ( t.ln<1 ) {
 					// en cours...
 					var val =
