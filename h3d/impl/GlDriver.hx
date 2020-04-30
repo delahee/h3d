@@ -867,7 +867,7 @@ class GlDriver extends Driver {
 					gl.bindBuffer(GL.ARRAY_BUFFER, null); curBuffer = null; curMultiBuffer = null;
 				}
 				else {
-					var zeroBufferByteLen = 64 * 1024;
+					var zeroBufferByteLen = 512 * 1024;
 					if ( zeroBuffer == null ) zeroBuffer = new Uint8Array( zeroBufferByteLen );
 					
 					var requestedLen = count * stride * 4;
@@ -995,7 +995,7 @@ class GlDriver extends Driver {
 				rm( f );
 				
 				#if debug
-				hxd.System.trace1('color disposed #' +f.color.id + ', disposing fbo');
+				//hxd.System.trace1('color disposed #' +f.color.id + ', disposing fbo');
 				#end
 				
 				gl.deleteFramebuffer( f.fbo );
@@ -1424,7 +1424,7 @@ class GlDriver extends Driver {
 				var uploadedbuf : Float32Array = null;
 				var startByte = startVertex * stride * 4;
 				var requestedLen = vertexCount * stride * 4;
-				var zeroBufferLen = 256 * 1024;
+				var zeroBufferLen = 512 * 1024;
 				if ( zeroBufferF == null ) zeroBufferF = new Float32Array( zeroBufferLen );
 				uploadedbuf = zeroBufferF;
 				if ( zeroBufferLen < requestedLen){

@@ -28,11 +28,13 @@ class Charset {
 	**/
 	public static var POLISH = "ĄĆĘŁŃÓŚŹŻąćęłńóśźż";
 	
+	
+	
 	/**
 		HANGUL_SYL support for korean
 	**/
 	public static function HANGUL_SYL(){
-		var s = new StringBuf();
+		var s = new haxe.Utf8();
 		for ( i in 0xAC00...0xD7A3+1){
 			s.addChar( i );
 		}
@@ -40,7 +42,7 @@ class Charset {
 	};
 	
 	public static function HANGUL_JAMMO(){
-		var s = new StringBuf();
+		var s = new haxe.Utf8();
 		for ( i in 0x1100...0x11FF){
 			s.addChar( i );
 		}
@@ -59,8 +61,8 @@ class Charset {
 	
 	function new() {
 		map = new Map();
-		inline function m(a, b) {
-			map.set(a, b);
+		inline function m(dst, src) {
+			map.set(dst, src);
 		}
 		
 		// fullwidth unicode to ASCII (if missing)
@@ -115,8 +117,13 @@ class Charset {
 		m(code("‘"), code("'"));
 		m(code("‹"), code("<"));
 		m(code("›"), code(">"));
+		
+		#if cpp
+		m( 7838, 0xDF); //esset resolution
+		#end
 	}
 	
+	@:generic
 	public function resolveChar<T>( cc : Int, glyphs : Map<Int,T> ) : Null<T> {
 		var c : Null<Int> = cc;
 		while( c != null ) {
@@ -125,6 +132,10 @@ class Charset {
 			c = map.get(c);
 		}
 		return null;
+	}
+	
+	public function getAlias(code:Int ):Int{
+		return map.get(code);
 	}
 	
 	public inline function isSpace(cc : Int) {
@@ -148,6 +159,12 @@ class Charset {
 			return true;
 			
 		return isSpace(cc);
+	}
+	
+	//dest = source
+	//all chars requesting dest will become src
+	function alias(strDest:String,strSource:String){
+		map.set( haxe.Utf8.charCodeAt(strDest,0), haxe.Utf8.charCodeAt(strSource,0));
 	}
 
 	static var inst : Charset;

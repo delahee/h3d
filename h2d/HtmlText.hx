@@ -109,7 +109,7 @@ class HtmlText extends Drawable {
 				var prevChar = prevChar;
 				while( size <= maxWidth && k < utf8Text.length ) {
 					var cc =  utf8Text.unsafeGet(k++);
-					if( font.charset.isSpace(cc) || cc == '\n'.code ) break;
+					if ( font.charset.isSpace(cc) || cc == '\n'.code ) break;
 					var e = font.getChar(cc);
 					size += e.width + letterSpacing + e.getKerningOffset(prevChar);
 					prevChar = cc;
@@ -132,7 +132,7 @@ class HtmlText extends Drawable {
 			} else
 				prevChar = cc;
 		}
-		if( restPos < text.length )
+		if( restPos < haxe.Utf8.length(text))
 			lines.push( haxe.Utf8.sub(text, restPos, text.length - restPos));
 			
 		return lines.join("\n");

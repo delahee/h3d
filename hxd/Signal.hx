@@ -4,12 +4,14 @@ class Signal {
 	var signals:Array<Void->Void> = [];
 	var signalsOnce:Array<Void->Void> = [];
 	
-	public var isTriggerring = false; 
+	public var isTriggering = false; 
 	public inline function add(f:Void->Void) 		signals.push( f );
 	public inline function addOnce(f:Void->Void) 	signalsOnce.push( f );
 	public inline function new() {}
 	public function trigger() {
-		isTriggerring = true;
+		if ( isTriggering ) return;//avoid critical blow
+		
+		isTriggering = true;
 		
 		if( signals.length > 0 )
 			for (s in signals) 
@@ -22,7 +24,7 @@ class Signal {
 					s();
 			signalsOnce=[];
 		}
-		isTriggerring = false;
+		isTriggering = false;
 	}
 	
 	public inline function remove(f) {
