@@ -1,7 +1,9 @@
 package h2d;
 
 import h2d.MultiSpriteBatch;
+import h2d.Text.TextLayoutInfos;
 import hxd.Math;
+
 
 class MTBLayout implements h2d.Text.ITextPos{
 	var t : MultiTextBatchElement;
@@ -171,8 +173,10 @@ class MultiTextBatchElement implements IText {
 			f(e);
 	}
 
+	static var nullText = "null";
+	
 	function set_text(t:String) {
-		var t = t == null ? "null" : t;
+		var t = t == null ? nullText : t;
 		if( t == this.text ) return t;
 		this.text = t;
 		
@@ -218,9 +222,16 @@ class MultiTextBatchElement implements IText {
 		}
 	}
 
-	function initGlyphs( utf : hxd.IntStack, rebuild = true, lines : Array<Int> = null ) : h2d.col.PointInt {
-		var info = new h2d.Text.TextLayoutInfos(textAlign, maxWidth, lineSpacing, letterSpacing);
-		return @:privateAccess h2d.Text._initGlyphs( layout, font, info, utf, rebuild, lines);
+	var _info : TextLayoutInfos;
+	
+	function initGlyphs( utf : hxd.IntStack, ?rebuild = true, ?lines : Array<Int> = null ) : h2d.col.PointInt {
+		
+		if( _info == null )
+			_info = new TextLayoutInfos(textAlign, maxWidth, lineSpacing, letterSpacing);
+		else 
+			_info.reset(textAlign, maxWidth, lineSpacing, letterSpacing);
+			
+		return @:privateAccess h2d.Text._initGlyphs( layout, font, _info, utf, rebuild, lines);
 	}
 
 	var tHeight : Null<Int> = null;
