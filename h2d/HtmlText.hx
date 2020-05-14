@@ -9,7 +9,7 @@ class HtmlText extends Drawable {
 	public var textWidth(get, null) : Int;
 	public var textHeight(get, null) : Int;
 	
-	public var letterSpacing : Float = 0.0;
+	public var letterSpacing(default,set) : Float = 0.0;
 	public var lineSpacing:Int;
 	public var maxWidth(default,set) : Null<Float> = null;
 	
@@ -40,6 +40,12 @@ class HtmlText extends Drawable {
 	function set_maxWidth(v:Null<Float>):Null<Float>
 	{
 		this.maxWidth = v;
+		set_htmlText(this.htmlText);
+		return v;
+	}
+	
+	function set_letterSpacing(v:Null<Float>):Null<Float>{
+		letterSpacing = v;
 		set_htmlText(this.htmlText);
 		return v;
 	}
@@ -84,7 +90,7 @@ class HtmlText extends Drawable {
 	}
 	
 	public function splitText( text : String, ?leftMargin = 0 ) {
-		if( maxWidth == null )
+		if ( maxWidth == null || text.length == 0 )
 			return text;
 		var lines = [], rest = text, restPos = 0;
 		var x = leftMargin, prevChar = -1;
@@ -116,8 +122,8 @@ class HtmlText extends Drawable {
 				}
 				if( size > maxWidth ) {
 					newline = true;
-					lines.push( haxe.Utf8.sub(text, restPos, i - restPos));
-					restPos = i;
+					lines.push( haxe.Utf8.sub(text, restPos, i - restPos + 1));
+					restPos = i + 1;
 					if( font.charset.isSpace(cc) ) {
 						e = null;
 						restPos++;
