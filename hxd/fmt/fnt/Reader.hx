@@ -42,7 +42,16 @@ class Reader
 			if ( h.xOffsetDelta != null) v.xOffsetDelta = h.xOffsetDelta;
 			if ( h.yOffsetDelta != null) v.yOffsetDelta = h.yOffsetDelta;
 			if ( h.xAdvanceDelta != null) v.xAdvanceDelta = h.xAdvanceDelta;
-			m.set( h.id, v);
+			
+			var id : Int = 0;
+			if ( Std.is( h.id, Int )){
+				id = h.id;
+			}
+			if ( Std.is( h.id, String )){
+				var idStr : String = cast h.id;
+				id = haxe.Utf8.charCodeAt( idStr, 0 );
+			}
+			m.set( id, v);
 		}
 		return m;
 	}

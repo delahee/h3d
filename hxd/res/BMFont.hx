@@ -64,6 +64,14 @@ class BMFont{
 			);
 			
 			var char = new h2d.Font.FontChar( tile,  Math.round( nc.xAdvance+xAdvanceDelta));
+			
+			
+			#if false
+			if ( hacks.exists( nc.id ) ) {
+				trace("nc " + nc.id +" v:" + nc + " char:" + char.width );
+			}
+			#end
+			
 			if( nc.kerningPairs!=null)
 			for ( k in nc.kerningPairs.keys() )
 				char.addKerning( k, nc.kerningPairs.get(k));

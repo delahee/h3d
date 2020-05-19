@@ -385,7 +385,7 @@ class Text extends Drawable implements IText {
 		var calcLines = !rebuild && lines != null;
 
 		for ( i in 0...utf.length ) {
-			var cc = utf.unsafeGet(i);
+			var cc : Int = utf.unsafeGet(i);
 			
 			//trace( "code: 0x" + StringTools.hex(cc) );
 			
