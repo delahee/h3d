@@ -122,12 +122,9 @@ class HtmlText extends Drawable {
 				}
 				if( size > maxWidth ) {
 					newline = true;
-					lines.push( haxe.Utf8.sub(text, restPos, i - restPos + 1));
+					var sub = haxe.Utf8.sub(text, restPos, i - restPos + 1);
+					lines.push( sub);
 					restPos = i + 1;
-					if( font.charset.isSpace(cc) ) {
-						e = null;
-						restPos++;
-					}
 				}
 			}
 			if( e != null )
