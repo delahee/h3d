@@ -846,7 +846,7 @@ class Pad {
 		if ( onPad != null ) onPad(p);
 		
 		#if debug
-		trace("pad successfully installed");
+		//trace("pad successfully installed");
 		#end
 	}
 	

@@ -354,6 +354,15 @@ class SpriteBatch extends Drawable {
 			}
 		// }
 		length++;
+		
+		#if debug
+		if ( nbQuad() > 8192 ) {
+			//are you really sure that is what you wanted to do...
+			//smells like a leak...
+			throw "SpriteBatch asssertion : too many elements..."+nbQuad()+" is too much "+name;
+		}
+		#end
+		
 		return e;
 	}
 

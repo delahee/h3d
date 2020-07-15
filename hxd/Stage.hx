@@ -376,7 +376,7 @@ class Stage {
 	public static function requestSoftKeyboard(){
 		#if (openfl && switch)
 		trace("requestSoftKeyboard");
-		var str = lime.console.nswitch.Swkbd.getKeyboardResult();
+		var str = lime.console.nswitch.Swkbd.SwkbdLib.getKeyboardResult();
 		if ( str == null ){
 			var stage = hxd.Stage.getInstance();
 			var ke = new flash.events.KeyboardEvent("anon",true,false,0,0);

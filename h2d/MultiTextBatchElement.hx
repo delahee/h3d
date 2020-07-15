@@ -293,7 +293,7 @@ class MultiTextBatchElement implements IText {
 	public function dispose() {
 		for(e in elements)
 			e.remove();
-		elements = null;
+		elements = [];
 
 		font = null;
 		sp = null;

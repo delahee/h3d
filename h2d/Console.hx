@@ -346,8 +346,9 @@ class Console extends h2d.Sprite {
 		}
 		try {
 			Reflect.callMethod(null, cmd.callb, vargs);
-		} catch ( e : String ) {
-			#if debug
+		} catch ( e : Dynamic ) {
+			var msg : String = Std.string(e);
+			#if (debug||!prod)
 				trace("err running cmd :"+command);
 				trace(e);
 				
