@@ -246,6 +246,8 @@ class MultiSpriteBatch extends Drawable {
 	var length : Int;
 
 	var tmpBuf : hxd.FloatBuffer;
+	public var debug = false;
+
 
 	public function new(?parent : h2d.Sprite) {
 		super(parent);
@@ -286,7 +288,7 @@ class MultiSpriteBatch extends Drawable {
 
 	/**
 	 */
-	//@:noDebug
+	@:noDebug
 	public function add(e:MultiBatchElement, ?prio = 0) {
 		e.batch = this;
 		e.priority = prio;
@@ -336,6 +338,10 @@ class MultiSpriteBatch extends Drawable {
 			}
 		//}
 		length++;
+		
+		//#if debug
+		//if ( debug ) trace("added");
+		//#end 
 		return e;
 	}
 
@@ -365,6 +371,10 @@ class MultiSpriteBatch extends Drawable {
 		e.prev = null;
 		e.next = null;
 		length--;
+		
+		//#if debug
+		//if ( debug ) trace("deleted");
+		//#end 
 	}
 	
 	@:allow(h2d.MultiBatchElement)
@@ -644,6 +654,18 @@ class MultiSpriteBatch extends Drawable {
 		var bufpos = 0;
 		bufpos = computeTRS();
 		var nverts = Std.int( bufpos / stride );
+		
+		if ( nbQuad() > 8192 ) {
+			#if debug
+			//are you really sure that is what you wanted to do...
+			//smells like a leak...
+			throw "MultiSpriteBatch asssertion : too many elements..."+nbQuad()+" is too much "+name;
+			#else
+			//prevent buffer fragmentations and crash
+			return;
+			#end
+		}
+		
 		if( nbQuad() > 0 ){
 			ctx.flush(true);
 
